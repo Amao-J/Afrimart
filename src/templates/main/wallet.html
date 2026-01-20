@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My Wallet{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; padding: 40px 0;">
+    <h2>My Wallet</h2>
+    
+    <div class="wallet-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 15px; margin: 30px 0;">
+        <h3>Available Balance</h3>
+        <h1 style="font-size: 48px; margin: 20px 0;">{{ wallet_balance }}</h1>
+        <p>{{ currency_flag }} {{ currency_name }}</p>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+            <ion-icon name="arrow-back-outline"></ion-icon> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+.btn-primary {
+    background: #667eea;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+}
+.btn-primary:hover {
+    background: #5568d3;
+}
+</style>
+{% endblock %}

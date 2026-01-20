@@ -1,0 +1,654 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+   <div class="banner">
+
+      <div class="container">
+
+        <div class="slider-container has-scrollbar">
+
+          <div class="slider-item">
+
+            <img src="./assets/images/banner-1.png" alt="sale" class="banner-img">
+
+            <div class="banner-content">
+
+              <p class="banner-subtitle">Trending item</p>
+
+              <h2 class="banner-title">Fashion sale</h2>
+
+              <p class="banner-text">
+                starting at {% format_price 20000 %}
+              </p>
+
+              <a href="#" class="banner-btn">Shop now</a>
+
+            </div>
+
+          </div>
+
+          <div class="slider-item">
+
+            <img src="{% static 'assets/images/banner-1.jpg' %}" alt="modern sunglasses" class="banner-img">
+
+            <div class="banner-content">
+
+              <p class="banner-subtitle"></p>
+
+              <h2 class="banner-title"></h2>
+
+              <p class="banner-text">
+                starting at {% format_price 15000 %}
+              </p>
+
+              <a href="#" class="banner-btn">Shop now</a>
+
+            </div>
+
+          </div>
+
+          <div class="slider-item">
+
+            <img src="{% static 'assets/images/banner-2.png' %}" alt="new fashion summer sale" class="banner-img">
+
+            <div class="banner-content">
+
+              <p class="banner-subtitle">Sale Offer</p>
+
+              <h2 class="banner-title">New fashion summer sale</h2>
+
+              <p class="banner-text">
+                starting at {% format_price 2000 %}
+              </p>
+
+              <a href="#" class="banner-btn">Shop now</a>
+
+            </div>
+
+          </div>
+                    <div class="slider-item">
+
+            <img src="./assets/images/banner-3.jpg" alt="new fashion summer sale" class="banner-img">
+
+            <div class="banner-content">
+
+              <p class="banner-subtitle">Sale Offer</p>
+
+              <h2 class="banner-title">New fashion summer sale</h2>
+
+              <p class="banner-text">
+                starting at {% format_price 20000 %}
+              </p>
+
+              <a href="#" class="banner-btn">Shop now</a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        </div>
+
+      </div>
+
+    </div>
+     <div class="category">
+
+      <div class="container">
+
+        <div class="category-item-container has-scrollbar">
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="{% static 'assets/images/icons/video-svgrepo-com.svg' %}" alt="Enternaiment" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Enternaiment </h3>
+
+                <p class="category-item-amount">(53)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="{% static 'assets/images/sweater.svg' %}" alt="winter wear" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Winter wear</h3>
+
+                <p class="category-item-amount">(58)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="./assets/images/icons/glasses.svg" alt="glasses & lens" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Glasses & lens</h3>
+
+                <p class="category-item-amount">(68)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="./assets/images/icons/shorts.svg" alt="shorts & jeans" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Shorts</h3>
+
+                <p class="category-item-amount">(84)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="{% static 'assets/images/tees.svg' %}" alt="t-shirts" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">T-shirts</h3>
+
+                <p class="category-item-amount">(35)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="./assets/images/icons/jacket.svg" alt="jacket" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Jacket</h3>
+
+                <p class="category-item-amount">(16)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="./assets/images/icons/watch.svg" alt="watch" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Watch</h3>
+
+                <p class="category-item-amount">(27)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+          <div class="category-item">
+
+            <div class="category-img-box">
+              <img src="./assets/images/icons/hat.svg" alt="hat & caps" width="30">
+            </div>
+
+            <div class="category-content-box">
+
+              <div class="category-content-flex">
+                <h3 class="category-item-title">Hat & caps</h3>
+
+                <p class="category-item-amount">(39)</p>
+              </div>
+
+              <a href="#" class="category-btn">Show all</a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+<div class="product-container">
+
+      <div class="container">
+
+
+
+ <div class="sidebar-category sidebar">
+
+            <div class="sidebar-top">
+              <h2 class="sidebar-title">Category</h2>
+
+              <button class="sidebar-close-btn" data-mobile-menu-close-btn="">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+              </button>
+            </div>
+
+            <ul class="sidebar-menu-category-list">
+
+              {% for category in categories %}
+              <li class="sidebar-menu-category">
+
+                <button class="sidebar-accordion-menu" data-accordion-btn="">
+
+                  <div class="menu-title-flex">
+                    <img src="./assets/images/icons/dress.svg" alt="{{ category.name }}" width="20" height="20" class="menu-title-img">
+
+                    <p class="menu-title">{{ category.name }}</p>
+                  </div>
+
+                  <div>
+                    <ion-icon name="add-outline" class="add-icon md hydrated" role="img" aria-label="add outline"></ion-icon>
+                    <ion-icon name="remove-outline" class="remove-icon md hydrated" role="img" aria-label="remove outline"></ion-icon>
+                  </div>
+
+                </button>
+
+                <ul class="sidebar-submenu-category-list" data-accordion="">
+                  {% for product in category.products.all|slice:":4" %}
+                  <li class="sidebar-submenu-category">
+                    <a href="/product/{{ product.id }}/" class="sidebar-submenu-title">
+                      <p class="product-name">{{ product.name|truncatechars:20 }}</p>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+
+              </li>
+              {% endfor %}
+
+            </ul>
+
+          </div>
+           <div class="product-box">
+
+          <!--
+            - PRODUCT MINIMAL
+          -->
+
+          <div class="product-minimal">
+
+            <div class="product-showcase">
+
+              <h2 class="title">New Arrivals</h2>
+
+              <div class="showcase-wrapper has-scrollbar">
+
+                {% for product in products|slice:":8" %}
+                  {% if forloop.counter0|divisibleby:4 %}
+                    <div class="showcase-container">
+                  {% endif %}
+
+                  <div class="showcase">
+                    <a href="/product/{{ product.id }}/" class="showcase-img-box">
+                      {% if product.cloudinary_url %}
+                        <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" width="70" class="showcase-img">
+                      {% elif product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" width="70" class="showcase-img">
+                      {% else %}
+                        <div style="width: 70px; height: 70px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                          <ion-icon name="image-outline"></ion-icon>
+                        </div>
+                      {% endif %}
+                    </a>
+
+                    <div class="showcase-content">
+                      <a href="/product/{{ product.id }}/">
+                        <h4 class="showcase-title">{{ product.name|truncatechars:35 }}</h4>
+                      </a>
+
+                      <a href="#" class="showcase-category">{{ product.category.name }}</a>
+
+                      <div class="price-box">
+                        {% if product.has_discount %}
+                          <p class="price">{{ product.converted_price }}</p>
+                          <del>{{ product.converted_original_price }}</del>
+                        {% else %}
+                          <p class="price">{{ product.converted_price }}</p>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                  {% if forloop.counter|divisibleby:4 or forloop.last %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+
+              </div>
+
+            </div>
+
+            <div class="product-showcase">
+            
+              <h2 class="title">Trending</h2>
+            
+              <div class="showcase-wrapper has-scrollbar">
+
+                {% for product in products|slice:":8" %}
+                  {% if forloop.counter0|divisibleby:4 %}
+                    <div class="showcase-container">
+                  {% endif %}
+
+                  <div class="showcase">
+                    <a href="/product/{{ product.id }}/" class="showcase-img-box">
+                      {% if product.cloudinary_url %}
+                        <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" width="70" class="showcase-img">
+                      {% elif product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" width="70" class="showcase-img">
+                      {% else %}
+                        <div style="width: 70px; height: 70px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                          <ion-icon name="image-outline"></ion-icon>
+                        </div>
+                      {% endif %}
+                    </a>
+
+                    <div class="showcase-content">
+                      <a href="/product/{{ product.id }}/">
+                        <h4 class="showcase-title">{{ product.name|truncatechars:35 }}</h4>
+                      </a>
+
+                      <a href="#" class="showcase-category">{{ product.category.name }}</a>
+
+                      <div class="price-box">
+                        {% if product.has_discount %}
+                          <p class="price">{{ product.converted_price }}</p>
+                          <del>{{ product.converted_original_price }}</del>
+                        {% else %}
+                          <p class="price">{{ product.converted_price }}</p>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                  {% if forloop.counter|divisibleby:4 or forloop.last %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+            
+              </div>
+            
+            </div>
+
+          </div>
+
+
+
+          <!--
+            - PRODUCT FEATURED
+          -->
+
+          <div class="product-featured">
+
+            <h2 class="title">Deal of the day</h2>
+
+            <div class="showcase-wrapper has-scrollbar">
+
+              {% for product in products|slice:":2" %}
+              <div class="showcase-container">
+
+                <div class="showcase">
+                  
+                  <div class="showcase-banner">
+                    {% if product.cloudinary_url %}
+                      <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="showcase-img">
+                    {% elif product.image %}
+                      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="showcase-img">
+                    {% else %}
+                      <div style="width: 100%; height: 300px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                        <ion-icon name="image-outline" style="font-size: 48px;"></ion-icon>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="showcase-content">
+                    
+                    <div class="showcase-rating">
+                      <ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                      <ion-icon name="star"></ion-icon>
+                      <ion-icon name="star-outline"></ion-icon>
+                      <ion-icon name="star-outline"></ion-icon>
+                    </div>
+
+                    <a href="/product/{{ product.id }}/">
+                      <h3 class="showcase-title">{{ product.name }}</h3>
+                    </a>
+
+                    <p class="showcase-desc">
+                      {{ product.description|truncatechars:100 }}
+                    </p>
+
+                    <div class="price-box">
+                      <p class="price">{{ product.converted_price }}</p>
+                      {% if product.has_discount %}
+                        <del>{{ product.converted_original_price }}</del>
+                      {% endif %}
+                    </div>
+
+                    <button class="add-cart-btn">add to cart</button>
+
+                    <div class="showcase-status">
+                      <div class="wrapper">
+                        <p>
+                          already sold: <b>{{ product.total_sold|default:"0" }}</b>
+                        </p>
+
+                        <p>
+                          available: <b>{{ product.stock }}</b>
+                        </p>
+                      </div>
+
+                      <div class="showcase-status-bar"></div>
+                    </div>
+
+                    <div class="countdown-box">
+
+                      <p class="countdown-desc">
+                        Hurry Up! Offer ends in:
+                      </p>
+
+                      <div class="countdown">
+
+                        <div class="countdown-content">
+
+                          <p class="display-number">360</p>
+
+                          <p class="display-text">Days</p>
+
+                        </div>
+
+                        <div class="countdown-content">
+                          <p class="display-number">24</p>
+                          <p class="display-text">Hours</p>
+                        </div>
+
+                        <div class="countdown-content">
+                          <p class="display-number">59</p>
+                          <p class="display-text">Min</p>
+                        </div>
+
+                        <div class="countdown-content">
+                          <p class="display-number">00</p>
+                          <p class="display-text">Sec</p>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+              {% endfor %}
+
+            </div>
+
+          </div>
+
+
+
+          <!--
+            - PRODUCT GRID
+          -->
+
+          <div class="product-main">
+
+        
+
+            <div class="product-grid">
+
+              {% for product in products %}
+              <div class="showcase">
+              
+                <div class="showcase-banner">
+                  {% if product.cloudinary_url %}
+                    <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="product-img default" width="300">
+                    <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="product-img hover" width="300">
+                  {% elif product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img default" width="300">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img hover" width="300">
+                  {% else %}
+                    <div style="width: 100%; height: 300px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                      <ion-icon name="image-outline" style="font-size: 48px;"></ion-icon>
+                    </div>
+                  {% endif %}
+              
+                  {% if product.has_discount %}
+                    <p class="showcase-badge">{{ product.discount_percentage|default:"0" }}%</p>
+                  {% elif product.is_featured %}
+                    <p class="showcase-badge angle pink">new</p>
+                  {% endif %}
+              
+                  <div class="showcase-actions">
+                    <button class="btn-action">
+                      <ion-icon name="heart-outline"></ion-icon>
+                    </button>
+              
+                    <button class="btn-action">
+                      <ion-icon name="eye-outline"></ion-icon>
+                    </button>
+              
+                    <button class="btn-action">
+                      <ion-icon name="repeat-outline"></ion-icon>
+                    </button>
+              
+                    <button class="btn-action">
+                      <ion-icon name="bag-add-outline"></ion-icon>
+                    </button>
+                  </div>
+                </div>
+              
+                <div class="showcase-content">
+                  <a href="#" class="showcase-category">{{ product.category.name }}</a>
+              
+                  <h3>
+                    <a href="/product/{{ product.id }}/" class="showcase-title">{{ product.name }}</a>
+                  </h3>
+              
+                  <div class="showcase-rating">
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star"></ion-icon>
+                    <ion-icon name="star-outline"></ion-icon>
+                    <ion-icon name="star-outline"></ion-icon>
+                  </div>
+              
+                  <div class="price-box">
+                    <p class="price">{{ product.converted_price }}</p>
+                    {% if product.has_discount %}
+                      <del>{{ product.converted_original_price }}</del>
+                    {% endif %}
+                  </div>
+              
+                </div>
+              
+              </div>
+              {% endfor %}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+          </div>
+          </div>
+          
+
+
+
+{% endblock %}
+{%block footer%}
+{%endblock%}
