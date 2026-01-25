@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Techfy Africa{% endblock %}
+
+{% block content %}
+<section class="ftco-section" style="padding-top: 100px; min-height: 80vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <h2>Create Account</h2>
+                            <p class="text-muted">Join Afrimart today!</p>
+                        </div>
+
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.first_name.label_tag }}
+                                        {{ form.first_name }}
+                                        {% if form.first_name.errors %}
+                                            <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form.last_name.label_tag }}
+                                        {{ form.last_name }}
+                                        {% if form.last_name.errors %}
+                                            <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.username.label_tag }}
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">Choose a unique username</small>
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.email.label_tag }}
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.country_code.label_tag }}
+                                <div class="input-group">
+                                    {{ form.country_code }}
+                                    {{ form.phone }}
+                                </div>
+                                <small class="form-text text-muted">
+                                    Enter your phone number without the country code
+                                </small>
+                                {% if form.phone.errors %}
+                                    <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.password1.label_tag }}
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.password2.label_tag }}
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-lg btn-block mt-4">
+                                <i class="fa fa-user-plus"></i> Create Account
+                            </button>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <p class="text-muted">
+                                Already have an account? 
+                                <a href="{% url 'login' %}" class="text-primary font-weight-bold">Login here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Phone number validation
+document.getElementById('phone').addEventListener('input', function(e) {
+    // Remove non-digits
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // Remove leading 0 (will be added by country code)
+    if (value.startsWith('0')) {
+        value = value.substring(1);
+    }
+    
+    // Limit to 15 digits (max international number length)
+    if (value.length > 15) {
+        value = value.substring(0, 15);
+    }
+    
+    e.target.value = value;
+});
+
+// Password confirmation validation
+document.getElementById('password2').addEventListener('input', function() {
+    const password1 = document.getElementById('password1').value;
+    const password2 = this.value;
+    
+    if (password1 !== password2 && password2.length > 0) {
+        this.setCustomValidity('Passwords do not match');
+        this.classList.add('is-invalid');
+    } else {
+        this.setCustomValidity('');
+        this.classList.remove('is-invalid');
+    }
+});
+
+// Show selected country info
+document.getElementById('country_code').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const countryCode = this.value;
+    console.log('Selected country code:', countryCode);
+});
+</script>
+
+<style>
+.input-group select {
+    border-right: 0;
+}
+.input-group input {
+    border-left: 0;
+}
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+</style>
+{% endblock %}
