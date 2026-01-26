@@ -3,3 +3,4 @@ requests
 pillow
 cloudinary
 python-decouple
+whitenoise
