@@ -163,13 +163,11 @@ USE_TZ = True
 
 SITE_URL = 'http://127.0.0.1:8000'  
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-# Project-level static files directory
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
