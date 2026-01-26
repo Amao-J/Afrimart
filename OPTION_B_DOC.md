@@ -7,14 +7,13 @@ Complete step-by-step guide for building a modern React frontend that conne
 ##  Table of Contents
 
 1. [Overview](#overview)
-2. [Backend API Setup](#backend-api-setup)
-3. [React Frontend Setup](#react-frontend-setup)
-4. [Authentication Implementation](#authentication-implementation)
-5. [Product Display](#product-display)
-6. [Currency Conversion](#currency-conversion)
-7. [Cart Management](#cart-management)
-8. [Complete Code Examples](#complete-code-examples)
-9. [Deployment](#deployment)
+2. [React Frontend Setup](#react-frontend-setup)
+3. [Authentication Implementation](#authentication-implementation)
+4. [Product Display](#product-display)
+5. [Currency Conversion](#currency-conversion)
+6. [Cart Management](#cart-management)
+7. [Complete Code Examples](#complete-code-examples)
+8. [Deployment](#deployment)
 
 ---
 
