@@ -29,7 +29,10 @@ SECRET_KEY = 'django-insecure-4hf-7p#$xy*l+(#dx^9*%t3(t=p)3cd8yqto3e9s52$4c&v*!6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = ['afrimart-production.up.railway.app']
+if DEBUG:
+    ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
 
 CLOUDINARY_URL = config('CLOUDINARY_URL', default='')
 
