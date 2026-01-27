@@ -2,85 +2,309 @@
 {% load static %}
 {% load currency_tags %}
 
-{% block title %}Your Cart{% endblock %}
+{% block title %}Shopping Cart{% endblock %}
 
 {% block content %}
-<section class="ftco-section" style="padding-top: 100px; min-height: 60vh;">
-  <div class="container">
-    <h3 class="title">Shopping Cart</h3>
 
-    {% if cart_items %}
-      <div class="card">
-        <div class="card-body">
-          <table class="table" style="width:100%; border-collapse:collapse;">
-            <thead>
-              <tr>
-                <th style="text-align:left; padding:8px">Product</th>
-                <th style="text-align:right; padding:8px">Price</th>
-                <th style="text-align:center; padding:8px">Quantity</th>
-                <th style="text-align:right; padding:8px">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in cart_items %}
-                <tr>
-                  <td style="padding:8px; vertical-align:middle;">
-                    <div style="display:flex; gap:10px; align-items:center;">
-                      {% if item.product.image %}
-                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;" />
-                      {% endif %}
-                      <div>
-                        <strong>{{ item.product.name }}</strong>
-                        <div class="small text-muted">
-                          {% if item.product.category %}{{ item.product.category.name }}{% endif %}
+<div class="container my-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none" style="color: #2E6E1F; font-size: 14px;">Home</a></li>
+      <li class="breadcrumb-item active" style="font-size: 14px;">Shopping Cart</li>
+    </ol>
+  </nav>
+
+  <!-- Page Title -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Shopping Cart</h2>
+  </div>
+
+  {% if cart_items %}
+  <div class="row">
+    <!-- Cart Items -->
+    <div class="col-lg-8 mb-4">
+      <div class="card border-0">
+        <div class="card-body p-0">
+          <!-- Cart Header (Desktop) -->
+          <div class="d-none d-md-flex bg-light p-3 fw-bold border-bottom">
+            <div class="col-md-6">Product</div>
+            <div class="col-md-2 text-center">Price</div>
+            <div class="col-md-2 text-center">Quantity</div>
+            <div class="col-md-2 text-center">Total</div>
+          </div>
+
+          <!-- Cart Items -->
+          {% for item in cart_items %}
+          <div class="cart-item p-3 border-bottom">
+            <div class="row align-items-center">
+              <!-- Product Info -->
+              <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                  <!-- Product Image -->
+                  <div class="me-3">
+                    <a href="/product/{{ item.product.id }}/">
+                      {% if item.product.cloudinary_url %}
+                        <img src="{{ item.product.cloudinary_url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                      {% elif item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                      {% else %}
+                        <div style="width: 100px; height: 100px; background-color: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                          <ion-icon name="image-outline" style="font-size: 40px;"></ion-icon>
                         </div>
-                      </div>
+                      {% endif %}
+                    </a>
+                  </div>
+                  
+                  <!-- Product Details -->
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">
+                      <a href="/product/{{ item.product.id }}/" class="text-decoration-none text-dark">{{ item.product.name }}</a>
+                    </h6>
+                    <p class="text-muted small mb-2">{{ item.product.category.name }}</p>
+                    
+                    <!-- Stock Status -->
+                    {% if item.product.stock > 0 %}
+                      <span class="badge bg-success small">In Stock</span>
+                    {% else %}
+                      <span class="badge bg-danger small">Out of Stock</span>
+                    {% endif %}
+                    
+                    <!-- Remove Button (Mobile) -->
+                    <div class="d-md-none mt-2">
+                      <form method="POST" action="" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          <ion-icon name="trash-outline"></ion-icon> Remove
+                        </button>
+                      </form>
                     </div>
-                  </td>
-                  <td style="text-align:right; padding:8px;">{% format_price item.product.price %}</td>
-                  <td style="text-align:center; padding:8px;">
-                    <form method="POST" action="{% url 'update_cart' item.product.id %}" style="display:inline; margin:0;">
-                      {% csrf_token %}
-                      <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" style="width:60px; padding:4px;">
-                      <button type="submit" class="btn btn-sm btn-info" style="padding:2px 8px;">Update</button>
-                    </form>
-                  </td>
-                  <td style="text-align:right; padding:8px;">
-                    {% format_price item.subtotal %}
-                    <br>
-                    <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger" style="margin-top:4px;">Remove</a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3" style="text-align:right; padding:8px;"><strong>Total:</strong></td>
-                <td style="text-align:right; padding:8px;"><strong>{% format_price cart_total %}</strong></td>
-              </tr>
-            </tfoot>
-          </table>
+                  </div>
+                </div>
+              </div>
 
-          <div style="margin-top:16px; display:flex; gap:12px; justify-content:space-between; flex-wrap:wrap;">
-            <div>
-              <a href="{% url 'home' %}" class="btn btn-secondary" style="background:#f5f5f5; border:1px solid #e6e6e6; color:#333;">Continue Shopping</a>
-              <a href="{% url 'clear_cart' %}" class="btn btn-danger" style="margin-left:8px;" onclick="return confirm('Are you sure you want to clear your cart?');">Clear Cart</a>
+              <!-- Price (Desktop) -->
+              <div class="col-md-2 text-center d-none d-md-block">
+                <p class="mb-0 fw-bold" style="color: #2E6E1F;">{{ item.product.converted_price }}</p>
+              </div>
+
+              <!-- Quantity -->
+              <div class="col-md-2">
+                <div class="d-flex align-items-center justify-content-center mt-3 mt-md-0">
+                  <form method="POST" action="" class="d-flex align-items-center">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="decrease" class="btn btn-sm btn-outline-secondary" style="width: 35px; height: 35px;">
+                      <ion-icon name="remove-outline"></ion-icon>
+                    </button>
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control text-center mx-2" style="width: 60px; height: 35px;" readonly>
+                    <button type="submit" name="action" value="increase" class="btn btn-sm btn-outline-secondary" style="width: 35px; height: 35px;">
+                      <ion-icon name="add-outline"></ion-icon>
+                    </button>
+                  </form>
+                </div>
+                
+                <!-- Price (Mobile) -->
+                <div class="d-md-none text-center mt-2">
+                  <p class="mb-0 fw-bold" style="color: #2E6E1F;">{{ item.product.converted_price }}</p>
+                </div>
+              </div>
+
+              <!-- Total -->
+              <div class="col-md-2 text-center">
+                <p class="mb-0 fw-bold h5 mt-2 mt-md-0" style="color: #2E6E1F;">{{ item.total_price }}</p>
+              </div>
             </div>
-            <div>
-              <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+
+            <!-- Remove Button (Desktop) -->
+            <div class="d-none d-md-flex justify-content-end mt-2">
+              <form method="POST" action="">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <ion-icon name="trash-outline" class="me-1"></ion-icon> Remove
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+
+      <!-- Coupon Code Section -->
+      <div class="card border-0 mt-4">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Have a Coupon Code?</h5>
+          <form method="POST" action="" class="row g-2">
+            {% csrf_token %}
+            <div class="col-md-8">
+              <input type="text" name="coupon_code" class="form-control" placeholder="Enter coupon code">
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="btn w-100" style="background-color: #2E6E1F; color: white;">Apply Coupon</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+      <div class="card border-0 position-sticky" style="top: 100px;">
+        <div class="card-header text-white" style="background-color: #2E6E1F;">
+          <h5 class="mb-0" style="font-size: 16px;">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <!-- Summary Items -->
+          <div class="d-flex justify-content-between mb-3">
+            <span>Subtotal ({{ cart_count }} items)</span>
+            <span class="fw-bold">{{ cart_subtotal }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-3">
+            <span>Shipping</span>
+            <span class="text-success fw-bold">FREE</span>
+          </div>
+
+          {% if discount_amount %}
+          <div class="d-flex justify-content-between mb-3 text-success">
+            <span>Discount</span>
+            <span class="fw-bold">-{{ discount_amount }}</span>
+          </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between mb-3">
+            <span>Tax (VAT 7.5%)</span>
+            <span class="fw-bold">{{ cart_tax }}</span>
+          </div>
+
+          <hr>
+
+          <div class="d-flex justify-content-between mb-4">
+            <span class="h5 fw-bold">Total</span>
+            <span class="h4 fw-bold" style="color: #2E6E1F;">{{ cart_total }}</span>
+          </div>
+
+          <!-- Checkout Button -->
+          <a href="{% url 'checkout' %}" class="btn btn-lg w-100 mb-3" style="background-color: #2E6E1F; color: white; font-size: 16px;">
+            Proceed to Checkout
+            <ion-icon name="arrow-forward-outline" class="ms-2"></ion-icon>
+          </a>
+
+          <!-- Continue Shopping -->
+          <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-lg w-100" style="font-size: 16px;">
+            Continue Shopping
+          </a>
+
+          <!-- Trust Badges -->
+          <div class="mt-4 pt-3 border-top">
+            <div class="d-flex align-items-center mb-2">
+              <ion-icon name="shield-checkmark" style="color: #2E6E1F; font-size: 24px;" class="me-2"></ion-icon>
+              <small>Secure Payment</small>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+              <ion-icon name="car" style="color: #2E6E1F; font-size: 24px;" class="me-2"></ion-icon>
+              <small>Free Shipping on orders over $100</small>
+            </div>
+            <div class="d-flex align-items-center">
+              <ion-icon name="sync" style="color: #2E6E1F; font-size: 24px;" class="me-2"></ion-icon>
+              <small>30-Day Returns</small>
             </div>
           </div>
         </div>
       </div>
-    {% else %}
-      <div class="card">
-        <div class="card-body">
-          <p>Your cart is empty.</p>
-          <a href="{% url 'home' %}" class="btn btn-primary">Shop Now</a>
-        </div>
-      </div>
-    {% endif %}
-
+    </div>
   </div>
-</section>
+
+  {% else %}
+  <!-- Empty Cart -->
+  <div class="text-center py-5">
+    <div class="mb-4">
+      <ion-icon name="cart-outline" style="font-size: 120px; color: #ccc;"></ion-icon>
+    </div>
+    <h2 class="mb-3">Your Cart is Empty</h2>
+    <p class="text-muted mb-4">Looks like you haven't added any items to your cart yet.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-lg px-5" style="background-color: #2E6E1F; color: white;">
+      Start Shopping
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- You May Also Like Section -->
+  {% if suggested_products %}
+  <div class="row mt-5">
+    <div class="col-12">
+      <h3 class="mb-4 fw-bold">You May Also Like</h3>
+      <div class="row g-4">
+        {% for product in suggested_products %}
+        <div class="col-6 col-md-3">
+          <div class="card border-0 h-100">
+            <div class="position-relative overflow-hidden" style="border-radius: 8px 8px 0 0;">
+              {% if product.cloudinary_url %}
+                <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+              {% elif product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+              {% else %}
+                <div style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                  <ion-icon name="image-outline" style="font-size: 48px;"></ion-icon>
+                </div>
+              {% endif %}
+              
+              {% if product.has_discount %}
+                <span class="position-absolute top-0 start-0 badge bg-danger m-2">{{ product.discount_percentage }}%</span>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <p class="small mb-1" style="color: #2E6E1F;">{{ product.category.name }}</p>
+              <h6 class="card-title mb-2">
+                <a href="/product/{{ product.id }}/" class="text-decoration-none text-dark">{{ product.name|truncatechars:30 }}</a>
+              </h6>
+              <div class="mb-3">
+                <span class="fw-bold" style="color: #2E6E1F;">{{ product.converted_price }}</span>
+                {% if product.has_discount %}
+                  <del class="text-muted small ms-1">{{ product.converted_original_price }}</del>
+                {% endif %}
+              </div>
+              <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-sm w-100" style="background-color: #2E6E1F; color: white;">
+                  <ion-icon name="cart-outline" class="me-1"></ion-icon>
+                  Add to Cart
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+  .cart-item {
+    transition: background-color 0.3s;
+  }
+  
+  .cart-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>
+
 {% endblock %}

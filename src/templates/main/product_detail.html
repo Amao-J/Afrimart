@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none" style="color: #2E6E1F;">Home</a></li>
+      <li class="breadcrumb-item"><a href="#" class="text-decoration-none" style="color: #2E6E1F;">{{ product.category.name }}</a></li>
+      <li class="breadcrumb-item active">{{ product.name|truncatechars:30 }}</li>
+    </ol>
+  </nav>
+
+  <!-- Product Detail Section -->
+  <div class="row">
+    <!-- Product Images -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0" style="background-color: #f5f5f5;">
+        <div class="card-body p-4">
+          <!-- Main Image -->
+          <div class="mb-3 text-center">
+            {% if product.cloudinary_url %}
+              <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="img-fluid rounded" style="max-height: 500px; object-fit: contain;" id="mainImage">
+            {% elif product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="max-height: 500px; object-fit: contain;" id="mainImage">
+            {% else %}
+              <div style="height: 500px; background-color: #e0e0e0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <ion-icon name="image-outline" style="font-size: 120px; color: #999;"></ion-icon>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Thumbnail Images (if you have multiple images) -->
+          <div class="d-flex gap-2 justify-content-center">
+            {% if product.cloudinary_url or product.image %}
+              <div class="border rounded p-1" style="cursor: pointer; width: 80px; height: 80px;">
+                {% if product.cloudinary_url %}
+                  <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: cover;">
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-lg-6">
+      <div class="mb-3">
+        <span class="badge px-3 py-2" style="background-color: #2E6E1F; font-size: 14px;">{{ product.category.name }}</span>
+        {% if product.is_featured %}
+          <span class="badge bg-success px-3 py-2 ms-2" style="font-size: 14px;">New Arrival</span>
+        {% endif %}
+      </div>
+
+      <h1 class="mb-3">{{ product.name }}</h1>
+
+      <!-- Rating -->
+      <div class="mb-2 d-flex align-items-center">
+        <div class="me-3">
+          <ion-icon name="star" class="text-warning"></ion-icon>
+          <ion-icon name="star" class="text-warning"></ion-icon>
+          <ion-icon name="star" class="text-warning"></ion-icon>
+          <ion-icon name="star" class="text-warning"></ion-icon>
+          <ion-icon name="star-outline" class="text-warning"></ion-icon>
+        </div>
+        <span class="text-muted">(4.0) 128 Reviews</span>
+      </div>
+
+      <!-- Price -->
+      <div class="mb-3">
+        <h2 class="mb-2" style="color: #2E6E1F;">
+          {{ product.converted_price }}
+          {% if product.has_discount %}
+            <del class="text-muted h4 ms-3">{{ product.converted_original_price }}</del>
+            <span class="badge bg-danger ms-2" style="font-size: 15px;">Save {{ product.discount_percentage }}%</span>
+          {% endif %}
+        </h2>
+      </div>
+
+      <!-- Availability -->
+      <div class="mb-4">
+        {% if product.stock > 0 %}
+          <p class="mb-2">
+            <strong>Availability:</strong> 
+            <span class="text-success fw-bold">In Stock ({{ product.stock }} available)</span>
+          </p>
+        {% else %}
+          <p class="mb-2">
+            <strong>Availability:</strong> 
+            <span class="text-danger fw-bold">Out of Stock</span>
+          </p>
+        {% endif %}
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3">Description</h5>
+        <p class="text-muted">{{ product.description|default:"No description available for this product." }}</p>
+      </div>
+
+      <!-- Quantity Selector -->
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3">Quantity</h5>
+        <div class="d-flex align-items-center">
+          <button class="btn btn-outline-secondary" id="decreaseQty" style="width: 40px; height: 40px;">
+            <ion-icon name="remove-outline"></ion-icon>
+          </button>
+          <input type="number" class="form-control text-center mx-2" id="quantity" value="1" min="1" max="{{ product.stock }}" style="width: 80px; height: 40px;">
+          <button class="btn btn-outline-secondary" id="increaseQty" style="width: 40px; height: 40px;">
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mb-4">
+        <form method="POST" action="{% url 'add_to_cart' product.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" id="cartQuantity" value="1">
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-lg px-5 flex-grow-1" style="background-color: #2E6E1F; color: white; border: none;" {% if product.stock <= 0 %}disabled{% endif %}>
+              <ion-icon name="cart-outline" class="me-2"></ion-icon>
+              Add to Cart
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-lg" style="width: 60px;">
+              <ion-icon name="heart-outline"></ion-icon>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Additional Info -->
+      <div class="card border-0" style="background-color: #f5f5f5;">
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2">
+              <ion-icon name="checkmark-circle" style="color: #2E6E1F;"></ion-icon>
+              <strong>Free Shipping:</strong> On orders over $100
+            </li>
+            <li class="mb-2">
+              <ion-icon name="checkmark-circle" style="color: #2E6E1F;"></ion-icon>
+              <strong>Easy Returns:</strong> 30-day return policy
+            </li>
+            <li class="mb-2">
+              <ion-icon name="checkmark-circle" style="color: #2E6E1F;"></ion-icon>
+              <strong>Secure Payment:</strong> 100% secure transaction
+            </li>
+            <li>
+              <ion-icon name="checkmark-circle" style="color: #2E6E1F;"></ion-icon>
+              <strong>Support:</strong> 24/7 customer service
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Details Tabs -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+            Description
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications" type="button" role="tab">
+            Specifications
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+            Reviews (128)
+          </button>
+        </li>
+      </ul>
+      
+      <div class="tab-content p-4 border border-top-0">
+        <div class="tab-pane fade show active" id="description" role="tabpanel">
+          <h5 class="mb-3">Product Description</h5>
+          <p>{{ product.description|default:"This is a high-quality product designed to meet your needs. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." }}</p>
+        </div>
+        
+        <div class="tab-pane fade" id="specifications" role="tabpanel">
+          <h5 class="mb-3">Product Specifications</h5>
+          <table class="table">
+            <tbody>
+              <tr>
+                <td><strong>Category</strong></td>
+                <td>{{ product.category.name }}</td>
+              </tr>
+              <tr>
+                <td><strong>Stock</strong></td>
+                <td>{{ product.stock }} units</td>
+              </tr>
+              <tr>
+                <td><strong>Weight</strong></td>
+                <td>1.5 kg</td>
+              </tr>
+              <tr>
+                <td><strong>Dimensions</strong></td>
+                <td>30 x 20 x 10 cm</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+          <h5 class="mb-4">Customer Reviews</h5>
+          
+          <!-- Single Review -->
+          <div class="mb-4 pb-4 border-bottom">
+            <div class="d-flex mb-2">
+              <div class="me-3">
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                  <span class="text-white fw-bold">JD</span>
+                </div>
+              </div>
+              <div>
+                <h6 class="mb-1">John Doe</h6>
+                <div class="mb-2">
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                </div>
+                <p class="text-muted small mb-2">Reviewed on January 15, 2025</p>
+                <p class="mb-0">Excellent product! Exactly as described and arrived quickly. Highly recommend!</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Another Review -->
+          <div class="mb-4">
+            <div class="d-flex mb-2">
+              <div class="me-3">
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                  <span class="text-white fw-bold">SM</span>
+                </div>
+              </div>
+              <div>
+                <h6 class="mb-1">Sarah Miller</h6>
+                <div class="mb-2">
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star" class="text-warning"></ion-icon>
+                  <ion-icon name="star-outline" class="text-warning"></ion-icon>
+                </div>
+                <p class="text-muted small mb-2">Reviewed on January 10, 2025</p>
+                <p class="mb-0">Good quality for the price. Would buy again!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <h3 class="mb-4 fw-bold">Related Products</h3>
+      <div class="row g-4">
+        {% for related_product in related_products %}
+        <div class="col-6 col-md-3">
+          <div class="card border-0 h-100">
+            <div class="position-relative overflow-hidden" style="border-radius: 8px 8px 0 0;">
+              {% if related_product.cloudinary_url %}
+                <img src="{{ related_product.cloudinary_url }}" alt="{{ related_product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+              {% elif related_product.image %}
+                <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+              {% else %}
+                <div style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                  <ion-icon name="image-outline" style="font-size: 48px;"></ion-icon>
+                </div>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <p class="small mb-1" style="color: #2E6E1F;">{{ related_product.category.name }}</p>
+              <h6 class="card-title mb-2">
+                <a href="/product/{{ related_product.id }}/" class="text-decoration-none text-dark">{{ related_product.name|truncatechars:30 }}</a>
+              </h6>
+              <div>
+                <span class="fw-bold" style="color: #2E6E1F;">{{ related_product.converted_price }}</span>
+                {% if related_product.has_discount %}
+                  <del class="text-muted small ms-1">{{ related_product.converted_original_price }}</del>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .nav-tabs .nav-link {
+    color: #333;
+    border: none;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .nav-tabs .nav-link:hover {
+    color: #2E6E1F;
+    border-color: transparent;
+  }
+  
+  .nav-tabs .nav-link.active {
+    color: #2E6E1F;
+    background-color: transparent;
+    border-color: transparent transparent #2E6E1F transparent;
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  // Quantity selector
+  const decreaseBtn = document.getElementById('decreaseQty');
+  const increaseBtn = document.getElementById('increaseQty');
+  const quantityInput = document.getElementById('quantity');
+  const cartQuantityInput = document.getElementById('cartQuantity');
+  
+  if (decreaseBtn && increaseBtn && quantityInput) {
+    decreaseBtn.addEventListener('click', function() {
+      let currentValue = parseInt(quantityInput.value);
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+        cartQuantityInput.value = currentValue - 1;
+      }
+    });
+    
+    increaseBtn.addEventListener('click', function() {
+      let currentValue = parseInt(quantityInput.value);
+      let maxValue = parseInt(quantityInput.max);
+      if (currentValue < maxValue) {
+        quantityInput.value = currentValue + 1;
+        cartQuantityInput.value = currentValue + 1;
+      }
+    });
+    
+    quantityInput.addEventListener('change', function() {
+      cartQuantityInput.value = this.value;
+    });
+  }
+</script>
+
+{% endblock %}
