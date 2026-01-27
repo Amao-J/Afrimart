@@ -74,7 +74,7 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
         >
           <p class="text-uppercase text-white-50 mb-2">Sale Offer</p>
           <h2 class="display-4 fw-bold">New Fashion Summer Sale</h2>
-          <p class="fs-5 mb-3">Starting at $20</p>
+          <p class="fs-5 mb-3">Starting at {% format_price 20 %}</p>
           <a href="#" class="btn btn-success btn-lg px-5">Shop Now</a>
         </div>
       </div>
@@ -504,114 +504,135 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
         <h3 class="mb-3 fw-bold">Deal of the Day</h3>
         <div class="row">
           {% for product in products|slice:":2" %}
-          <div class="col-md-6 mb-4">
+            <div class="col-md-6 mb-4">
             <div class="card border-0 h-100">
               <div class="position-relative">
-                {% if product.cloudinary_url %}
-                <img
-                  src="{{ product.cloudinary_url }}"
-                  alt="{{ product.name }}"
-                  class="card-img-top"
-                  style="height: 300px; object-fit: cover"
-                />
-                {% elif product.image %}
-                <img
-                  src="{{ product.image.url }}"
-                  alt="{{ product.name }}"
-                  class="card-img-top"
-                  style="height: 300px; object-fit: cover"
-                />
-                {% else %}
-                <div
-                  style="
-                    height: 300px;
-                    background-color: #f0f0f0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                >
-                  <ion-icon
-                    name="image-outline"
-                    style="font-size: 48px"
-                  ></ion-icon>
-                </div>
-                {% endif %}
+              {% if product.cloudinary_url %}
+              <img
+                src="{{ product.cloudinary_url }}"
+                alt="{{ product.name }}"
+                class="card-img-top"
+                style="height: 300px; object-fit: cover"
+              />
+              {% elif product.image %}
+              <img
+                src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+                class="card-img-top"
+                style="height: 300px; object-fit: cover"
+              />
+              {% else %}
+              <div
+                style="
+                height: 300px;
+                background-color: #f0f0f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                "
+              >
+                <ion-icon
+                name="image-outline"
+                style="font-size: 48px"
+                ></ion-icon>
+              </div>
+              {% endif %}
+              {% if product.has_discount %}
+              <span class="position-absolute top-0 start-0 badge bg-danger m-2">
+                {{ product.discount_percentage|default:"0" }}%
+              </span>
+              {% endif %}
               </div>
               <div class="card-body">
-                <div class="mb-2">
+              <div class="mb-2">
+                {% for i in "12345" %}
+                {% if forloop.counter <= product.rating|default:3 %}
                   <ion-icon name="star" class="text-warning"></ion-icon>
-                  <ion-icon name="star" class="text-warning"></ion-icon>
-                  <ion-icon name="star" class="text-warning"></ion-icon>
+                {% else %}
                   <ion-icon name="star-outline" class="text-warning"></ion-icon>
-                  <ion-icon name="star-outline" class="text-warning"></ion-icon>
-                </div>
-                <h5 class="card-title">
-                  <a
-                    href="/product/{{ product.id }}/"
-                    class="text-decoration-none text-dark"
-                    >{{ product.name }}</a
-                  >
-                </h5>
-                <p class="card-text text-muted small">
-                  {{ product.description|truncatechars:100 }}
-                </p>
-                <div class="mb-3">
-                  <span class="h4 text-success fw-bold"
-                    >{{ product.converted_price }}</span
-                  >
-                  {% if product.has_discount %}
-                  <del class="text-muted ms-2"
-                    >{{ product.converted_original_price }}</del
-                  >
-                  {% endif %}
-                </div>
-                <button class="btn btn-success w-100 mb-3">Add to Cart</button>
+                {% endif %}
+                {% endfor %}
+              </div>
+              <h5 class="card-title">
+                <a
+                href="/product/{{ product.id }}/"
+                class="text-decoration-none text-dark"
+                >{{ product.name }}</a
+                >
+              </h5>
+              <p class="card-text text-muted small">
+                {{ product.description|truncatechars:100 }}
+              </p>
+              <div class="mb-3">
+                <span class="h4 text-success fw-bold"
+                >{{ product.converted_price }}</span
+                >
+                {% if product.has_discount %}
+                <del class="text-muted ms-2"
+                >{{ product.converted_original_price }}</del
+                >
+                {% endif %}
+              </div>
+              <button class="btn btn-success w-100 mb-3" onclick="addToCartAjax({{ product.id }})">Add to Cart</button>
 
-                <div class="mb-3">
-                  <div
-                    class="d-flex justify-content-between text-muted small mb-2"
-                  >
-                    <span
-                      >Already Sold:
-                      <strong
-                        >{{ product.total_sold|default:"0" }}</strong
-                      ></span
-                    >
-                    <span>Available: <strong>{{ product.stock }}</strong></span>
-                  </div>
-                  <div class="progress" style="height: 8px">
-                    <div
-                      class="progress-bar bg-success"
-                      style="width: 50%"
-                    ></div>
-                  </div>
+              <div class="mb-3">
+                <div
+                class="d-flex justify-content-between text-muted small mb-2"
+                >
+                <span>
+                  Already Sold:
+                  <strong>{{ product.total_sold|default:"0" }}</strong>
+                </span>
+                <span>
+                  Available: <strong>{{ product.stock|default:"0" }}</strong>
+                </span>
                 </div>
+                {% with total=product.total_sold|add:product.stock %}
+                {% if total > 0 %}
+                {% widthratio product.total_sold total 100 as sold_percent %}
+                <div class="progress" style="height: 8px">
+                <div
+                  class="progress-bar bg-success"
+                  style="width: {{ sold_percent }}%"
+                ></div>
+                </div>
+                {% else %}
+                <div class="progress" style="height: 8px">
+                <div
+                  class="progress-bar bg-success"
+                  style="width: 0%"
+                ></div>
+                </div>
+                {% endif %}
+                {% endwith %}
+              </div>
 
-                <div class="alert alert-success border-0 text-center">
-                  <p class="small mb-2 fw-bold">Hurry Up! Offer ends in:</p>
-                  <div class="d-flex justify-content-center gap-2">
-                    <div class="text-center">
-                      <div class="fw-bold">360</div>
-                      <div class="small">Days</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="fw-bold">24</div>
-                      <div class="small">Hours</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="fw-bold">59</div>
-                      <div class="small">Min</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="fw-bold">00</div>
-                      <div class="small">Sec</div>
-                    </div>
-                  </div>
+              {% if product.deal_end %}
+              <div class="alert alert-success border-0 text-center">
+                <p class="small mb-2 fw-bold">Hurry Up! Offer ends in:</p>
+                <div class="d-flex justify-content-center gap-2" data-deal-end="{{ product.deal_end|date:'c' }}">
+                <div class="text-center">
+                  <div class="fw-bold deal-days">--</div>
+                  <div class="small">Days</div>
+                </div>
+                <div class="text-center">
+                  <div class="fw-bold deal-hours">--</div>
+                  <div class="small">Hours</div>
+                </div>
+                <div class="text-center">
+                  <div class="fw-bold deal-minutes">--</div>
+                  <div class="small">Min</div>
+                </div>
+                <div class="text-center">
+                  <div class="fw-bold deal-seconds">--</div>
+                  <div class="small">Sec</div>
+                </div>
                 </div>
               </div>
+              {% endif %}
+              </div>
             </div>
-          </div>
+            </div>
           {% endfor %}
         </div>
       </div>
@@ -684,6 +705,8 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
                   <button
                     class="btn btn-sm btn-light rounded-circle"
                     style="width: 35px; height: 35px"
+                    onclick="addToCartAjax({{ product.id }})"
+                    title="Add to Cart"
                   >
                     <ion-icon name="bag-add-outline"></ion-icon>
                   </button>
@@ -778,5 +801,77 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
     background-color: #2e6e1f;
   }
 </style>
+
+<script>
+  function addToCartAjax(productId) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                      document.querySelector('[name="csrfmiddlewaretoken"]')?.value ||
+                      getCookie('csrftoken');
+
+    const formData = new FormData();
+    formData.append('quantity', 1);
+
+    fetch(`/cart/ajax/add/${productId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken,
+      },
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success message
+        showNotification(data.message, 'success');
+        // Update cart count if there's a cart count element
+        const cartCountEl = document.getElementById('cart-count');
+        if (cartCountEl) {
+          cartCountEl.textContent = data.cart_count;
+        }
+      } else {
+        showNotification(data.message, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Failed to add to cart', 'error');
+    });
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function showNotification(message, type = 'info') {
+    // Create a simple notification
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+    alertDiv.setAttribute('role', 'alert');
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Insert at the top of the page
+    const container = document.querySelector('.container:first-of-type') || document.body;
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 5000);
+  }
+</script>
 
 {% endblock %} {% block footer %}{% endblock %}

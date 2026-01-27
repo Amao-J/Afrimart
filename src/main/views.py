@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from .utils.currency import set_user_currency, SUPPORTED_CURRENCIES, get_exchange_rate, batch_update_rates
 from .models import Order, OrderItem, Product, Wallet, Payment
 from decimal import Decimal
-from .cart import get_cart, save_cart, get_cart_items,cart_view,update_cart,remove_from_cart,clear_cart
+from .cart import get_cart, save_cart, get_cart_items, update_cart, remove_from_cart, clear_cart, cart_view as cart_view_func
 import uuid
 import requests
 import json
@@ -150,6 +150,26 @@ def add_to_cart(request, product_id):
     
     messages.success(request, f'Added {quantity} x {product.name} to cart')
     return redirect('cart')
+
+
+def cart_view(request):
+    """Display shopping cart"""
+    return cart_view_func(request)
+
+
+def update_cart_view(request, product_id):
+    """Update product quantity in cart"""
+    return update_cart(request, product_id)
+
+
+def remove_from_cart_view(request, product_id):
+    """Remove product from cart"""
+    return remove_from_cart(request, product_id)
+
+
+def clear_cart_view(request):
+    """Clear entire cart"""
+    return clear_cart(request)
 
 @login_required
 def dashboard(request):
