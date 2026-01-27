@@ -1,54 +1,214 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Login - Techfy-NG{% endblock %}
+{% block title %}Login - Afrimart{% endblock %}
 
 {% block content %}
-<section class="ftco-section" style="padding-top: 100px; min-height: 80vh;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow">
-                    <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                            <h2>Welcome Back!</h2>
-                            <p class="text-muted">Login to your account</p>
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-5 d-none d-md-block" style="background: linear-gradient(135deg, #2E6E1F 0%, #1a4012 100%);">
+                        <div class="d-flex flex-column justify-content-center align-items-center h-100 p-5 text-white">
+                            <div class="mb-4">
+                                <img src="{% static 'assets/images/logo/logo.png' %}" alt="Afrimart" class="img-fluid" style="max-width: 150px; filter: brightness(0) invert(1);">
+                            </div>
+                            <p class="text-center mb-4">Your one-stop shop for quality products across Africa</p>
+                            
+                          
+                            
+                            <div class="mt-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <ion-icon name="checkmark-circle" class="me-2" style="font-size: 15px;"></ion-icon>
+                                    <span style="font-size: 14px;">Secure Shopping</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <ion-icon name="checkmark-circle" class="me-2" style="font-size: 15px;"></ion-icon>
+                                    <span style="font-size: 14px;">Fast Delivery</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <ion-icon name="checkmark-circle" class="me-2" style="font-size: 15px;"></ion-icon>
+                                    <span style="font-size: 14px;">24/7 Support</span>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <form method="post">
-                            {% csrf_token %}
-
-                            <div class="form-group">
-                                {{ form.username.label_tag }}
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger small">{{ form.username.errors.0 }}</div>
-                                {% endif %}
+                    <!-- Right Side - Login Form -->
+                    <div class="col-md-7">
+                        <div class="p-5">
+                            <div class="mb-4">
+                                <h2 class="fw-bold mb-2 text-center">Welcome Back!</h2>
+                                <p class="text-muted text-center">Login to continue shopping</p>
                             </div>
 
-                            <div class="form-group">
-                                {{ form.password.label_tag }}
-                                {{ form.password }}
-                                {% if form.password.errors %}
-                                    <div class="text-danger small">{{ form.password.errors.0 }}</div>
-                                {% endif %}
+                            <!-- Display Form Errors -->
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+
+                            <form method="post">
+                                {% csrf_token %}
+
+                                <!-- Username Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
+                                        <ion-icon name="person-outline" class="me-1"></ion-icon>
+                                        Username or Email
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="{{ form.username.name }}" 
+                                        id="{{ form.username.id_for_label }}"
+                                        class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+                                        placeholder="Enter your username"
+                                        value="{{ form.username.value|default:'' }}"
+                                        required
+                                        style="font-size: 15px;"
+                                    >
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.username.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Password Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">
+                                        <ion-icon name="lock-closed-outline" class="me-1"></ion-icon>
+                                        Password
+                                    </label>
+                                    <div class="position-relative">
+                                        <input 
+                                            type="password" 
+                                            name="{{ form.password.name }}" 
+                                            id="{{ form.password.id_for_label }}"
+                                            class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" 
+                                            placeholder="Enter your password"
+                                            required
+                                            style="font-size: 15px;"
+                                        >
+                                        <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" id="togglePassword" style="text-decoration: none; color: #6c757d;">
+                                            <ion-icon name="eye-outline" id="eyeIcon"></ion-icon>
+                                        </button>
+                                        {% if form.password.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ form.password.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Remember Me & Forgot Password -->
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                                        <label class="form-check-label" for="rememberMe">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                    <a href="#" class="text-decoration-none" style="color: #2E6E1F;">Forgot Password?</a>
+                                </div>
+
+                                <!-- Login Button -->
+                                <button type="submit" class="btn btn-lg w-100 mb-3" style="background-color: #2E6E1F; color: white; border: none; font-size: 17px;">
+                                    <ion-icon name="log-in-outline" class="me-2"></ion-icon>
+                                    Login
+                                </button>
+
+                              
+                            </form>
+
+                            <!-- Register Link -->
+                            <div class="text-center mt-4 pt-3 border-top">
+                                <p class="mb-0 text-muted" style="font-size: 15px;">
+                                    Don't have an account? 
+                                    <a href="{% url 'register' %}" class="fw-bold text-decoration-none" style="color: #2E6E1F; font-size: 15px;">
+                                        Create Account
+                                    </a>
+                                </p>
                             </div>
-
-                            <button type="submit" class="btn btn-primary btn-lg btn-block mt-4">
-                                <i class="fa fa-sign-in"></i> Login
-                            </button>
-                        </form>
-
-                        <div class="text-center mt-4">
-                            <p class="text-muted">
-                                Don't have an account? 
-                                <a href="{% url 'register' %}" class="text-primary font-weight-bold">Register here</a>
-                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<style>
+    /* Password toggle button */
+    #togglePassword {
+        border: none;
+        background: none;
+        padding: 0;
+        margin-right: 10px;
+    }
+
+    #togglePassword:focus {
+        box-shadow: none;
+    }
+
+    /* Form controls */
+    .form-control:focus {
+        border-color: #2E6E1F;
+        box-shadow: 0 0 0 0.2rem rgba(46, 110, 31, 0.25);
+    }
+
+    .form-check-input:checked {
+        background-color: #2E6E1F;
+        border-color: #2E6E1F;
+    }
+
+    .form-check-input:focus {
+        border-color: #2E6E1F;
+        box-shadow: 0 0 0 0.2rem rgba(46, 110, 31, 0.25);
+    }
+
+    /* Button hover effects */
+    .btn[style*="background-color: #2E6E1F"]:hover {
+        background-color: #1a4012 !important;
+    }
+
+    .btn-outline-dark:hover {
+        background-color: #000;
+        color: white;
+    }
+
+    /* Card shadow */
+    .card {
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .card {
+            margin-top: 20px;
+        }
+    }
+</style>
+
+<script>
+    // Password toggle functionality
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            // Toggle password visibility
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon
+            eyeIcon.setAttribute('name', type === 'password' ? 'eye-outline' : 'eye-off-outline');
+        });
+    }
+</script>
+
 {% endblock %}
