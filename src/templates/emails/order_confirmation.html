@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: #28a745;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmed!</h1>
+            <p>Order #{{ order.id }}</p>
+        </div>
+        <div class="content">
+            <p>Hi {{ buyer.first_name|default:buyer.username }},</p>
+            
+            <p>Thank you for your order! We've received your order and will process it shortly.</p>
+            
+            <div class="order-details">
+                <h3>Order Details:</h3>
+                {% for item in items %}
+                <div class="item">
+                    <strong>{{ item.product.name }}</strong><br>
+                    Quantity: {{ item.quantity }} × ₦{{ item.price|floatformat:2 }}<br>
+                    Subtotal: ₦{{ item.quantity|mul:item.price|floatformat:2 }}
+                </div>
+                {% endfor %}
+                
+                <div class="total">
+                    Total: ₦{{ order.total_amount|floatformat:2 }}
+                </div>
+            </div>
+            
+            <p><strong>Shipping Address:</strong><br>
+            {{ order.shipping_address }}</p>
+            
+            <p>We'll send you another email when your order ships.</p>
+            
+            <p>Thank you for shopping with Afrimart!</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -98,11 +98,7 @@ def get_exchange_rate(from_currency='USD', to_currency='NGN', use_cache=True):
 
 
 def fetch_exchange_rate_from_api(from_currency='USD', to_currency='NGN'):
-    """
-    Fetch live exchange rate from ExchangeRate-API
-    API returns rates with base currency
-    Example: GET /v4/latest/NGN returns all rates from NGN
-    """
+
     try:
         # Fetch rates with from_currency as base
         url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
@@ -132,10 +128,7 @@ def fetch_exchange_rate_from_api(from_currency='USD', to_currency='NGN'):
 
 
 def get_fallback_rates():
-    """
-    Fallback exchange rates (updated: Jan 2025 based on actual API data)
-    Used when API is unavailable
-    """
+   
     return {
         # From NGN (based on actual API response)
         'NGN_USD': 0.000702,

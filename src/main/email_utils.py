@@ -414,11 +414,7 @@ def send_low_stock_alert(product):
 
 
 def send_admin_notification(subject, message):
-    """
-    Send generic notification to admin
-    From: noreply@techfy.africa
-    To: admin@techfy.africa
-    """
+ 
     try:
         send_mail(
             subject=f'[Admin Alert] {subject}',

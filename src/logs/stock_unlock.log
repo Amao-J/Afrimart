@@ -1955,3 +1955,7 @@ INFO 2026-01-27 14:22:56,076 currency Using cached rate: 1 NGN = 0.0907 KES
 INFO 2026-01-27 14:22:56,076 currency Using cached rate: 1 NGN = 0.0907 KES
 INFO 2026-01-27 14:22:56,077 currency Using cached rate: 1 NGN = 0.0907 KES
 INFO 2026-01-27 14:22:56,077 currency Using cached rate: 1 NGN = 0.0907 KES
+INFO 2026-01-27 22:45:06,673 currency User currency set to USD
+INFO 2026-01-27 22:45:31,282 currency Using DB rate: 1 NGN = 0.000702 USD
+INFO 2026-01-27 22:45:31,283 currency Using cached rate: 1 NGN = 0.000702 USD
+INFO 2026-01-27 22:45:40,841 currency User currency set to NGN

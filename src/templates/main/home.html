@@ -1,5 +1,8 @@
-{% extends 'base.html' %} {% load humanize %} {% load static %} {% load
-currency_tags %} {% block title %}Home{% endblock %} {% block content %}
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+{% load currency_tags %}
+{% block title %}Home{% endblock %} {% block content %}
 
 <!-- Hero Carousel -->
 <div class="container-fluid px-0">
@@ -41,7 +44,7 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
         >
           <p class="text-uppercase text-white-50 mb-2">Trending Item</p>
           <h2 class="display-4 fw-bold">Fashion Sale</h2>
-          <p class="fs-5 mb-3">Starting at $200</p>
+          <p class="fs-5 mb-3">Starting at {% format_price 20000 %}</p>
           <a href="#" class="btn btn-success btn-lg px-5">Shop Now</a>
         </div>
       </div>
@@ -57,7 +60,7 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
           class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-4 rounded"
         >
           <h2 class="display-4 fw-bold">Modern Sunglasses</h2>
-          <p class="fs-5 mb-3">Starting at $150</p>
+          <p class="fs-5 mb-3">Starting at {% format_price 15000 %}</p>
           <a href="#" class="btn btn-success btn-lg px-5">Shop Now</a>
         </div>
       </div>
@@ -91,7 +94,7 @@ currency_tags %} {% block title %}Home{% endblock %} {% block content %}
         >
           <p class="text-uppercase text-white-50 mb-2">Sale Offer</p>
           <h2 class="display-4 fw-bold">New Fashion Summer Sale</h2>
-          <p class="fs-5 mb-3">Starting at $200</p>
+          <p class="fs-5 mb-3">Starting at {% format_price 40000 %}</p>
           <a href="#" class="btn btn-success btn-lg px-5">Shop Now</a>
         </div>
       </div>
