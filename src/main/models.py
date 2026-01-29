@@ -47,6 +47,41 @@ class Product(models.Model):
         """Check if product has discount"""
         return self.discount_percentage > 0
     
+    def get_primary_image(self):
+        """Get the primary/featured image for the product"""
+        primary = self.images.filter(is_primary=True).first()
+        if primary:
+            return primary.image.url
+        # Fallback to first image if no primary set
+        first_image = self.images.first()
+        if first_image:
+            return first_image.image.url
+        # Final fallback to legacy image field
+        if self.image:
+            return self.image.url
+        return None
+    
+    def get_all_images(self):
+        """Get all images for the product"""
+        return self.images.all().order_by('-is_primary', 'order')
+
+
+class ProductImage(models.Model):
+    """Model to handle multiple images for a single product"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='product_images/')
+    is_primary = models.BooleanField(default=False, help_text="Set as the main product image")
+    order = models.PositiveIntegerField(default=0, help_text="Order of display")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-is_primary', 'order']
+        verbose_name = 'Product Image'
+        verbose_name_plural = 'Product Images'
+    
+    def __str__(self):
+        return f"{self.product.name} - Image {self.order}"
+    
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlisted_by')
@@ -327,6 +362,14 @@ class UserProfile(models.Model):
     # Additional
     date_of_birth = models.DateField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    
+    # Seller Information
+    is_seller = models.BooleanField(default=False, help_text="User is a seller/vendor")
+    seller_approved = models.BooleanField(default=False, help_text="Seller account is approved")
+    seller_application_date = models.DateTimeField(null=True, blank=True)
+    seller_approval_date = models.DateTimeField(null=True, blank=True)
+    seller_description = models.TextField(blank=True, help_text="Seller business description")
+    seller_store_name = models.CharField(max_length=255, blank=True, help_text="Store name for sellers")
     
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

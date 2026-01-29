@@ -3,22 +3,63 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Product, Order, OrderItem, Wallet, Payment, Refund
+from .models import Product, Order, OrderItem, Wallet, Payment, Refund, ProductImage, UserProfile
+from django.utils import timezone
+
+
+class ProductImageInline(admin.TabularInline):
+    """Inline editor for product images"""
+    model = ProductImage
+    extra = 1
+    fields = ['image', 'is_primary', 'order', 'preview_image']
+    readonly_fields = ['preview_image', 'uploaded_at']
+    
+    def preview_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="100" style="max-height:100px; object-fit:cover;" />', obj.image.url)
+        return "No image"
+    preview_image.short_description = 'Preview'
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ['product', 'display_image', 'is_primary', 'order', 'uploaded_at']
+    list_filter = ['is_primary', 'uploaded_at', 'product']
+    search_fields = ['product__name']
+    readonly_fields = ['uploaded_at', 'preview_image']
+    
+    def display_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', obj.image.url)
+        return "No image"
+    display_image.short_description = 'Thumbnail'
+    
+    def preview_image(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="300" />', obj.image.url)
+        return "No image"
+    preview_image.short_description = 'Full Preview'
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', 'created_at', 'display_image']
-    list_filter = ['created_at', 'stock']
-    search_fields = ['name', 'description']
+    list_display = ['name', 'price', 'stock', 'seller', 'images_count', 'is_featured', 'created_at', 'display_image']
+    list_filter = ['created_at', 'stock', 'is_featured', 'seller']
+    search_fields = ['name', 'description', 'seller__username']
     readonly_fields = ['created_at', 'updated_at', 'preview_image']
+    inlines = [ProductImageInline]
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'description', 'price', 'stock')
+            'fields': ('name', 'description', 'price', 'stock', 'seller', 'category')
         }),
-        ('Images', {
-            'fields': ('image', 'cloudinary_url', 'preview_image')
+        ('Pricing', {
+            'fields': ('discount_percentage', 'is_featured')
+        }),
+        ('Legacy Image Fields', {
+            'fields': ('image', 'cloudinary_url', 'preview_image'),
+            'classes': ('collapse',),
+            'description': 'These fields are deprecated. Use Product Images (below) instead.'
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -27,18 +68,21 @@ class ProductAdmin(admin.ModelAdmin):
     )
     
     def display_image(self, obj):
-        if obj.cloudinary_url:
-            return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', obj.cloudinary_url)
-        elif obj.image:
-            return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', obj.image.url)
+        primary_img = obj.get_primary_image()
+        if primary_img:
+            return format_html('<img src="{}" width="50" height="50" style="object-fit:cover;" />', primary_img)
         return "No image"
     display_image.short_description = 'Image'
     
+    def images_count(self, obj):
+        count = obj.images.count()
+        return format_html('<span class="badge" style="background-color: #417690;">{}</span>', count)
+    images_count.short_description = 'Images'
+    
     def preview_image(self, obj):
-        if obj.cloudinary_url:
-            return format_html('<img src="{}" width="200" />', obj.cloudinary_url)
-        elif obj.image:
-            return format_html('<img src="{}" width="200" />', obj.image.url)
+        primary_img = obj.get_primary_image()
+        if primary_img:
+            return format_html('<img src="{}" width="200" />', primary_img)
         return "No image uploaded"
     preview_image.short_description = 'Preview'
 
@@ -374,6 +418,74 @@ class RefundAdmin(admin.ModelAdmin):
         )
         self.message_user(request, f'{updated} refund(s) rejected.')
     reject_refunds.short_description = 'Reject selected refunds'
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    """Admin for managing user profiles and seller approvals"""
+    list_display = ['user', 'phone', 'is_seller', 'seller_status_badge', 'seller_store_name', 'seller_application_date']
+    list_filter = ['is_seller', 'seller_approved', 'seller_application_date']
+    search_fields = ['user__username', 'user__email', 'seller_store_name', 'phone']
+    readonly_fields = ['seller_application_date', 'seller_approval_date', 'created_at', 'updated_at']
+    
+    fieldsets = (
+        ('User Information', {
+            'fields': ('user', 'phone', 'created_at', 'updated_at')
+        }),
+        ('Address', {
+            'fields': ('street_address', 'city', 'state', 'country'),
+            'classes': ('collapse',)
+        }),
+        ('Additional', {
+            'fields': ('date_of_birth', 'avatar'),
+            'classes': ('collapse',)
+        }),
+        ('Seller Account', {
+            'fields': (
+                'is_seller',
+                'seller_approved',
+                'seller_store_name',
+                'seller_description',
+                'seller_application_date',
+                'seller_approval_date'
+            )
+        }),
+    )
+    
+    def seller_status_badge(self, obj):
+        """Display seller status as a badge"""
+        if not obj.is_seller:
+            return format_html(
+                '<span class="badge" style="background-color: #ccc;">Not a Seller</span>'
+            )
+        elif obj.seller_approved:
+            return format_html(
+                '<span class="badge" style="background-color: #28a745;">Approved</span>'
+            )
+        else:
+            return format_html(
+                '<span class="badge" style="background-color: #ffc107;">Pending</span>'
+            )
+    seller_status_badge.short_description = 'Seller Status'
+    
+    actions = ['approve_sellers', 'reject_sellers']
+    
+    def approve_sellers(self, request, queryset):
+        """Approve selected seller applications"""
+        updated = queryset.filter(is_seller=True, seller_approved=False).update(
+            seller_approved=True,
+            seller_approval_date=timezone.now()
+        )
+        self.message_user(request, f'{updated} seller(s) approved!')
+    approve_sellers.short_description = 'Approve selected seller applications'
+    
+    def reject_sellers(self, request, queryset):
+        """Reject seller applications"""
+        updated = queryset.filter(is_seller=True, seller_approved=False).update(
+            is_seller=False
+        )
+        self.message_user(request, f'{updated} seller application(s) rejected.')
+    reject_sellers.short_description = 'Reject selected seller applications'
 
 
 # Customize admin site header

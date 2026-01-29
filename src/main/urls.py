@@ -41,6 +41,19 @@ urlpatterns = [
     path('payment/webhook/', views.verify_payment_webhook, name='payment_webhook'),
     
 
+    # Seller URLs
+    path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
+    path('seller/pending-approval/', auth.seller_pending_approval, name='seller_pending_approval'),
+    path('seller/products/', views.seller_products, name='seller_products'),
+    path('seller/product/add/', views.add_product, name='add_product'),
+    path('seller/product/<int:product_id>/edit/', views.edit_product, name='edit_product'),
+    path('seller/product/<int:product_id>/delete/', views.delete_product, name='delete_product'),
+    path('seller/product/<int:product_id>/upload-images/', views.upload_product_images, name='upload_product_images'),
+    path('seller/image/<int:image_id>/delete/', views.delete_product_image, name='delete_product_image'),
+    path('seller/image/<int:image_id>/set-primary/', views.set_primary_image, name='set_primary_image'),
+    path('seller/orders/', views.seller_orders, name='seller_orders'),
+    path('seller/order/<int:order_id>/', views.seller_order_detail, name='seller_order_detail'),
+
      path('', views.home, name='home'),
     path('products/', views.product_list, name='product_list'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
