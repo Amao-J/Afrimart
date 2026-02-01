@@ -1,3 +1,4 @@
+import random
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from main.models import Category, Product, Wallet
@@ -314,7 +315,21 @@ class Command(BaseCommand):
                 'stock': 60,
                 'category': 'Health & Beauty',
                 'discount': 0,
-                'featured': False
+                'featured': False,
+                'deal_of_the_day': False,
+                'trending': True
+            },
+
+            {
+                'name': 'Hair Straightener Ceramic',
+                'description': 'Professional ceramic flat iron with adjustable temperature settings',
+                'price': 40000,
+                'stock': 40,
+                'category': 'Health & Beauty',
+                'discount': 10,
+                'featured': False,
+                'deal_of_the_day': True,
+                'trending': False
             },
             {
                 'name': 'Hair Dryer Professional',
@@ -382,10 +397,25 @@ class Command(BaseCommand):
                 savings = product.get_savings()
                 self.stdout.write(
                     f'   • {product.name}: {product.discount_percentage}% off '
-                    f'(Save ₦{savings:,.2f})'
-                )
-        
-        # Show featured products
+                    f'(Save ₦{savings:,.2f})')
+ 
+        products = Product.objects.all()
+
+        # Set trending products (random 8 products)
+        trending = random.sample(list(products), min(8, len(products)))
+        for product in trending:
+            product.is_trending = True
+            product.save()
+
+        # Set one product as deal of the day (best discount)
+        deal = Product.objects.filter(discount_percentage__gt=0).order_by('-discount_percentage').first()
+        if deal:
+            deal.is_deal_of_the_day = True
+            deal.save()
+
+        self.stdout.write(self.style.SUCCESS(f'✓ Set {len(trending)} trending products'))
+        self.stdout.write(self.style.SUCCESS(f'✓ Set deal of the day: {deal.name if deal else "None"}'))
+
         featured_products = Product.objects.filter(is_featured=True)
         self.stdout.write(f'\n Featured Products: {featured_products.count()}')
         

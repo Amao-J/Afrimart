@@ -23,6 +23,8 @@ class Product(models.Model):
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products', null=True, blank=True)  
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0) 
     is_featured = models.BooleanField(default=False)
+    is_trending = models.BooleanField(default=False)
+    is_deal_of_the_day = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -49,26 +49,21 @@ else:
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
-# Your hosting's SMTP server (check cPanel)
-EMAIL_HOST = 'mail.techfy.africa' 
-EMAIL_PORT = 465
-
-EMAIL_USE_SSL = True
-# Your email credentials
-EMAIL_HOST_USER = 'noreply@techfy.africa'
-EMAIL_HOST_PASSWORD = 'RO*(_3+%]FT]GK$_'
-
-# From email
-DEFAULT_FROM_EMAIL = 'Afrimart <noreply@techfy.africa>'
-SERVER_EMAIL = 'admin@techfy.africa'
+EMAIL_HOST_USER = 'yomijonathan8@gmail.com'
+EMAIL_HOST_PASSWORD = 'ltkukhjytfruuoxx'
+DEFAULT_FROM_EMAIL = 'Afrimart <yomijonathan8@gmail.com>'
+SERVER_EMAIL = 'yomijonathan8@gmail.com'
 
 # Email addresses for different purposes
-NOREPLY_EMAIL = 'noreply@techfy.africa'
-ORDERS_EMAIL = 'orders@techfy.africa'
-SUPPORT_EMAIL = 'support@techfy.africa'
-ESCROW_EMAIL = 'escrow@techfy.africa'
-ADMIN_EMAIL = 'admin@techfy.africa'
+NOREPLY_EMAIL = 'yomijonathan8@gmail.com'
+ORDERS_EMAIL = 'yomijonathan8@gmail.com'
+SUPPORT_EMAIL = 'yomijonathan8@gmail.com'
+ESCROW_EMAIL = 'yomijonathan8@gmail.com'
+ADMIN_EMAIL = 'yomijonathan8@gmail.com'
 
 # Timeout settings (important for shared hosting)
 EMAIL_TIMEOUT = 30

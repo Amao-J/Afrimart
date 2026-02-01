@@ -43,8 +43,8 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', 'seller', 'images_count', 'is_featured', 'created_at', 'display_image']
-    list_filter = ['created_at', 'stock', 'is_featured', 'seller']
+    list_display = ['name', 'price', 'stock', 'seller', 'images_count', 'is_featured','is_deal_of_the_day','is_trending', 'created_at', 'display_image']
+    list_filter = ['created_at', 'stock', 'is_featured', 'is_deal_of_the_day','is_trending', 'seller']
     search_fields = ['name', 'description', 'seller__username']
     readonly_fields = ['created_at', 'updated_at', 'preview_image']
     inlines = [ProductImageInline]
