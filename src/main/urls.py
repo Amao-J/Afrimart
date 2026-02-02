@@ -23,6 +23,7 @@ urlpatterns = [
 
     path('cart/ajax/add/<int:product_id>/', views.ajax_add_to_cart, name='ajax_add_to_cart'),
     path('cart/ajax/count/', views.get_cart_count, name='get_cart_count'),
+    path('wallet/', views.wallet_view, name='wallet'),
     
     path('set-currency/', views.set_currency, name='set_currency'),
     path('currency-rates/', views.get_currency_rates, name='get_currency_rates'),

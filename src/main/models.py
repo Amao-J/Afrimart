@@ -16,8 +16,6 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
-    cloudinary_url = models.URLField(max_length=500, blank=True)  
     stock = models.IntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products', null=True, blank=True)  
@@ -50,21 +48,17 @@ class Product(models.Model):
         return self.discount_percentage > 0
     
     def get_primary_image(self):
-        """Get the primary/featured image for the product"""
-        primary = self.images.filter(is_primary=True).first()
-        if primary:
-            return primary.image.url
-        # Fallback to first image if no primary set
-        first_image = self.images.first()
-        if first_image:
-            return first_image.image.url
-        # Final fallback to legacy image field
-        if self.image:
-            return self.image.url
-        return None
-    
+        image = (
+            self.images.filter(is_primary=True).first()
+            or self.images.first()
+        )
+        if not image:
+            return None
+
+        return image.cloudinary_url or image.image.url
+        
     def get_all_images(self):
-        """Get all images for the product"""
+            
         return self.images.all().order_by('-is_primary', 'order')
 
 
@@ -72,6 +66,7 @@ class ProductImage(models.Model):
     """Model to handle multiple images for a single product"""
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='product_images/')
+    cloudinary_url = models.URLField(max_length=500, blank=True)  
     is_primary = models.BooleanField(default=False, help_text="Set as the main product image")
     order = models.PositiveIntegerField(default=0, help_text="Order of display")
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -213,6 +208,8 @@ class WalletTransaction(models.Model):
     transaction_type = models.CharField(max_length=20)  # ✓ Now here
     description = models.TextField()
     reference = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class CurrencyRate(models.Model):

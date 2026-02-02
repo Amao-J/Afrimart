@@ -1,0 +1,340 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-01 15:44+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\app\settings.py:54
+msgid "English"
+msgstr "Anglais"
+
+#: .\app\settings.py:55
+msgid "French"
+msgstr "Français"
+
+#: .\app\settings.py:56
+msgid "Swahili"
+msgstr "Swahili"
+
+#: .\app\settings.py:57
+msgid "Hausa"
+msgstr "Haoussa"
+
+#: .\app\settings.py:58
+msgid "Yorùbá"
+msgstr "Yorùbá"
+
+#: .\app\settings.py:59
+msgid "Igbo"
+msgstr "Igbo"
+
+#: .\app\settings.py:60
+msgid "Arabic"
+msgstr "Arabe"
+
+#: .\templates\base.html:493
+msgid "Free Shipping"
+msgstr "Livraison gratuite"
+
+#: .\templates\base.html:493
+msgid "This Weekend For New Users"
+msgstr "Ce week-end pour les nouveaux utilisateurs"
+
+#: .\templates\base.html:599 .\templates\base.html:671
+msgid "Home"
+msgstr "Accueil"
+
+#: .\templates\base.html:603 .\templates\main\home.html:288
+msgid "Categories"
+msgstr "Catégories"
+
+#: .\templates\base.html:605 .\templates\base.html:767
+msgid "Electronics"
+msgstr "Électronique"
+
+#: .\templates\base.html:606 .\templates\base.html:766
+msgid "Fashion"
+msgstr "Mode"
+
+#: .\templates\base.html:607 .\templates\base.html:633
+msgid "Jewelry"
+msgstr "Bijoux"
+
+#: .\templates\base.html:608 .\templates\base.html:768
+msgid "Cosmetics"
+msgstr "Cosmétiques"
+
+#: .\templates\base.html:613
+msgid "Men's"
+msgstr "Hommes"
+
+#: .\templates\base.html:615
+msgid "Shirts"
+msgstr "Chemises"
+
+#: .\templates\base.html:616
+msgid "Shorts & Jeans"
+msgstr "Shorts & Jeans"
+
+#: .\templates\base.html:617
+msgid "Safety Shoes"
+msgstr "Chaussures de sécurité"
+
+#: .\templates\base.html:618
+msgid "Wallets"
+msgstr "Portefeuilles"
+
+#: .\templates\base.html:623
+msgid "Women's"
+msgstr "Femmes"
+
+#: .\templates\base.html:625
+msgid "Dresses"
+msgstr "Robes"
+
+#: .\templates\base.html:626 .\templates\base.html:635
+msgid "Earrings"
+msgstr "Boucles d'oreilles"
+
+#: .\templates\base.html:627 .\templates\base.html:637
+msgid "Necklaces"
+msgstr "Colliers"
+
+#: .\templates\base.html:628
+msgid "Makeup Kits"
+msgstr "Trousse de maquillage"
+
+#: .\templates\base.html:636
+msgid "Rings"
+msgstr "Bagues"
+
+#: .\templates\base.html:638
+msgid "Bracelets"
+msgstr "Bracelets"
+
+#: .\templates\base.html:643
+msgid "Perfume"
+msgstr "Parfum"
+
+#: .\templates\base.html:645
+msgid "Clothes Perfume"
+msgstr "Parfum pour vêtements"
+
+#: .\templates\base.html:646
+msgid "Deodorant"
+msgstr "Déodorant"
+
+#: .\templates\base.html:647
+msgid "Fragrances"
+msgstr "Parfums"
+
+#: .\templates\base.html:648
+msgid "Air Freshener"
+msgstr "Désodorisant"
+
+#: .\templates\base.html:653
+msgid "Blog"
+msgstr "Blog"
+
+#: .\templates\base.html:657 .\templates\base.html:685
+#: .\templates\base.html:778
+msgid "Hot Offers"
+msgstr "Offres chaudes"
+
+#: .\templates\base.html:667
+msgid "Menu"
+msgstr "Menu"
+
+#: .\templates\base.html:672
+msgid "Products"
+msgstr "Produits"
+
+#: .\templates\base.html:675
+msgid "My Orders"
+msgstr "Mes commandes"
+
+#: .\templates\base.html:676
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: .\templates\base.html:677
+msgid "Profile"
+msgstr "Profil"
+
+#: .\templates\base.html:678
+msgid "Wallet"
+msgstr "Portefeuille"
+
+#: .\templates\base.html:679
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: .\templates\base.html:681
+msgid "Login"
+msgstr "Connexion"
+
+#: .\templates\base.html:682
+msgid "Register"
+msgstr "S'inscrire"
+
+#: .\templates\base.html:765
+msgid "Popular Categories"
+msgstr ""
+
+#: .\templates\base.html:769
+msgid "Health & Beauty"
+msgstr ""
+
+#: .\templates\base.html:770
+msgid "Watches"
+msgstr ""
+
+#: .\templates\base.html:771 .\templates\main\home.html:196
+msgid "Accessories"
+msgstr ""
+
+#: .\templates\base.html:775
+msgid "Quick Links"
+msgstr ""
+
+#: .\templates\base.html:776 .\templates\main\home.html:342
+msgid "New Arrivals"
+msgstr ""
+
+#: .\templates\base.html:777
+msgid "Best Sellers"
+msgstr ""
+
+#: .\templates\base.html:779
+msgid "Price Drops"
+msgstr ""
+
+#: .\templates\base.html:780
+msgid "Contact Us"
+msgstr ""
+
+#: .\templates\base.html:781
+msgid "Sitemap"
+msgstr ""
+
+#: .\templates\base.html:785
+msgid "Customer Care"
+msgstr ""
+
+#: .\templates\base.html:786
+msgid "About Us"
+msgstr ""
+
+#: .\templates\base.html:787
+msgid "Delivery Information"
+msgstr ""
+
+#: .\templates\base.html:788
+msgid "Terms & Conditions"
+msgstr ""
+
+#: .\templates\base.html:789
+msgid "Privacy Policy"
+msgstr ""
+
+#: .\templates\base.html:790
+msgid "Returns & Refunds"
+msgstr ""
+
+#: .\templates\base.html:791
+msgid "Secure Payment"
+msgstr ""
+
+#: .\templates\main\home.html:46
+msgid "Trending Item"
+msgstr ""
+
+#: .\templates\main\home.html:47
+#, fuzzy
+#| msgid "Fashion"
+msgid "Fashion Sale"
+msgstr "Mode"
+
+#: .\templates\main\home.html:48 .\templates\main\home.html:64
+#: .\templates\main\home.html:81 .\templates\main\home.html:98
+msgid "Starting at"
+msgstr "À partir de"
+
+#: .\templates\main\home.html:49 .\templates\main\home.html:65
+#: .\templates\main\home.html:82 .\templates\main\home.html:99
+msgid "Shop Now"
+msgstr "Achetez maintenant"
+
+#: .\templates\main\home.html:63
+msgid "Modern Sunglasses"
+msgstr "Lunettes de soleil modernes"
+
+#: .\templates\main\home.html:79 .\templates\main\home.html:96
+#, fuzzy
+#| msgid "Hot Offers"
+msgid "Sale Offer"
+msgstr "Offres chaudes"
+
+#: .\templates\main\home.html:80 .\templates\main\home.html:97
+msgid "New Fashion Summer Sale"
+msgstr "Nouvelle vente d’été de mode"
+
+#: .\templates\main\home.html:125
+msgid "Shop By Category"
+msgstr "Magasiner par catégorie"
+
+#: .\templates\main\home.html:139
+msgid "Bags"
+msgstr "Sacs"
+
+#: .\templates\main\home.html:158
+msgid "Winter Wear"
+msgstr "Vêtements d'hiver"
+
+#: .\templates\main\home.html:177
+msgid "Glasses & Lens"
+msgstr "Lunettes & Lentilles"
+
+#: .\templates\main\home.html:215
+#, fuzzy
+#| msgid "Shirts"
+msgid "T-Shirts"
+msgstr "Chemises"
+
+#: .\templates\main\home.html:234
+msgid "Tan Tops"
+msgstr "Tops couleur beige"
+
+#: .\templates\main\home.html:253
+msgid "Trousers"
+msgstr "Pantalons"
+
+#: .\templates\main\home.html:272
+msgid "Belts"
+msgstr "Ceintures"
+
+#: .\templates\main\home.html:274
+msgid "Show All"
+msgstr "Voir tout"
+
+#: .\templates\main\home.html:413
+msgid "Trending"
+msgstr "Tendances"
+
+#: .\templates\main\home.html:486
+msgid "Deal of the Day"
+msgstr "Offre du jour"

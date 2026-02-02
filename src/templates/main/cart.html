@@ -45,10 +45,8 @@
                   <!-- Product Image -->
                   <div class="me-3">
                     <a href="/product/{{ item.product.id }}/">
-                      {% if item.product.cloudinary_url %}
-                        <img src="{{ item.product.cloudinary_url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
-                      {% elif item.product.image %}
-                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                      {% if item.product.get_primary_image %}
+                        <img src="{{ item.product.get_primary_image }}" alt="{{ item.product.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                       {% else %}
                         <div style="width: 100px; height: 100px; background-color: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                           <ion-icon name="image-outline" style="font-size: 40px;"></ion-icon>
@@ -240,10 +238,8 @@
         <div class="col-6 col-md-3">
           <div class="card border-0 h-100">
             <div class="position-relative overflow-hidden" style="border-radius: 8px 8px 0 0;">
-              {% if product.cloudinary_url %}
-                <img src="{{ product.cloudinary_url }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-              {% elif product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+              {% if product.get_primary_image %}
+                <img src="{{ product.get_primary_image }}" alt="{{ product.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
               {% else %}
                 <div style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
                   <ion-icon name="image-outline" style="font-size: 48px;"></ion-icon>

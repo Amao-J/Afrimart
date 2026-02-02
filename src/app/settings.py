@@ -15,7 +15,84 @@ import cloudinary.api
 import os
 from decouple import config
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 
+"""
+Comprehensive patch for Django 5.0 + Python 3.14 compatibility
+Add to your project root and import in settings.py BEFORE DJANGO SETUP
+"""
+
+import sys
+import django
+
+if sys.version_info >= (3, 14) and django.VERSION < (5, 1):
+    print(f"⚠️  Detected Python {sys.version_info.major}.{sys.version_info.minor} with Django {django.get_version()}")
+    print("   Applying compatibility patches...")
+    
+    # Patch 1: Fix BaseContext.__copy__
+    try:
+        from django.template import context
+        
+        class PatchedBaseContext(context.BaseContext):
+            def __copy__(self):
+                """Fixed copy for Python 3.14"""
+                duplicate = self.__class__()
+                # Directly access dicts instead of using super()
+                if hasattr(self, 'dicts'):
+                    for d in self.dicts:
+                        duplicate.update(d)
+                return duplicate
+        
+        # Replace the class
+        context.BaseContext = PatchedBaseContext
+        print("   ✓ Patched BaseContext.__copy__")
+    except Exception as e:
+        print(f"   ✗ Failed to patch BaseContext: {e}")
+    
+    # Patch 2: Fix Context class
+    try:
+        from django.template.context import Context
+        
+        original_context_copy = Context.__copy__
+        
+        def patched_context_copy(self):
+            try:
+                return original_context_copy(self)
+            except (AttributeError, TypeError):
+                # Manual copy
+                duplicate = Context()
+                for d in self.dicts:
+                    duplicate.update(d)
+                return duplicate
+        
+        Context.__copy__ = patched_context_copy
+        print("   ✓ Patched Context.__copy__")
+    except Exception as e:
+        print(f"   ✗ Failed to patch Context: {e}")
+    
+    # Patch 3: Fix RequestContext
+    try:
+        from django.template.context import RequestContext
+        
+        original_request_context_copy = RequestContext.__copy__
+        
+        def patched_request_context_copy(self):
+            try:
+                return original_request_context_copy(self)
+            except (AttributeError, TypeError):
+                # Manual copy with request
+                duplicate = RequestContext(self.request)
+                for d in self.dicts:
+                    duplicate.update(d)
+                return duplicate
+        
+        RequestContext.__copy__ = patched_request_context_copy
+        print("   ✓ Patched RequestContext.__copy__")
+    except Exception as e:
+        print(f"   ✗ Failed to patch RequestContext: {e}")
+    
+    print("   ✓ All patches applied successfully")
+    print("   ⚠️  WARNING: This is a temporary fix. Please upgrade to Django 5.1+ or use Python 3.12/3.13")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -46,6 +123,24 @@ else:
         secure=True
     )
 
+
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('fr', _('French')),
+    ('sw', _('Swahili')),
+    ('ha', _('Hausa')),
+    ('yo', _('Yorùbá')),
+    ('ig', _('Igbo')),
+    ('ar', _('Arabic')),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+LANGUAGES_BIDI = ['ar']
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -87,6 +182,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # moved here per Django docs
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -105,10 +201,11 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
+                'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'main.context_processor.cart_processor',
-                'main.context_processor.currency_processor' 
+                'main.context_processor.currency_processor'
             ],
         },
     },

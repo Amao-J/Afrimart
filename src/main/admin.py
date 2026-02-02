@@ -1,4 +1,3 @@
-# main/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
@@ -43,30 +42,29 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', 'seller', 'images_count', 'is_featured','is_deal_of_the_day','is_trending', 'created_at', 'display_image']
-    list_filter = ['created_at', 'stock', 'is_featured', 'is_deal_of_the_day','is_trending', 'seller']
+    list_display = ['name', 'price', 'stock', 'seller', 'images_count', 'is_featured', 'is_deal_of_the_day', 'is_trending', 'created_at', 'display_image']
+    list_filter = ['created_at', 'stock', 'is_featured', 'is_deal_of_the_day', 'is_trending', 'seller']
     search_fields = ['name', 'description', 'seller__username']
+    
+    # Must include any methods used in fieldsets here
     readonly_fields = ['created_at', 'updated_at', 'preview_image']
     inlines = [ProductImageInline]
     
+    # Define fieldsets directly instead of using get_fieldsets
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'description', 'price', 'stock', 'seller', 'category')
+        ('Product Information', {
+            'fields': ('name', 'description', 'category', 'seller', 'price', 'stock', 'discount_percentage')
         }),
-        ('Pricing', {
-            'fields': ('discount_percentage', 'is_featured')
-        }),
-        ('Legacy Image Fields', {
-            'fields': ('image', 'cloudinary_url', 'preview_image'),
-            'classes': ('collapse',),
-            'description': 'These fields are deprecated. Use Product Images (below) instead.'
+        ('Promotions & Status', {
+            'fields': ('is_featured', 'is_trending', 'is_deal_of_the_day'),
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
-    
+
+    # --- Utility Methods ---
     def display_image(self, obj):
         primary_img = obj.get_primary_image()
         if primary_img:
