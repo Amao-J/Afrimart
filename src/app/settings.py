@@ -17,10 +17,7 @@ from decouple import config
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
-"""
-Comprehensive patch for Django 5.0 + Python 3.14 compatibility
-Add to your project root and import in settings.py BEFORE DJANGO SETUP
-"""
+
 
 import sys
 import django
@@ -92,7 +89,8 @@ if sys.version_info >= (3, 14) and django.VERSION < (5, 1):
         print(f"   ✗ Failed to patch RequestContext: {e}")
     
     print("   ✓ All patches applied successfully")
-    print("   ⚠️  WARNING: This is a temporary fix. Please upgrade to Django 5.1+ or use Python 3.12/3.13")
+    print("   This is a temporary fix. Please upgrade to Django 5.1+ or use Python 3.12/3.13")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -111,6 +109,10 @@ if DEBUG:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
 
 CLOUDINARY_URL = config('CLOUDINARY_URL', default='')
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://afrimart-production.up.railway.app",
+]
 
 if CLOUDINARY_URL:
     cloudinary.config()
