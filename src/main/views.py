@@ -217,9 +217,6 @@ def wallet_view(request):
     return render(request, 'main/wallet.html', context)
 
 
-<<<<<<< HEAD
-# @login_required
-=======
 @login_required
 def top_up_wallet(request):
     """Top up the logged-in user's wallet (direct credit simulation)
@@ -272,7 +269,6 @@ def top_up_wallet(request):
 
 
 @login_required
->>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
 def checkout(request):
     """Checkout process"""
     cart_data = get_cart_items(request)

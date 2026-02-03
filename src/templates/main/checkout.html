@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-<<<<<<< HEAD
 {% load static %}
 {% load currency_tags %}
+{% load humanize %}
 
 {% block title %}Checkout - Afrimart{% endblock %}
 
@@ -13,23 +13,10 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none" style="color: #2E6E1F;">Home</a></li>
       <li class="breadcrumb-item"><a href="{% url 'view_cart' %}" class="text-decoration-none" style="color: #2E6E1F;">Cart</a></li>
-=======
-{% load humanize %}
-
-{% block title %}Checkout{% endblock %}
-
-{% block content %}
-<div class="container my-5">
-  <nav aria-label="breadcrumb" class="mb-3">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'cart' %}">Cart</a></li>
->>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
       <li class="breadcrumb-item active">Checkout</li>
     </ol>
   </nav>
 
-<<<<<<< HEAD
   <!-- Page Title -->
   <div class="mb-4">
     <h1 class="fw-bold">Checkout</h1>
@@ -73,7 +60,7 @@
     </div>
   </div>
 
-  <form method="POST" action="{% url 'process_checkout' %}" id="checkoutForm">
+  <form method="POST" id="checkoutForm">
     {% csrf_token %}
     
     <div class="row">
@@ -108,82 +95,51 @@
 
             <div class="mb-3">
               <label for="phone" class="form-label fw-semibold">Phone Number *</label>
-              <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.profile.phone }}" required>
+              <input type="tel" class="form-control" id="phone" name="shipping_phone" value="{{ request.POST.shipping_phone|default:'' }}" required>
             </div>
 
             <div class="mb-3">
               <label for="address" class="form-label fw-semibold">Street Address *</label>
-              <input type="text" class="form-control" id="address" name="address" placeholder="House number and street name" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="address2" class="form-label fw-semibold">Apartment, suite, etc. (optional)</label>
-              <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, suite, unit, building, floor, etc.">
-=======
-  <div class="row">
-    <div class="col-lg-8">
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Shipping Information</h5>
-        </div>
-        <div class="card-body">
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="mb-3">
-              <label class="form-label">Address</label>
-              <textarea name="shipping_address" class="form-control" rows="3" required>{{ request.POST.shipping_address|default:'' }}</textarea>
->>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
+              <textarea name="shipping_address" class="form-control" id="address" rows="2" placeholder="House number and street name" required>{{ request.POST.shipping_address|default:'' }}</textarea>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-<<<<<<< HEAD
                 <label for="city" class="form-label fw-semibold">City *</label>
-                <input type="text" class="form-control" id="city" name="city" required>
+                <input type="text" class="form-control" id="city" name="shipping_city" value="{{ request.POST.shipping_city|default:'' }}" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="state" class="form-label fw-semibold">State/Province *</label>
-                <input type="text" class="form-control" id="state" name="state" required>
+                <input type="text" class="form-control" id="state" name="shipping_state" value="{{ request.POST.shipping_state|default:'' }}" required>
               </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label for="zipCode" class="form-label fw-semibold">Postal/ZIP Code *</label>
-                <input type="text" class="form-control" id="zipCode" name="zip_code" required>
+                <label for="zipCode" class="form-label fw-semibold">Postal/ZIP Code</label>
+                <input type="text" class="form-control" id="zipCode" name="zip_code" value="{{ request.POST.zip_code|default:'' }}">
               </div>
               <div class="col-md-6 mb-3">
                 <label for="country" class="form-label fw-semibold">Country *</label>
                 <select class="form-select" id="country" name="country" required>
                   <option value="">Select Country</option>
-                  <option value="NG">Nigeria</option>
+                  <option value="NG" selected>Nigeria</option>
                   <option value="GH">Ghana</option>
                   <option value="KE">Kenya</option>
                   <option value="ZA">South Africa</option>
                   <option value="US">United States</option>
                   <option value="GB">United Kingdom</option>
                 </select>
-=======
-                <label class="form-label">City</label>
-                <input type="text" name="shipping_city" class="form-control" required value="{{ request.POST.shipping_city|default:'' }}">
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label class="form-label">State/Region</label>
-                <input type="text" name="shipping_state" class="form-control" required value="{{ request.POST.shipping_state|default:'' }}">
->>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
               </div>
             </div>
 
             <div class="mb-3">
-<<<<<<< HEAD
               <label for="orderNotes" class="form-label fw-semibold">Order Notes (optional)</label>
-              <textarea class="form-control" id="orderNotes" name="order_notes" rows="3" placeholder="Special delivery instructions..."></textarea>
+              <textarea class="form-control" id="orderNotes" name="order_notes" rows="3" placeholder="Special delivery instructions...">{{ request.POST.order_notes|default:'' }}</textarea>
             </div>
 
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="saveAddress">
+              <input class="form-check-input" type="checkbox" id="saveAddress" name="save_address">
               <label class="form-check-label" for="saveAddress">
                 Save this address for future orders
               </label>
@@ -221,7 +177,7 @@
                     <strong>Express Shipping</strong>
                     <p class="mb-0 small text-muted">2-3 business days</p>
                   </div>
-                  <strong>$15.00</strong>
+                  <strong>₦5,000</strong>
                 </div>
               </label>
             </div>
@@ -234,7 +190,7 @@
                     <strong>Next Day Delivery</strong>
                     <p class="mb-0 small text-muted">1 business day</p>
                   </div>
-                  <strong>$30.00</strong>
+                  <strong>₦10,000</strong>
                 </div>
               </label>
             </div>
@@ -265,16 +221,16 @@
             <div id="cardDetails" class="ms-4 mb-3">
               <div class="mb-3">
                 <label for="cardNumber" class="form-label fw-semibold">Card Number</label>
-                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                <input type="text" class="form-control" id="cardNumber" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
               </div>
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label for="expiryDate" class="form-label fw-semibold">Expiry Date</label>
-                  <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                  <input type="text" class="form-control" id="expiryDate" name="card_expiry" placeholder="MM/YY" maxlength="5">
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="cvv" class="form-label fw-semibold">CVV</label>
-                  <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="4">
+                  <input type="text" class="form-control" id="cvv" name="card_cvv" placeholder="123" maxlength="4">
                 </div>
               </div>
             </div>
@@ -321,32 +277,36 @@
             
             <!-- Cart Items -->
             <div class="mb-3" style="max-height: 300px; overflow-y: auto;">
-              {% for item in cart_items %}
-              <div class="d-flex mb-3 pb-3 border-bottom">
-                <div class="me-3">
-                  {% if item.product.cloudinary_url %}
-                    <img src="{{ item.product.cloudinary_url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                  {% elif item.product.image %}
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                  {% else %}
-                    <div style="width: 60px; height: 60px; background-color: #f0f0f0; border-radius: 8px;"></div>
-                  {% endif %}
+              {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="d-flex mb-3 pb-3 border-bottom">
+                  <div class="me-3">
+                    {% if item.product.cloudinary_url %}
+                      <img src="{{ item.product.cloudinary_url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    {% elif item.product.image %}
+                      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    {% else %}
+                      <div style="width: 60px; height: 60px; background-color: #f0f0f0; border-radius: 8px;"></div>
+                    {% endif %}
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">{{ item.product.name|truncatechars:30 }}</h6>
+                    <small class="text-muted">Qty: {{ item.quantity }} • ₦{{ item.product.price|floatformat:2 }}</small>
+                  </div>
+                  <div class="text-end">
+                    <strong style="color: #2E6E1F;">₦{{ item.subtotal|floatformat:2 }}</strong>
+                  </div>
                 </div>
-                <div class="flex-grow-1">
-                  <h6 class="mb-1">{{ item.product.name|truncatechars:30 }}</h6>
-                  <small class="text-muted">Qty: {{ item.quantity }}</small>
-                </div>
-                <div class="text-end">
-                  <strong style="color: #2E6E1F;">{{ item.total_price }}</strong>
-                </div>
-              </div>
-              {% endfor %}
+                {% endfor %}
+              {% else %}
+                <p class="text-muted text-center">Your cart is empty</p>
+              {% endif %}
             </div>
 
             <!-- Coupon Code -->
             <div class="mb-3">
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="Coupon code" id="couponCode">
+                <input type="text" class="form-control" placeholder="Coupon code" id="couponCode" name="coupon_code">
                 <button class="btn" type="button" style="background-color: #2E6E1F; color: white;">Apply</button>
               </div>
             </div>
@@ -355,8 +315,8 @@
 
             <!-- Pricing Details -->
             <div class="d-flex justify-content-between mb-2">
-              <span>Subtotal</span>
-              <span class="fw-semibold">{{ cart_subtotal }}</span>
+              <span>Subtotal ({{ cart_count }} items)</span>
+              <span class="fw-semibold">₦{{ cart_total|floatformat:2 }}</span>
             </div>
 
             <div class="d-flex justify-content-between mb-2">
@@ -364,15 +324,10 @@
               <span class="fw-semibold text-success" id="shippingCost">FREE</span>
             </div>
 
-            <div class="d-flex justify-content-between mb-2">
-              <span>Tax (7.5%)</span>
-              <span class="fw-semibold">{{ cart_tax }}</span>
-            </div>
-
             {% if discount_amount %}
             <div class="d-flex justify-content-between mb-2 text-success">
               <span>Discount</span>
-              <span class="fw-semibold">-{{ discount_amount }}</span>
+              <span class="fw-semibold">-₦{{ discount_amount|floatformat:2 }}</span>
             </div>
             {% endif %}
 
@@ -380,14 +335,22 @@
 
             <div class="d-flex justify-content-between mb-4">
               <span class="h5 fw-bold">Total</span>
-              <span class="h4 fw-bold" style="color: #2E6E1F;" id="totalAmount">{{ cart_total }}</span>
+              <span class="h4 fw-bold" style="color: #2E6E1F;" id="totalAmount">₦{{ cart_total|floatformat:2 }}</span>
             </div>
+
+            <p class="small text-muted mb-3">Proceeding will create an order per seller and you will be redirected to complete payment for each order.</p>
 
             <!-- Place Order Button -->
             <button type="submit" class="btn btn-lg w-100 mb-3" style="background-color: #2E6E1F; color: white; border: none;">
               <ion-icon name="checkmark-circle" class="me-2"></ion-icon>
               Place Order
             </button>
+
+            <!-- Back to Cart -->
+            <a href="{% url 'view_cart' %}" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+              <ion-icon name="arrow-back-outline" class="me-2"></ion-icon>
+              Back to Cart
+            </a>
 
             <div class="text-center">
               <small class="text-muted">
@@ -491,9 +454,8 @@
     background-color: #f8f9fa;
   }
 
-  .form-check-input:checked ~ .form-check-label .border {
-    border-color: #2E6E1F !important;
-    background-color: #f0f8f0;
+  .form-check-input:checked ~ .form-check-label {
+    color: #2E6E1F;
   }
 
   /* Card Shadow */
@@ -505,6 +467,11 @@
   /* Button Hover */
   .btn[style*="background-color: #2E6E1F"]:hover {
     background-color: #1a4012 !important;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
   }
 </style>
 
@@ -547,10 +514,10 @@
         shippingCost.textContent = 'FREE';
         shippingCost.classList.add('text-success');
       } else if (this.value === 'express') {
-        shippingCost.textContent = '$15.00';
+        shippingCost.textContent = '₦5,000';
         shippingCost.classList.remove('text-success');
       } else if (this.value === 'nextday') {
-        shippingCost.textContent = '$30.00';
+        shippingCost.textContent = '₦10,000';
         shippingCost.classList.remove('text-success');
       }
     });
@@ -578,69 +545,4 @@
   });
 </script>
 
-=======
-              <label class="form-label">Phone</label>
-              <input type="text" name="shipping_phone" class="form-control" required value="{{ request.POST.shipping_phone|default:'' }}">
-            </div>
-
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-success">Place Order</button>
-              <a href="{% url 'cart' %}" class="btn btn-outline-secondary">Back to Cart</a>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Items in your order</h5>
-        </div>
-        <div class="card-body">
-          {% if cart_items %}
-            <ul class="list-group">
-              {% for item in cart_items %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{{ item.product.name }}</strong><br>
-                    <small class="text-muted">Qty: {{ item.quantity }} • ₦{{ item.product.price|floatformat:2 }}</small>
-                  </div>
-                  <div class="fw-bold">₦{{ item.subtotal|floatformat:2 }}</div>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="mb-0">Your cart is empty.</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="card position-sticky" style="top: 100px;">
-        <div class="card-header text-white" style="background-color: #2E6E1F;">
-          <h5 class="mb-0">Order Summary</h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex justify-content-between mb-2">
-            <span>Items ({{ cart_count }})</span>
-            <strong>₦{{ cart_total|floatformat:2 }}</strong>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Shipping</span>
-            <span class="text-success fw-bold">FREE</span>
-          </div>
-          <hr>
-          <div class="d-flex justify-content-between mb-3">
-            <span class="h5">Total</span>
-            <span class="h5 fw-bold text-success">₦{{ cart_total|floatformat:2 }}</span>
-          </div>
-
-          <p class="small text-muted">Proceeding will create an order per seller and you will be redirected to complete payment for each order.</p>
-          <a href="{% url 'cart' %}" class="btn btn-outline-secondary w-100 mb-2">Edit Cart</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
->>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
 {% endblock %}
