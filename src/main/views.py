@@ -217,7 +217,7 @@ def wallet_view(request):
     return render(request, 'main/wallet.html', context)
 
 
-@login_required
+# @login_required
 def checkout(request):
     """Checkout process"""
     cart_data = get_cart_items(request)
