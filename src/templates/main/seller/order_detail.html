@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} - Afrimart{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">Order #{{ order.id }}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Order Information -->
+        <div class="col-md-8">
+            <!-- Order Status -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-0"><strong>Status:</strong></p>
+                            {% if order.status == 'pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% elif order.status == 'processing' %}
+                                <span class="badge bg-info">Processing</span>
+                            {% elif order.status == 'shipped' %}
+                                <span class="badge bg-secondary">Shipped</span>
+                            {% elif order.status == 'delivered' %}
+                                <span class="badge bg-success">Delivered</span>
+                            {% elif order.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-0"><strong>Payment Status:</strong></p>
+                            {% if order.payment_status == 'pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% elif order.payment_status == 'paid' %}
+                                <span class="badge bg-success">Paid</span>
+                            {% elif order.payment_status == 'failed' %}
+                                <span class="badge bg-danger">Failed</span>
+                            {% elif order.payment_status == 'refunded' %}
+                                <span class="badge bg-info">Refunded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'product_detail' item.product.id %}">
+                                            {{ item.product.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₦{{ item.price|floatformat:2 }}</td>
+                                    <td><strong>₦{{ item.get_total|floatformat:2 }}</strong></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>Address:</strong><br>
+                        {{ order.shipping_address|linebreaks }}
+                    </p>
+                    {% if order.tracking_number %}
+                        <p class="mb-0 mt-3">
+                            <strong>Tracking Number:</strong><br>
+                            <code>{{ order.tracking_number }}</code>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div class="col-md-4">
+            <!-- Customer Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Details</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>Name:</strong><br>
+                        {{ order.buyer.get_full_name|default:order.buyer.username }}
+                    </p>
+                    <p class="mb-1">
+                        <strong>Email:</strong><br>
+                        <a href="mailto:{{ order.buyer.email }}">{{ order.buyer.email }}</a>
+                    </p>
+                    {% if order.buyer.profile.phone %}
+                        <p class="mb-0">
+                            <strong>Phone:</strong><br>
+                            {{ order.buyer.profile.get_display_phone }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>₦{{ order.total_amount|floatformat:2 }}</strong>
+                    </div>
+                    {% if order.total_amount_usd %}
+                        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                            <span>USD Equivalent:</span>
+                            <strong>${{ order.total_amount_usd|floatformat:2 }}</strong>
+                        </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong class="text-success">₦{{ order.total_amount|floatformat:2 }}</strong>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        Currency: {{ order.currency }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Payment Details -->
+            {% if order.payments.all %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Payment Method</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for payment in order.payments.all %}
+                            <p class="mb-1">
+                                <strong>Method:</strong> {{ payment.get_payment_method_display|default:payment.payment_method }}
+                            </p>
+                            <p class="mb-0">
+                                <strong>Reference:</strong><br>
+                                <small>{{ payment.reference }}</small>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Timestamps -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>Order Date:</strong><br>
+                        <small>{{ order.created_at|date:"M d, Y \a\t H:i" }}</small>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Last Updated:</strong><br>
+                        <small>{{ order.updated_at|date:"M d, Y \a\t H:i" }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Link -->
+    <div class="mt-4">
+        <a href="{% url 'seller_orders' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -7,7 +7,7 @@
 <section class="ftco-section" style="padding-top: 100px; min-height: 80vh;">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
+            <div class="col-md-10 col-lg-8">
                 <div class="card shadow">
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
@@ -15,81 +15,220 @@
                             <p class="text-muted">Join Afrimart today!</p>
                         </div>
 
-                        <form method="post">
-                            {% csrf_token %}
+                        <!-- Tab Navigation -->
+                        <ul class="nav nav-tabs mb-4" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#buyer-tab">
+                                    <i class="fas fa-shopping-cart"></i> Buyer
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#seller-tab">
+                                    <i class="fas fa-store"></i> Seller
+                                </a>
+                            </li>
+                        </ul>
 
-                            <div class="row">
-                                <div class="col-md-6">
+                        <!-- Tab Content -->
+                        <div class="tab-content">
+                            <!-- Buyer Registration Tab -->
+                            <div id="buyer-tab" class="tab-pane fade show active">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="is_seller" value="off">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.first_name.label_tag }}
+                                                {{ form.first_name }}
+                                                {% if form.first_name.errors %}
+                                                    <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.last_name.label_tag }}
+                                                {{ form.last_name }}
+                                                {% if form.last_name.errors %}
+                                                    <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group">
-                                        {{ form.first_name.label_tag }}
-                                        {{ form.first_name }}
-                                        {% if form.first_name.errors %}
-                                            <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                        {{ form.username.label_tag }}
+                                        {{ form.username }}
+                                        {% if form.username.errors %}
+                                            <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">Choose a unique username</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ form.email.label_tag }}
+                                        {{ form.email }}
+                                        {% if form.email.errors %}
+                                            <div class="text-danger small">{{ form.email.errors.0 }}</div>
                                         {% endif %}
                                     </div>
-                                </div>
-                                <div class="col-md-6">
+
                                     <div class="form-group">
-                                        {{ form.last_name.label_tag }}
-                                        {{ form.last_name }}
-                                        {% if form.last_name.errors %}
-                                            <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                        {{ form.country_code.label_tag }}
+                                        <div class="input-group">
+                                            {{ form.country_code }}
+                                            {{ form.phone }}
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Enter your phone number without the country code
+                                        </small>
+                                        {% if form.phone.errors %}
+                                            <div class="text-danger small">{{ form.phone.errors.0 }}</div>
                                         {% endif %}
                                     </div>
-                                </div>
+
+                                    <div class="form-group">
+                                        {{ form.password1.label_tag }}
+                                        {{ form.password1 }}
+                                        {% if form.password1.errors %}
+                                            <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ form.password2.label_tag }}
+                                        {{ form.password2 }}
+                                        {% if form.password2.errors %}
+                                            <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success btn-lg w-100 mt-4">
+                                        <i class="fa fa-user-plus"></i> Create Account
+                                    </button>
+                                </form>
                             </div>
 
-                            <div class="form-group">
-                                {{ form.username.label_tag }}
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger small">{{ form.username.errors.0 }}</div>
-                                {% endif %}
-                                <small class="form-text text-muted">Choose a unique username</small>
-                            </div>
+                            <!-- Seller Registration Tab -->
+                            <div id="seller-tab" class="tab-pane fade">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="is_seller" value="on">
 
-                            <div class="form-group">
-                                {{ form.email.label_tag }}
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
-                                {% endif %}
-                            </div>
+                                    <div class="alert alert-info mb-4">
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>Seller Account</strong><br>
+                                        Join our seller network and start selling products to thousands of customers!
+                                    </div>
 
-                            <div class="form-group">
-                                {{ form.country_code.label_tag }}
-                                <div class="input-group">
-                                    {{ form.country_code }}
-                                    {{ form.phone }}
-                                </div>
-                                <small class="form-text text-muted">
-                                    Enter your phone number without the country code
-                                </small>
-                                {% if form.phone.errors %}
-                                    <div class="text-danger small">{{ form.phone.errors.0 }}</div>
-                                {% endif %}
-                            </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.first_name.label_tag }}
+                                                {{ form.first_name }}
+                                                {% if form.first_name.errors %}
+                                                    <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.last_name.label_tag }}
+                                                {{ form.last_name }}
+                                                {% if form.last_name.errors %}
+                                                    <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            <div class="form-group">
-                                {{ form.password1.label_tag }}
-                                {{ form.password1 }}
-                                {% if form.password1.errors %}
-                                    <div class="text-danger small">{{ form.password1.errors.0 }}</div>
-                                {% endif %}
-                            </div>
+                                    <div class="form-group">
+                                        {{ form.username.label_tag }}
+                                        {{ form.username }}
+                                        {% if form.username.errors %}
+                                            <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">Choose a unique username</small>
+                                    </div>
 
-                            <div class="form-group">
-                                {{ form.password2.label_tag }}
-                                {{ form.password2 }}
-                                {% if form.password2.errors %}
-                                    <div class="text-danger small">{{ form.password2.errors.0 }}</div>
-                                {% endif %}
-                            </div>
+                                    <div class="form-group">
+                                        {{ form.email.label_tag }}
+                                        {{ form.email }}
+                                        {% if form.email.errors %}
+                                            <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
 
-                            <button type="submit" class="btn btn-success btn-lg btn-block mt-4">
-                                <i class="fa fa-user-plus"></i> Create Account
-                            </button>
-                        </form>
+                                    <div class="form-group">
+                                        {{ form.country_code.label_tag }}
+                                        <div class="input-group">
+                                            {{ form.country_code }}
+                                            {{ form.phone }}
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Enter your phone number without the country code
+                                        </small>
+                                        {% if form.phone.errors %}
+                                            <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Seller-Specific Fields -->
+                                    <div class="card bg-light mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Store Information</h6>
+                                            
+                                            <div class="form-group">
+                                                {{ form.seller_store_name.label_tag }}
+                                                {{ form.seller_store_name }}
+                                                {% if form.seller_store_name.errors %}
+                                                    <div class="text-danger small">{{ form.seller_store_name.errors.0 }}</div>
+                                                {% endif %}
+                                                <small class="form-text text-muted">The name customers will see</small>
+                                            </div>
+
+                                            <div class="form-group">
+                                                {{ form.seller_description.label_tag }}
+                                                {{ form.seller_description }}
+                                                {% if form.seller_description.errors %}
+                                                    <div class="text-danger small">{{ form.seller_description.errors.0 }}</div>
+                                                {% endif %}
+                                                <small class="form-text text-muted">Tell us about your business</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ form.password1.label_tag }}
+                                        {{ form.password1 }}
+                                        {% if form.password1.errors %}
+                                            <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{ form.password2.label_tag }}
+                                        {{ form.password2 }}
+                                        {% if form.password2.errors %}
+                                            <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group form-check">
+                                        <input type="checkbox" class="form-check-input" id="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            I agree to Afrimart seller terms and conditions
+                                        </label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
+                                        <i class="fas fa-store"></i> Apply as Seller
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
 
                         <div class="text-center mt-4">
                             <p class="text-muted">
@@ -154,6 +293,10 @@ document.getElementById('country_code').addEventListener('change', function() {
 }
 .is-invalid {
     border-color: #dc3545 !important;
+}
+.nav-tabs .nav-link.active {
+    background-color: #f8f9fa;
+    border-bottom: 3px solid #007bff;
 }
 </style>
 {% endblock %}

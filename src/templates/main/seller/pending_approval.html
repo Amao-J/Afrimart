@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Account Pending - Afrimart{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card border-info shadow-lg">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-hourglass-half fa-5x text-warning"></i>
+                    </div>
+                    
+                    <h2 class="card-title mb-3">Your Seller Account is Pending Approval</h2>
+                    
+                    <p class="card-text lead mb-4">
+                        Thank you for joining Afrimart as a seller! Your account has been submitted for review.
+                    </p>
+                    
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading mb-3">What Happens Next?</h5>
+                        <ul class="text-start" style="max-width: 400px; margin: auto;">
+                            <li>Our team will review your seller information</li>
+                            <li>We'll verify your business details</li>
+                            <li>You'll receive an email confirmation once approved</li>
+                            <li>Approval typically takes 1-2 business days</li>
+                        </ul>
+                    </div>
+
+                    {% if store_name %}
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="card-subtitle text-muted">Your Store Information</h6>
+                                <h5 class="card-title mt-2">{{ store_name }}</h5>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="{% url 'profile' %}" class="btn btn-primary">
+                            <i class="fas fa-user-edit"></i> View Your Profile
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home"></i> Browse Afrimart
+                        </a>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="text-muted">
+                        <p class="mb-2">
+                            <strong>Need Help?</strong><br>
+                            <a href="mailto:support@afrimart.com">Contact our support team</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-light mt-4">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Tip:</strong> While you wait for approval, you can complete your profile and prepare your product listings.
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}

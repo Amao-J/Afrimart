@@ -1,6 +1,2 @@
-django == 5.0
-requests
-pillow
-cloudinary
-python-decouple
-whitenoise
+Django >= 5.0,<5.1 
+gunicorn

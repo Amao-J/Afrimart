@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from .utils.currency import set_user_currency, SUPPORTED_CURRENCIES, get_exchange_rate, batch_update_rates
 from .models import Order, OrderItem, Product, Wallet, Payment
 from decimal import Decimal
-from .cart import get_cart, save_cart, get_cart_items,cart_view,update_cart,remove_from_cart,clear_cart
+from .cart import get_cart, save_cart, get_cart_items, update_cart, remove_from_cart, clear_cart, cart_view as cart_view_func
 import uuid
 import requests
 import json
@@ -150,6 +150,26 @@ def add_to_cart(request, product_id):
     
     messages.success(request, f'Added {quantity} x {product.name} to cart')
     return redirect('cart')
+
+
+def cart_view(request):
+    """Display shopping cart"""
+    return cart_view_func(request)
+
+
+def update_cart_view(request, product_id):
+    """Update product quantity in cart"""
+    return update_cart(request, product_id)
+
+
+def remove_from_cart_view(request, product_id):
+    """Remove product from cart"""
+    return remove_from_cart(request, product_id)
+
+
+def clear_cart_view(request):
+    """Clear entire cart"""
+    return clear_cart(request)
 
 @login_required
 def dashboard(request):
@@ -902,3 +922,239 @@ def initialize_flutterwave_payment(escrow):
             'success': False,
             'message': f'Network error: {str(e)}'
         }
+
+
+# ============= SELLER DASHBOARD VIEWS =============
+
+from .auth import seller_required
+
+@seller_required
+def seller_dashboard(request):
+    """Seller dashboard showing their products and stats"""
+    seller = request.user
+    products = Product.objects.filter(seller=seller).order_by('-created_at')
+    
+    # Calculate statistics
+    total_products = products.count()
+    total_stock = sum(p.stock for p in products)
+    total_sales = Order.objects.filter(seller=seller, status='delivered').count()
+    
+    context = {
+        'products': products,
+        'total_products': total_products,
+        'total_stock': total_stock,
+        'total_sales': total_sales,
+    }
+    return render(request, 'main/seller/dashboard.html', context)
+
+
+@seller_required
+def seller_products(request):
+    """List all products for the seller"""
+    seller = request.user
+    products = Product.objects.filter(seller=seller).order_by('-created_at')
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+    
+    context = {
+        'products': products,
+        'search_query': search_query,
+    }
+    return render(request, 'main/seller/products.html', context)
+
+
+@seller_required
+def add_product(request):
+    """Add a new product"""
+    if request.method == 'POST':
+        from .forms import ProductForm
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            messages.success(request, 'Product created successfully!')
+            return redirect('edit_product', product_id=product.id)
+    else:
+        from .forms import ProductForm
+        form = ProductForm()
+    
+    context = {'form': form}
+    return render(request, 'main/seller/add_product.html', context)
+
+
+@seller_required
+def edit_product(request, product_id):
+    """Edit an existing product"""
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Check if user is the seller
+    if product.seller != request.user:
+        messages.error(request, 'You cannot edit this product')
+        return redirect('seller_dashboard')
+    
+    if request.method == 'POST':
+        from .forms import ProductForm
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product updated successfully!')
+            return redirect('edit_product', product_id=product.id)
+    else:
+        from .forms import ProductForm
+        form = ProductForm(instance=product)
+    
+    images = product.images.all().order_by('-is_primary', 'order')
+    context = {
+        'product': product,
+        'form': form,
+        'images': images,
+    }
+    return render(request, 'main/seller/edit_product.html', context)
+
+
+@seller_required
+def delete_product(request, product_id):
+    """Delete a product"""
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Check if user is the seller
+    if product.seller != request.user:
+        messages.error(request, 'You cannot delete this product')
+        return redirect('seller_dashboard')
+    
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, 'Product deleted successfully!')
+        return redirect('seller_products')
+    
+    context = {'product': product}
+    return render(request, 'main/seller/delete_product.html', context)
+
+
+@seller_required
+def upload_product_images(request, product_id):
+    """Upload multiple images for a product"""
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Check if user is the seller
+    if product.seller != request.user:
+        messages.error(request, 'You cannot upload images for this product')
+        return redirect('seller_dashboard')
+    
+    if request.method == 'POST':
+        from .forms import MultipleProductImageForm
+        form = MultipleProductImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            images = request.FILES.getlist('images')
+            
+            # Get current max order
+            max_order = ProductImage.objects.filter(product=product).aggregate(
+                models.Max('order')
+            )['order__max'] or 0
+            
+            for idx, image in enumerate(images):
+                ProductImage.objects.create(
+                    product=product,
+                    image=image,
+                    is_primary=False,
+                    order=max_order + idx + 1
+                )
+            
+            messages.success(request, f'{len(images)} image(s) uploaded successfully!')
+            return redirect('edit_product', product_id=product.id)
+    else:
+        from .forms import MultipleProductImageForm
+        form = MultipleProductImageForm()
+    
+    context = {
+        'product': product,
+        'form': form,
+    }
+    return render(request, 'main/seller/upload_images.html', context)
+
+
+@seller_required
+def delete_product_image(request, image_id):
+    """Delete a product image"""
+    image = get_object_or_404(ProductImage, id=image_id)
+    product = image.product
+    
+    # Check if user is the seller
+    if product.seller != request.user:
+        messages.error(request, 'You cannot delete this image')
+        return redirect('seller_dashboard')
+    
+    if request.method == 'POST':
+        image.delete()
+        messages.success(request, 'Image deleted successfully!')
+        return redirect('edit_product', product_id=product.id)
+    
+    context = {
+        'image': image,
+        'product': product,
+    }
+    return render(request, 'main/seller/delete_image.html', context)
+
+
+@seller_required
+def set_primary_image(request, image_id):
+    """Set an image as the primary image for a product"""
+    image = get_object_or_404(ProductImage, id=image_id)
+    product = image.product
+    
+    # Check if user is the seller
+    if product.seller != request.user:
+        messages.error(request, 'You cannot modify this product')
+        return redirect('seller_dashboard')
+    
+    # Unset previous primary image
+    ProductImage.objects.filter(product=product, is_primary=True).update(is_primary=False)
+    
+    # Set this image as primary
+    image.is_primary = True
+    image.save()
+    
+    messages.success(request, 'Primary image updated!')
+    return redirect('edit_product', product_id=product.id)
+
+
+@seller_required
+def seller_orders(request):
+    """View orders for products sold by this seller"""
+    seller = request.user
+    orders = Order.objects.filter(seller=seller).select_related('buyer').order_by('-created_at')
+    
+    # Filter by status if provided
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        orders = orders.filter(status=status_filter)
+    
+    context = {
+        'orders': orders,
+        'status_filter': status_filter,
+    }
+    return render(request, 'main/seller/orders.html', context)
+
+
+@seller_required
+def seller_order_detail(request, order_id):
+    """View details of a specific order"""
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Check if user is the seller
+    if order.seller != request.user:
+        messages.error(request, 'You cannot view this order')
+        return redirect('seller_dashboard')
+    
+    context = {'order': order}
+    return render(request, 'main/seller/order_detail.html', context)
+
+
+from django.db import models

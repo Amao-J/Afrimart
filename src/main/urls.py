@@ -16,9 +16,9 @@ urlpatterns = [
     
     path('cart/', views.cart_view, name='view_cart'),
     path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
-    path('cart/update/<int:product_id>/', views.update_cart, name='update_cart'),
-    path('cart/remove/<int:product_id>/', views.remove_from_cart, name='remove_from_cart'),
-    path('cart/clear/', views.clear_cart, name='clear_cart'),
+    path('cart/update/<int:product_id>/', views.update_cart_view, name='update_cart'),
+    path('cart/remove/<int:product_id>/', views.remove_from_cart_view, name='remove_from_cart'),
+    path('cart/clear/', views.clear_cart_view, name='clear_cart'),
     
 
     path('cart/ajax/add/<int:product_id>/', views.ajax_add_to_cart, name='ajax_add_to_cart'),
@@ -40,6 +40,19 @@ urlpatterns = [
     # Webhook
     path('payment/webhook/', views.verify_payment_webhook, name='payment_webhook'),
     
+
+    # Seller URLs
+    path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
+    path('seller/pending-approval/', auth.seller_pending_approval, name='seller_pending_approval'),
+    path('seller/products/', views.seller_products, name='seller_products'),
+    path('seller/product/add/', views.add_product, name='add_product'),
+    path('seller/product/<int:product_id>/edit/', views.edit_product, name='edit_product'),
+    path('seller/product/<int:product_id>/delete/', views.delete_product, name='delete_product'),
+    path('seller/product/<int:product_id>/upload-images/', views.upload_product_images, name='upload_product_images'),
+    path('seller/image/<int:image_id>/delete/', views.delete_product_image, name='delete_product_image'),
+    path('seller/image/<int:image_id>/set-primary/', views.set_primary_image, name='set_primary_image'),
+    path('seller/orders/', views.seller_orders, name='seller_orders'),
+    path('seller/order/<int:order_id>/', views.seller_order_detail, name='seller_order_detail'),
 
      path('', views.home, name='home'),
     path('products/', views.product_list, name='product_list'),

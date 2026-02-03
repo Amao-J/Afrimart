@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import UserProfile
+from django.utils import timezone
+from .models import UserProfile, Product, ProductImage, Category
 import re
 
 
@@ -46,6 +47,30 @@ class RegisterForm(forms.Form):
     phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '8012345678', 'id': 'phone'}))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'At least 6 characters', 'id': 'password1'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm password', 'id': 'password2'}))
+    
+    # Seller option
+    is_seller = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='Register as a seller/vendor'
+    )
+    seller_store_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Your store name (required for sellers)'
+        }),
+        label='Store Name'
+    )
+    seller_description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Describe your business (required for sellers)',
+            'rows': 3
+        }),
+        label='Business Description'
+    )
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -84,6 +109,22 @@ class RegisterForm(forms.Form):
             if UserProfile.objects.filter(phone=phone_full).exists():
                 raise forms.ValidationError('Phone number already registered')
             cleaned['phone_full'] = phone_full
+        
+        # Validate seller fields
+        is_seller = cleaned.get('is_seller')
+        if is_seller:
+            store_name = cleaned.get('seller_store_name', '').strip()
+            description = cleaned.get('seller_description', '').strip()
+            
+            if not store_name:
+                raise forms.ValidationError('Store name is required for sellers')
+            if not description:
+                raise forms.ValidationError('Business description is required for sellers')
+            if len(store_name) < 3:
+                raise forms.ValidationError('Store name must be at least 3 characters')
+            if len(description) < 20:
+                raise forms.ValidationError('Business description must be at least 20 characters')
+        
         return cleaned
 
     def save(self):
@@ -95,6 +136,91 @@ class RegisterForm(forms.Form):
             first_name=data['first_name'],
             last_name=data['last_name']
         )
-        UserProfile.objects.create(user=user, phone=data.get('phone_full', ''))
+        profile = UserProfile.objects.create(
+            user=user,
+            phone=data.get('phone_full', ''),
+            is_seller=data.get('is_seller', False),
+            seller_store_name=data.get('seller_store_name', ''),
+            seller_description=data.get('seller_description', '')
+        )
+        
+        # If seller, set application date
+        if data.get('is_seller'):
+            profile.seller_application_date = timezone.now()
+            profile.save()
+        
         # Create wallet will be handled elsewhere (view)
         return user
+
+
+class ProductForm(forms.ModelForm):
+    """Form for creating and editing products"""
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'category', 'stock', 'discount_percentage', 'is_featured']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Product name'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Product description',
+                'rows': 5
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0.00',
+                'step': '0.01'
+            }),
+            'category': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'stock': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0'
+            }),
+            'discount_percentage': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0',
+                'step': '0.01',
+                'min': '0',
+                'max': '100'
+            }),
+            'is_featured': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+
+
+class ProductImageForm(forms.ModelForm):
+    """Form for uploading product images"""
+    class Meta:
+        model = ProductImage
+        fields = ['image', 'is_primary', 'order']
+        widgets = {
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+            'is_primary': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'order': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0',
+                'min': '0'
+            })
+        }
+
+
+class MultipleProductImageForm(forms.Form):
+    """Form for uploading multiple images at once"""
+    images = forms.FileField(
+        widget=forms.ClearableFileInput(attrs={
+            'multiple': True,
+            'accept': 'image/*',
+            'class': 'form-control'
+        }),
+        help_text='Select one or more image files'
+    )
