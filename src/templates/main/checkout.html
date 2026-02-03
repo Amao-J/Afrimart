@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+<<<<<<< HEAD
 {% load static %}
 {% load currency_tags %}
 
@@ -12,10 +13,23 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none" style="color: #2E6E1F;">Home</a></li>
       <li class="breadcrumb-item"><a href="{% url 'view_cart' %}" class="text-decoration-none" style="color: #2E6E1F;">Cart</a></li>
+=======
+{% load humanize %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'cart' %}">Cart</a></li>
+>>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
       <li class="breadcrumb-item active">Checkout</li>
     </ol>
   </nav>
 
+<<<<<<< HEAD
   <!-- Page Title -->
   <div class="mb-4">
     <h1 class="fw-bold">Checkout</h1>
@@ -105,10 +119,26 @@
             <div class="mb-3">
               <label for="address2" class="form-label fw-semibold">Apartment, suite, etc. (optional)</label>
               <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, suite, unit, building, floor, etc.">
+=======
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Shipping Information</h5>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <textarea name="shipping_address" class="form-control" rows="3" required>{{ request.POST.shipping_address|default:'' }}</textarea>
+>>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
+<<<<<<< HEAD
                 <label for="city" class="form-label fw-semibold">City *</label>
                 <input type="text" class="form-control" id="city" name="city" required>
               </div>
@@ -134,10 +164,20 @@
                   <option value="US">United States</option>
                   <option value="GB">United Kingdom</option>
                 </select>
+=======
+                <label class="form-label">City</label>
+                <input type="text" name="shipping_city" class="form-control" required value="{{ request.POST.shipping_city|default:'' }}">
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">State/Region</label>
+                <input type="text" name="shipping_state" class="form-control" required value="{{ request.POST.shipping_state|default:'' }}">
+>>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
               </div>
             </div>
 
             <div class="mb-3">
+<<<<<<< HEAD
               <label for="orderNotes" class="form-label fw-semibold">Order Notes (optional)</label>
               <textarea class="form-control" id="orderNotes" name="order_notes" rows="3" placeholder="Special delivery instructions..."></textarea>
             </div>
@@ -538,4 +578,69 @@
   });
 </script>
 
+=======
+              <label class="form-label">Phone</label>
+              <input type="text" name="shipping_phone" class="form-control" required value="{{ request.POST.shipping_phone|default:'' }}">
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success">Place Order</button>
+              <a href="{% url 'cart' %}" class="btn btn-outline-secondary">Back to Cart</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Items in your order</h5>
+        </div>
+        <div class="card-body">
+          {% if cart_items %}
+            <ul class="list-group">
+              {% for item in cart_items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{{ item.product.name }}</strong><br>
+                    <small class="text-muted">Qty: {{ item.quantity }} • ₦{{ item.product.price|floatformat:2 }}</small>
+                  </div>
+                  <div class="fw-bold">₦{{ item.subtotal|floatformat:2 }}</div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="mb-0">Your cart is empty.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card position-sticky" style="top: 100px;">
+        <div class="card-header text-white" style="background-color: #2E6E1F;">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Items ({{ cart_count }})</span>
+            <strong>₦{{ cart_total|floatformat:2 }}</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping</span>
+            <span class="text-success fw-bold">FREE</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-3">
+            <span class="h5">Total</span>
+            <span class="h5 fw-bold text-success">₦{{ cart_total|floatformat:2 }}</span>
+          </div>
+
+          <p class="small text-muted">Proceeding will create an order per seller and you will be redirected to complete payment for each order.</p>
+          <a href="{% url 'cart' %}" class="btn btn-outline-secondary w-100 mb-2">Edit Cart</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+>>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
 {% endblock %}

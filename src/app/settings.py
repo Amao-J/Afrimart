@@ -260,6 +260,12 @@ USE_TZ = True
 
 SITE_URL = 'http://127.0.0.1:8000'  
 
+# Auth redirects
+# Use the named 'login' view so LocaleMiddleware (i18n_patterns) can resolve the language-prefixed login URL
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 

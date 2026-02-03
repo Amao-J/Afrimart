@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .utils.currency import set_user_currency, SUPPORTED_CURRENCIES, get_exchange_rate, batch_update_rates
-from .models import Order, OrderItem, Product, Wallet, Payment
+from .models import Order, OrderItem, Product, Wallet, WalletTransaction, Payment
 from decimal import Decimal
 from .cart import get_cart, save_cart, get_cart_items, update_cart, remove_from_cart, clear_cart, cart_view as cart_view_func
 import uuid
@@ -217,7 +217,62 @@ def wallet_view(request):
     return render(request, 'main/wallet.html', context)
 
 
+<<<<<<< HEAD
 # @login_required
+=======
+@login_required
+def top_up_wallet(request):
+    """Top up the logged-in user's wallet (direct credit simulation)
+
+    Note: This simulates a top-up (synchronous credit). Integrate a payment provider
+    for production top-ups (e.g., Flutterwave card flow) if needed.
+    """
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        amount_str = request.POST.get('amount', '0').strip()
+        try:
+            amount = Decimal(amount_str)
+        except Exception:
+            messages.error(request, 'Enter a valid amount')
+            return redirect('wallet_top_up')
+
+        if amount <= 0:
+            messages.error(request, 'Amount must be greater than zero')
+            return redirect('wallet_top_up')
+
+        try:
+            with transaction.atomic():
+                # Credit wallet
+                wallet.credit(amount)
+
+                # Record transaction
+                WalletTransaction.objects.create(
+                    wallet=wallet,
+                    amount=amount,
+                    transaction_type='topup',
+                    description='Top-up (direct credit)',
+                    reference=f"TOPUP-{uuid.uuid4().hex[:12].upper()}"
+                )
+
+            messages.success(request, f'✓ Wallet credited with ₦{amount:,.2f}')
+            return redirect('wallet')
+        except Exception as e:
+            messages.error(request, f'Error processing top-up: {str(e)}')
+            return redirect('wallet_top_up')
+
+    # GET - show top-up form
+    balance_info = convert_price_to_user_currency(wallet.balance, 'NGN', request)
+    context = {
+        'wallet': wallet,
+        'wallet_balance': balance_info['formatted'],
+        'wallet_amount': balance_info['amount'],
+    }
+    return render(request, 'main/wallet_topup.html', context)
+
+
+@login_required
+>>>>>>> 0d869d0b61c6494695ce5d8e67b6128a0c86eed3
 def checkout(request):
     """Checkout process"""
     cart_data = get_cart_items(request)
@@ -691,8 +746,13 @@ def verify_payment_webhook(request):
 
 
 
-def initialize_normal_flutterwave_payment(order):
-    """Initialize normal (non-escrow) payment with Flutterwave"""
+def initialize_normal_flutterwave_payment(order, payment_options="card,banktransfer,ussd,mobilemoney,account", payment_type="normal", redirect_url=None):
+    """Initialize normal (non-escrow) payment with Flutterwave
+
+    payment_options: string passed to Flutterwave's `payment_options` field
+    payment_type: 'normal' (order) or other custom tag
+    redirect_url: optional override for callback URL
+    """
     url = "https://api.flutterwave.com/v3/payments"
     
     # Generate unique transaction reference
@@ -703,12 +763,13 @@ def initialize_normal_flutterwave_payment(order):
         'Content-Type': 'application/json'
     }
     
+    redirect = redirect_url or f"{settings.SITE_URL}/payment/callback/"
     payload = {
         "tx_ref": tx_ref,
         "amount": str(order.total_amount),
-        "currency": "NGN",  # Change based on your currency or user preference
-        "redirect_url": f"{settings.SITE_URL}/payment/callback/",
-        "payment_options": "card,banktransfer,ussd,mobilemoney,account",
+        "currency": "NGN",
+        "redirect_url": redirect,
+        "payment_options": payment_options,
         "customer": {
             "email": order.buyer.email,
             "phonenumber": getattr(order.buyer, 'phone', ''),
@@ -722,7 +783,7 @@ def initialize_normal_flutterwave_payment(order):
         "meta": {
             "order_id": order.id,
             "buyer_id": order.buyer.id,
-            "payment_type": "normal"
+            "payment_type": payment_type
         }
     }
     
@@ -747,6 +808,151 @@ def initialize_normal_flutterwave_payment(order):
             'success': False,
             'message': f'Network error: {str(e)}'
         }
+
+
+@login_required
+def pay_with_wallet(request, order_id):
+    """Pay for an order using the user's wallet"""
+    order = get_object_or_404(Order, id=order_id, buyer=request.user)
+
+    if order.payment_status == 'paid':
+        messages.warning(request, "This order has already been paid for")
+        return redirect('order_detail', order_id=order.id)
+
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    amount = order.total_amount
+
+    if not wallet.can_debit(amount):
+        messages.error(request, "Insufficient wallet balance. Please top up your wallet or choose another payment method.")
+        return redirect('wallet')
+
+    try:
+        with transaction.atomic():
+            # Debit wallet
+            wallet.debit(amount)
+
+            # Update order
+            order.payment_status = 'paid'
+            order.payment_method = 'wallet'
+            order.payment_reference = f"WALLET-{uuid.uuid4().hex[:12].upper()}"
+            order.paid_at = timezone.now()
+            order.status = 'processing'
+            order.save()
+
+            # Create payment record
+            Payment.objects.create(
+                order=order,
+                user=request.user,
+                amount=amount,
+                payment_method='wallet',
+                reference=order.payment_reference,
+                status='successful',
+                payment_type='normal',
+                completed_at=timezone.now()
+            )
+
+            # Transfer to seller
+            transfer_to_seller(order.seller, amount)
+
+        messages.success(request, "Payment successful! Your order is being processed.")
+        return redirect('order_detail', order_id=order.id)
+    except Exception as e:
+        messages.error(request, f"Error processing wallet payment: {str(e)}")
+        return redirect('order_detail', order_id=order.id)
+
+
+@login_required
+def pay_with_wallet_escrow(request, order_id):
+    """Pay for an order into escrow using the buyer's wallet"""
+    order = get_object_or_404(Order, id=order_id, buyer=request.user)
+
+    if hasattr(order, 'escrow'):
+        messages.warning(request, "Escrow already exists for this order")
+        return redirect('order_detail', order_id=order.id)
+
+    # Calculate escrow fee (2%)
+    escrow_fee = order.total_amount * Decimal('0.02')
+    total_amount = order.total_amount + escrow_fee
+
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    if not wallet.can_debit(total_amount):
+        messages.error(request, "Insufficient wallet balance to fund escrow. Please top up your wallet.")
+        return redirect('wallet')
+
+    from escrow.models import EscrowTransaction, EscrowStatusHistory
+
+    try:
+        with transaction.atomic():
+            # Debit buyer wallet
+            wallet.debit(total_amount)
+
+            # Create escrow and mark as paid (in escrow)
+            escrow = EscrowTransaction.objects.create(
+                transaction_id=f"ESC-{uuid.uuid4().hex[:12].upper()}",
+                order=order,
+                buyer=request.user,
+                seller=order.seller,
+                amount=order.total_amount,
+                escrow_fee=escrow_fee,
+                total_amount=total_amount,
+                status='in_escrow',
+                payment_received_at=timezone.now(),
+                payment_reference=f"WALLET-ESC-{uuid.uuid4().hex[:12].upper()}",
+                payment_provider='wallet'
+            )
+
+            # Log status change
+            EscrowStatusHistory.objects.create(
+                escrow=escrow,
+                old_status='pending_payment',
+                new_status='in_escrow',
+                changed_by=request.user,
+                reason='Paid using wallet'
+            )
+
+            # Create payment record
+            Payment.objects.create(
+                order=order,
+                user=request.user,
+                amount=total_amount,
+                payment_method='wallet',
+                reference=escrow.payment_reference,
+                status='successful',
+                payment_type='escrow',
+                completed_at=timezone.now(),
+                metadata={'escrow_id': escrow.id}
+            )
+
+        messages.success(request, "Escrow payment successful! Funds are now in escrow.")
+        return redirect('escrow:detail', escrow_id=escrow.id)
+    except Exception as e:
+        messages.error(request, f"Error creating escrow with wallet payment: {str(e)}")
+        return redirect('order_detail', order_id=order.id)
+
+
+@login_required
+def initiate_bank_payment(request, order_id):
+    """Initiate a bank (Flutterwave banktransfer) payment for an order"""
+    order = get_object_or_404(Order, id=order_id, buyer=request.user)
+
+    if order.payment_status == 'paid':
+        messages.warning(request, "This order has already been paid for")
+        return redirect('order_detail', order_id=order.id)
+
+    # Prefer bank transfers only
+    payment_data = initialize_normal_flutterwave_payment(order, payment_options='banktransfer', payment_type='normal')
+
+    if not payment_data.get('success'):
+        messages.error(request, f"Payment initialization failed: {payment_data.get('message')}")
+        return redirect('order_detail', order_id=order.id)
+
+    context = {
+        'order': order,
+        'flutterwave_public_key': settings.FLUTTERWAVE_PUBLIC_KEY,
+        'payment_link': payment_data.get('link'),
+        'tx_ref': payment_data.get('tx_ref')
+    }
+    return render(request, 'main/payments/normal_payment.html', context)
 
 def dashboard(request):
     """User dashboard view"""

@@ -24,6 +24,7 @@ urlpatterns = [
     path('cart/ajax/add/<int:product_id>/', views.ajax_add_to_cart, name='ajax_add_to_cart'),
     path('cart/ajax/count/', views.get_cart_count, name='get_cart_count'),
     path('wallet/', views.wallet_view, name='wallet'),
+    path('wallet/top-up/', views.top_up_wallet, name='wallet_top_up'),
     
     path('set-currency/', views.set_currency, name='set_currency'),
     path('currency-rates/', views.get_currency_rates, name='get_currency_rates'),
@@ -37,6 +38,11 @@ urlpatterns = [
     path('payment/callback/', views.normal_payment_callback, name='normal_payment_callback'),
     path('payment/history/', views.payment_history, name='payment_history'),
     path('payment/<int:payment_id>/detail/', views.payment_detail, name='payment_detail'),
+
+    # New payment methods
+    path('payment/pay-with-wallet/<int:order_id>/', views.pay_with_wallet, name='pay_with_wallet'),
+    path('payment/pay-with-wallet-escrow/<int:order_id>/', views.pay_with_wallet_escrow, name='pay_with_wallet_escrow'),
+    path('payment/bank/<int:order_id>/', views.initiate_bank_payment, name='initiate_bank_payment'),
     
     # Webhook
     path('payment/webhook/', views.verify_payment_webhook, name='payment_webhook'),

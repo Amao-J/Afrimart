@@ -14,10 +14,11 @@
         <p>{{ currency_flag }} {{ currency_name }}</p>
     </div>
     
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 30px; display:flex; gap:12px;">
         <a href="{% url 'dashboard' %}" class="btn btn-primary">
             <ion-icon name="arrow-back-outline"></ion-icon> Back to Dashboard
         </a>
+        <a href="{% url 'wallet_top_up' %}" class="btn btn-success">Top up Wallet</a>
     </div>
 </div>
 
