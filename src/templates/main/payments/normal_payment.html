@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Complete Payment - Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Complete Payment for Order #{{ order.id }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">You're being redirected to the payment provider. If redirection doesn't work, click the button below.</p>
+
+                    {% if payment_link %}
+                        <a href="{{ payment_link }}" target="_blank" class="btn btn-lg btn-primary">Proceed to Bank Payment</a>
+                        <p class="small text-muted mt-3">Reference: <code>{{ tx_ref }}</code></p>
+                    {% else %}
+                        <p class="text-danger">Payment could not be initiated. Please try again or choose another method.</p>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <a href="{% url 'order_detail' order.id %}" class="btn btn-link">Back to Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

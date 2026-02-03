@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment {{ payment.reference }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Payment {{ payment.reference }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <p><strong>Order:</strong> <a href="{% url 'order_detail' payment.order.id %}">#{{ payment.order.id }}</a></p>
+            <p><strong>Amount:</strong> ₦{{ payment.amount|floatformat:2 }}</p>
+            <p><strong>Method:</strong> {{ payment.get_payment_method_display|default:payment.payment_method }}</p>
+            <p><strong>Status:</strong> {{ payment.status }}</p>
+            <p><strong>Reference:</strong> {{ payment.reference }}</p>
+            <p><strong>Date:</strong> {{ payment.created_at|date:'M d, Y H:i' }}</p>
+            <hr>
+            <a href="{% url 'payment_history' %}" class="btn btn-secondary">Back to Payments</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

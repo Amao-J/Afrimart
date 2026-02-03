@@ -1,7 +1,7 @@
 import random
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from main.models import Category, Product, Wallet
+from main.models import Category, Product, ProductImage, Wallet
 from decimal import Decimal
 
 # Cloudinary placeholder URL
@@ -356,7 +356,6 @@ class Command(BaseCommand):
                     'seller': admin,
                     'discount_percentage': Decimal(str(product_data['discount'])),
                     'is_featured': product_data['featured'],
-                    'cloudinary_url': PLACEHOLDER_IMAGE,  # Use Cloudinary placeholder
                 }
             )
             
@@ -368,6 +367,16 @@ class Command(BaseCommand):
                 updated_count += 1
                 status_icon = '↻'
                 status_text = 'Updated'
+
+            # Ensure there is at least one image for the product (use placeholder Cloudinary URL)
+            if not product.images.exists():
+                ProductImage.objects.create(
+                    product=product,
+                    cloudinary_url=PLACEHOLDER_IMAGE,
+                    is_primary=True,
+                    order=0,
+                    image=''
+                )
             
             # Display with discount info
             if product_data['discount'] >= 10:

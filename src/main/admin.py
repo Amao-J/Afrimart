@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Product, Order, OrderItem, Wallet, Payment, Refund, ProductImage, UserProfile
+from .models import Product, Order, OrderItem, Wallet, WalletTransaction, Payment, Refund, ProductImage, UserProfile
+from decimal import Decimal
+import uuid
 from django.utils import timezone
 
 
@@ -212,6 +214,7 @@ class WalletAdmin(admin.ModelAdmin):
     list_filter = ['created_at', 'updated_at']
     search_fields = ['user__username', 'user__email']
     readonly_fields = ['user', 'created_at', 'updated_at', 'balance_display']
+    actions = ['seed_selected_wallets']
     
     fieldsets = (
         ('Wallet Information', {
@@ -238,6 +241,26 @@ class WalletAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Prevent manual wallet creation - should be auto-created
         return False
+
+    def seed_selected_wallets(self, request, queryset):
+        """Seed selected wallets with a fixed amount (admin action)"""
+        amount = Decimal('100000')  # ₦100,000 default seed amount
+        seeded = 0
+        for wallet in queryset:
+            try:
+                wallet.credit(amount)
+                WalletTransaction.objects.create(
+                    wallet=wallet,
+                    amount=amount,
+                    transaction_type='seed',
+                    description='Admin seed',
+                    reference=f'ADMINSEED-{uuid.uuid4().hex[:8].upper()}'
+                )
+                seeded += 1
+            except Exception:
+                continue
+        self.message_user(request, f'Seeded {seeded} wallet(s) with ₦{amount:,.0f}')
+    seed_selected_wallets.short_description = 'Seed selected wallets with ₦100,000'
 
 
 @admin.register(Payment)
