@@ -1,0 +1,340 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-01 15:44+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\app\settings.py:54
+msgid "English"
+msgstr "Kiingereza"
+
+#: .\app\settings.py:55
+msgid "French"
+msgstr "Kifaransa"
+
+#: .\app\settings.py:56
+msgid "Swahili"
+msgstr "Kiswahili"
+
+#: .\app\settings.py:57
+msgid "Hausa"
+msgstr "Hausa"
+
+#: .\app\settings.py:58
+msgid "Yorùbá"
+msgstr "Yorùbá"
+
+#: .\app\settings.py:59
+msgid "Igbo"
+msgstr "Igbo"
+
+#: .\app\settings.py:60
+msgid "Arabic"
+msgstr "Kiarabu"
+
+#: .\templates\base.html:493
+msgid "Free Shipping"
+msgstr "Usafirishaji Bila Malipo"
+
+#: .\templates\base.html:493
+msgid "This Weekend For New Users"
+msgstr "Wiki hii kwa watumiaji wapya"
+
+#: .\templates\base.html:599 .\templates\base.html:671
+msgid "Home"
+msgstr "Nyumbani"
+
+#: .\templates\base.html:603 .\templates\main\home.html:288
+msgid "Categories"
+msgstr "Vikundi"
+
+#: .\templates\base.html:605 .\templates\base.html:767
+msgid "Electronics"
+msgstr "Vifaa vya umeme"
+
+#: .\templates\base.html:606 .\templates\base.html:766
+msgid "Fashion"
+msgstr "Mavazi"
+
+#: .\templates\base.html:607 .\templates\base.html:633
+msgid "Jewelry"
+msgstr "Mapambo"
+
+#: .\templates\base.html:608 .\templates\base.html:768
+msgid "Cosmetics"
+msgstr "Vipodozi"
+
+#: .\templates\base.html:613
+msgid "Men's"
+msgstr "Wanaume"
+
+#: .\templates\base.html:615
+msgid "Shirts"
+msgstr "Mashati"
+
+#: .\templates\base.html:616
+msgid "Shorts & Jeans"
+msgstr "Suruali fupi na Jeans"
+
+#: .\templates\base.html:617
+msgid "Safety Shoes"
+msgstr "Viatu vya usalama"
+
+#: .\templates\base.html:618
+msgid "Wallets"
+msgstr "Mifuko ya fedha"
+
+#: .\templates\base.html:623
+msgid "Women's"
+msgstr "Wanawake"
+
+#: .\templates\base.html:625
+msgid "Dresses"
+msgstr "Mavazi"
+
+#: .\templates\base.html:626 .\templates\base.html:635
+msgid "Earrings"
+msgstr "Herini"
+
+#: .\templates\base.html:627 .\templates\base.html:637
+msgid "Necklaces"
+msgstr "Minyororo"
+
+#: .\templates\base.html:628
+msgid "Makeup Kits"
+msgstr "Seti za Vipodozi"
+
+#: .\templates\base.html:636
+msgid "Rings"
+msgstr "Pete"
+
+#: .\templates\base.html:638
+msgid "Bracelets"
+msgstr "Bangili"
+
+#: .\templates\base.html:643
+msgid "Perfume"
+msgstr "Manukato"
+
+#: .\templates\base.html:645
+msgid "Clothes Perfume"
+msgstr "Manukato ya nguo"
+
+#: .\templates\base.html:646
+msgid "Deodorant"
+msgstr "Deyodoranti"
+
+#: .\templates\base.html:647
+msgid "Fragrances"
+msgstr "Harufu"
+
+#: .\templates\base.html:648
+msgid "Air Freshener"
+msgstr "Manukato ya hewa"
+
+#: .\templates\base.html:653
+msgid "Blog"
+msgstr "Blogu"
+
+#: .\templates\base.html:657 .\templates\base.html:685
+#: .\templates\base.html:778
+msgid "Hot Offers"
+msgstr "Matoleo Moto"
+
+#: .\templates\base.html:667
+msgid "Menu"
+msgstr "Menyu"
+
+#: .\templates\base.html:672
+msgid "Products"
+msgstr "Bidhaa"
+
+#: .\templates\base.html:675
+msgid "My Orders"
+msgstr "Maagizo Yangu"
+
+#: .\templates\base.html:676
+msgid "Dashboard"
+msgstr "Dashibodi"
+
+#: .\templates\base.html:677
+msgid "Profile"
+msgstr "Wasifu"
+
+#: .\templates\base.html:678
+msgid "Wallet"
+msgstr "Mfuko"
+
+#: .\templates\base.html:679
+msgid "Logout"
+msgstr "Toka"
+
+#: .\templates\base.html:681
+msgid "Login"
+msgstr "Ingia"
+
+#: .\templates\base.html:682
+msgid "Register"
+msgstr "Jisajili"
+
+#: .\templates\base.html:765
+msgid "Popular Categories"
+msgstr "Vikundi Maarufu"
+
+#: .\templates\base.html:769
+msgid "Health & Beauty"
+msgstr "Afya na Urembo"
+
+#: .\templates\base.html:770
+msgid "Watches"
+msgstr "Saa"
+
+#: .\templates\base.html:771 .\templates\main\home.html:196
+msgid "Accessories"
+msgstr "Vifaa"
+
+#: .\templates\base.html:775
+msgid "Quick Links"
+msgstr "Viungo Vya Haraka"
+
+#: .\templates\base.html:776 .\templates\main\home.html:342
+msgid "New Arrivals"
+msgstr "Vitu Vipya"
+
+#: .\templates\base.html:777
+msgid "Best Sellers"
+msgstr "Zilizouzwa Zaidi"
+
+#: .\templates\base.html:779
+msgid "Price Drops"
+msgstr "Kupungua kwa Bei"
+
+#: .\templates\base.html:780
+msgid "Contact Us"
+msgstr "Wasiliana Nasi"
+
+#: .\templates\base.html:781
+msgid "Sitemap"
+msgstr "Ramani ya Tovuti"
+
+#: .\templates\base.html:785
+msgid "Customer Care"
+msgstr "Huduma kwa Wateja"
+
+#: .\templates\base.html:786
+msgid "About Us"
+msgstr "Kuhusu Sisi"
+
+#: .\templates\base.html:787
+msgid "Delivery Information"
+msgstr "Taarifa za Uwasilishaji"
+
+#: .\templates\base.html:788
+msgid "Terms & Conditions"
+msgstr "Masharti na Vigezo"
+
+#: .\templates\base.html:789
+msgid "Privacy Policy"
+msgstr "Sera ya Faragha"
+
+#: .\templates\base.html:790
+msgid "Returns & Refunds"
+msgstr "Kurudisha na Marejesho"
+
+#: .\templates\base.html:791
+msgid "Secure Payment"
+msgstr "Malipo Salama"
+
+#: .\templates\main\home.html:46
+msgid "Trending Item"
+msgstr ""
+
+#: .\templates\main\home.html:47
+#, fuzzy
+#| msgid "Fashion"
+msgid "Fashion Sale"
+msgstr "Mavazi"
+
+#: .\templates\main\home.html:48 .\templates\main\home.html:64
+#: .\templates\main\home.html:81 .\templates\main\home.html:98
+msgid "Starting at"
+msgstr "Kuanzia"
+
+#: .\templates\main\home.html:49 .\templates\main\home.html:65
+#: .\templates\main\home.html:82 .\templates\main\home.html:99
+msgid "Shop Now"
+msgstr "Nunua Sasa"
+
+#: .\templates\main\home.html:63
+msgid "Modern Sunglasses"
+msgstr "Miwani ya Kisasa"
+
+#: .\templates\main\home.html:79 .\templates\main\home.html:96
+#, fuzzy
+#| msgid "Hot Offers"
+msgid "Sale Offer"
+msgstr "Matoleo Moto"
+
+#: .\templates\main\home.html:80 .\templates\main\home.html:97
+msgid "New Fashion Summer Sale"
+msgstr "Mauzo Mapya ya Majira"
+
+#: .\templates\main\home.html:125
+msgid "Shop By Category"
+msgstr "Nunua Kwa Kikundi"
+
+#: .\templates\main\home.html:139
+msgid "Bags"
+msgstr "Mikoba"
+
+#: .\templates\main\home.html:158
+msgid "Winter Wear"
+msgstr "Mavazi ya Baridi"
+
+#: .\templates\main\home.html:177
+msgid "Glasses & Lens"
+msgstr "Miwani na Lens"
+
+#: .\templates\main\home.html:215
+#, fuzzy
+#| msgid "Shirts"
+msgid "T-Shirts"
+msgstr "Mashati"
+
+#: .\templates\main\home.html:234
+msgid "Tan Tops"
+msgstr "Vitu vya Tan"
+
+#: .\templates\main\home.html:253
+msgid "Trousers"
+msgstr "Suruali"
+
+#: .\templates\main\home.html:272
+msgid "Belts"
+msgstr "Mikanda"
+
+#: .\templates\main\home.html:274
+msgid "Show All"
+msgstr "Onyesha Yote"
+
+#: .\templates\main\home.html:413
+msgid "Trending"
+msgstr "Maarufu"
+
+#: .\templates\main\home.html:486
+msgid "Deal of the Day"
+msgstr "Ofa ya Leo"

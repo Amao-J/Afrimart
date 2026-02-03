@@ -1,0 +1,339 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-01 15:44+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\app\settings.py:54
+msgid "English"
+msgstr "Gẹẹsi"
+
+#: .\app\settings.py:55
+msgid "French"
+msgstr "Faransé"
+
+#: .\app\settings.py:56
+msgid "Swahili"
+msgstr "Kiswahili"
+
+#: .\app\settings.py:57
+msgid "Hausa"
+msgstr "Hausa"
+
+#: .\app\settings.py:58
+msgid "Yorùbá"
+msgstr "Yorùbá"
+
+#: .\app\settings.py:59
+msgid "Igbo"
+msgstr "Igbo"
+
+#: .\app\settings.py:60
+msgid "Arabic"
+msgstr "Arabikì"
+
+#: .\templates\base.html:493
+msgid "Free Shipping"
+msgstr "Ifijiṣẹ Ọfẹ"
+
+#: .\templates\base.html:493
+msgid "This Weekend For New Users"
+msgstr "Ọsẹ yii fun awọn olumulo titun"
+
+#: .\templates\base.html:599 .\templates\base.html:671
+msgid "Home"
+msgstr "Ile"
+
+#: .\templates\base.html:603 .\templates\main\home.html:288
+msgid "Categories"
+msgstr "Awọn ẹka"
+
+#: .\templates\base.html:605 .\templates\base.html:767
+msgid "Electronics"
+msgstr "Awọn ẹrọ itanna"
+
+#: .\templates\base.html:606 .\templates\base.html:766
+msgid "Fashion"
+msgstr "Aṣọ"
+
+#: .\templates\base.html:607 .\templates\base.html:633
+msgid "Jewelry"
+msgstr "Ọṣọ"
+
+#: .\templates\base.html:608 .\templates\base.html:768
+msgid "Cosmetics"
+msgstr "Awọn ohun ikunra"
+
+#: .\templates\base.html:613
+msgid "Men's"
+msgstr "Ọkunrin"
+
+#: .\templates\base.html:615
+msgid "Shirts"
+msgstr "Awọn aṣọ"
+
+#: .\templates\base.html:616
+msgid "Shorts & Jeans"
+msgstr "Ṣọti & Jinsi"
+
+#: .\templates\base.html:617
+msgid "Safety Shoes"
+msgstr "Bata Aabo"
+
+#: .\templates\base.html:618
+msgid "Wallets"
+msgstr "Apo apamọwọ"
+
+#: .\templates\base.html:623
+msgid "Women's"
+msgstr "Obinrin"
+
+#: .\templates\base.html:625
+msgid "Dresses"
+msgstr "Aso"
+
+#: .\templates\base.html:626 .\templates\base.html:635
+msgid "Earrings"
+msgstr "Awọn Hi"
+
+#: .\templates\base.html:627 .\templates\base.html:637
+msgid "Necklaces"
+msgstr "Ọṣọ ọrun"
+
+#: .\templates\base.html:628
+msgid "Makeup Kits"
+msgstr "Awọn Kitu Iboju"
+
+#: .\templates\base.html:636
+msgid "Rings"
+msgstr "Oruka"
+
+#: .\templates\base.html:638
+msgid "Bracelets"
+msgstr "Awọn Ọpa ọwọ"
+
+#: .\templates\base.html:643
+msgid "Perfume"
+msgstr "Ifunra"
+
+#: .\templates\base.html:645
+msgid "Clothes Perfume"
+msgstr "Ifunra aṣọ"
+
+#: .\templates\base.html:646
+msgid "Deodorant"
+msgstr "Deodorant"
+
+#: .\templates\base.html:647
+msgid "Fragrances"
+msgstr "Awọn oorun"
+
+#: .\templates\base.html:648
+msgid "Air Freshener"
+msgstr "Atunse Afẹfẹ"
+
+#: .\templates\base.html:653
+msgid "Blog"
+msgstr "Bulọọgi"
+
+#: .\templates\base.html:657 .\templates\base.html:685
+#: .\templates\base.html:778
+msgid "Hot Offers"
+msgstr "Awọn ìfilọ Gbona"
+
+#: .\templates\base.html:667
+msgid "Menu"
+msgstr "Mẹnu"
+
+#: .\templates\base.html:672
+msgid "Products"
+msgstr "Awọn ọja"
+
+#: .\templates\base.html:675
+msgid "My Orders"
+msgstr "Awọn aṣẹ mi"
+
+#: .\templates\base.html:676
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: .\templates\base.html:677
+msgid "Profile"
+msgstr "Profaili"
+
+#: .\templates\base.html:678
+msgid "Wallet"
+msgstr "Apamọwọ"
+
+#: .\templates\base.html:679
+msgid "Logout"
+msgstr "Jade"
+
+#: .\templates\base.html:681
+msgid "Login"
+msgstr "Wọle"
+
+#: .\templates\base.html:682
+msgid "Register"
+msgstr "Forukọsilẹ"
+
+#: .\templates\base.html:765
+msgid "Popular Categories"
+msgstr ""
+
+#: .\templates\base.html:769
+msgid "Health & Beauty"
+msgstr ""
+
+#: .\templates\base.html:770
+msgid "Watches"
+msgstr ""
+
+#: .\templates\base.html:771 .\templates\main\home.html:196
+msgid "Accessories"
+msgstr ""
+
+#: .\templates\base.html:775
+msgid "Quick Links"
+msgstr ""
+
+#: .\templates\base.html:776 .\templates\main\home.html:342
+msgid "New Arrivals"
+msgstr ""
+
+#: .\templates\base.html:777
+msgid "Best Sellers"
+msgstr ""
+
+#: .\templates\base.html:779
+msgid "Price Drops"
+msgstr ""
+
+#: .\templates\base.html:780
+msgid "Contact Us"
+msgstr ""
+
+#: .\templates\base.html:781
+msgid "Sitemap"
+msgstr ""
+
+#: .\templates\base.html:785
+msgid "Customer Care"
+msgstr ""
+
+#: .\templates\base.html:786
+msgid "About Us"
+msgstr ""
+
+#: .\templates\base.html:787
+msgid "Delivery Information"
+msgstr ""
+
+#: .\templates\base.html:788
+msgid "Terms & Conditions"
+msgstr ""
+
+#: .\templates\base.html:789
+msgid "Privacy Policy"
+msgstr ""
+
+#: .\templates\base.html:790
+msgid "Returns & Refunds"
+msgstr ""
+
+#: .\templates\base.html:791
+msgid "Secure Payment"
+msgstr ""
+
+#: .\templates\main\home.html:46
+msgid "Trending Item"
+msgstr ""
+
+#: .\templates\main\home.html:47
+#, fuzzy
+#| msgid "Fashion"
+msgid "Fashion Sale"
+msgstr "Aṣọ"
+
+#: .\templates\main\home.html:48 .\templates\main\home.html:64
+#: .\templates\main\home.html:81 .\templates\main\home.html:98
+msgid "Starting at"
+msgstr "Bibẹrẹ ni"
+
+#: .\templates\main\home.html:49 .\templates\main\home.html:65
+#: .\templates\main\home.html:82 .\templates\main\home.html:99
+msgid "Shop Now"
+msgstr "Ra Bayi"
+
+#: .\templates\main\home.html:63
+msgid "Modern Sunglasses"
+msgstr "Gilaasi Oorun Imọ"
+
+#: .\templates\main\home.html:79 .\templates\main\home.html:96
+#, fuzzy
+#| msgid "Hot Offers"
+msgid "Sale Offer"
+msgstr "Awọn ìfilọ Gbona"
+
+#: .\templates\main\home.html:80 .\templates\main\home.html:97
+msgid "New Fashion Summer Sale"
+msgstr "Tita Asiko Ooru Tuntun"
+
+#: .\templates\main\home.html:125
+msgid "Shop By Category"
+msgstr "Ra Nipasẹ Ẹ̀ka"
+
+#: .\templates\main\home.html:139
+msgid "Bags"
+msgstr "Apọ"
+
+#: .\templates\main\home.html:158
+msgid "Winter Wear"
+msgstr "Aṣọ igba otutu"
+
+#: .\templates\main\home.html:177
+msgid "Glasses & Lens"
+msgstr "Gilaasi & Lens"
+
+#: .\templates\main\home.html:215
+#, fuzzy
+#| msgid "Shirts"
+msgid "T-Shirts"
+msgstr "Awọn aṣọ"
+
+#: .\templates\main\home.html:234
+msgid "Tan Tops"
+msgstr "Tops Tan"
+
+#: .\templates\main\home.html:253
+msgid "Trousers"
+msgstr "Súrùwàlì"
+
+#: .\templates\main\home.html:272
+msgid "Belts"
+msgstr "Belti"
+
+#: .\templates\main\home.html:274
+msgid "Show All"
+msgstr "Fihan Gbogbo"
+
+#: .\templates\main\home.html:413
+msgid "Trending"
+msgstr "Ti n wọpọ"
+
+#: .\templates\main\home.html:486
+msgid "Deal of the Day"
+msgstr "Ipese Ọjọ́"

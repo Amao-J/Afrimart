@@ -214,10 +214,46 @@ class ProductImageForm(forms.ModelForm):
         }
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    """Widget that supports multiple file uploads and returns a list"""
+    allow_multiple_selected = True
+
+    def value_from_datadict(self, data, files, name):
+        # Return a list of files when multiple are uploaded
+        if name in files:
+            return files.getlist(name)
+        return super().value_from_datadict(data, files, name)
+
+
+class MultiFileField(forms.FileField):
+    """Custom FileField to accept multiple uploaded files"""
+
+    def to_python(self, data):
+        # Normalize to a list of files
+        if not data:
+            return []
+        if isinstance(data, list):
+            return data
+        return [data]
+
+    def validate(self, data):
+        # Use Field.validate for required checks
+        forms.Field.validate(self, data)
+        # Data should be a list
+        if not isinstance(data, (list, tuple)):
+            raise forms.ValidationError('Invalid uploaded files')
+        # Validate each file is an image
+        for f in data:
+            content_type = getattr(f, 'content_type', '')
+            if content_type and not content_type.startswith('image'):
+                raise forms.ValidationError('Only image files are allowed')
+
+
 class MultipleProductImageForm(forms.Form):
     """Form for uploading multiple images at once"""
-    images = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={
+    images = MultiFileField(
+        required=False,
+        widget=MultipleFileInput(attrs={
             'multiple': True,
             'accept': 'image/*',
             'class': 'form-control'

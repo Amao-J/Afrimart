@@ -1,7 +1,9 @@
 {% load static %}
+{% load i18n %}
 {% load currency_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+
 
 <head>
   <meta charset="UTF-8">
@@ -488,9 +490,9 @@
           </div>
         </div>
         <div class="col-md-4 text-center">
-          <strong>Free Shipping</strong> This Weekend For New Users
+          <strong>{% trans "Free Shipping" %}</strong> {% trans "This Weekend For New Users" %}
         </div>
-        <div class="col-md-4 text-end">
+        <div class="col-md-4 text-end" style="display: flex;">
           <select name="currency" id="desktop-currency-selector">
             {% for code, info in supported_currencies.items %}
               <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>
@@ -498,11 +500,26 @@
               </option>
             {% endfor %}
           </select>
-          <select name="language">
-            <option value="en-US">English</option>
-            <option value="es-ES">Español</option>
-            <option value="fr">Français</option>
-          </select>
+    <form action="{% url 'set_language' %}" method="post">
+  {% csrf_token %}
+  <select name="language" onchange="this.form.submit()">
+    {% get_current_language as LANGUAGE_CODE %}
+    {% get_available_languages as LANGUAGES %}
+    {% for code, name in LANGUAGES %}
+      <option value="{{ code }}" {% if code == LANGUAGE_CODE %}selected{% endif %}>
+        {% if code == "en" %}🇬🇧 English
+        {% elif code == "fr" %}🇫🇷 Français
+        {% elif code == "sw" %}🇰🇪 Kiswahili
+        {% elif code == "ha" %}🇳🇬 Hausa
+        {% elif code == "yo" %}🇳🇬 Yorùbá
+        {% elif code == "ig" %}🇳🇬 Igbo
+        {% elif code == "ar" %}🇪🇬 العربية
+        {% endif %}
+      </option>
+    {% endfor %}
+  </select>
+</form>
+
         </div>
       </div>
     </div>
@@ -579,65 +596,65 @@
       <div class="navbar navbar-expand-lg">
         <ul class="navbar-nav mx-auto">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-link" href="{% url 'home' %}">{% trans "Home" %}</a>
           </li>
           
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{% trans "Categories" %}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Electronics</a></li>
-              <li><a class="dropdown-item" href="#">Fashion</a></li>
-              <li><a class="dropdown-item" href="#">Jewelry</a></li>
-              <li><a class="dropdown-item" href="#">Cosmetics</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Electronics" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Fashion" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Jewelry" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Cosmetics" %}</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Men's</a>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{% trans "Men's" %}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Shirts</a></li>
-              <li><a class="dropdown-item" href="#">Shorts & Jeans</a></li>
-              <li><a class="dropdown-item" href="#">Safety Shoes</a></li>
-              <li><a class="dropdown-item" href="#">Wallets</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Shirts" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Shorts & Jeans" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Safety Shoes" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Wallets" %}</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Women's</a>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{% trans "Women's" %}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Dresses</a></li>
-              <li><a class="dropdown-item" href="#">Earrings</a></li>
-              <li><a class="dropdown-item" href="#">Necklaces</a></li>
-              <li><a class="dropdown-item" href="#">Makeup Kits</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Dresses" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Earrings" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Necklaces" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Makeup Kits" %}</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Jewelry</a>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{% trans "Jewelry" %}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Earrings</a></li>
-              <li><a class="dropdown-item" href="#">Rings</a></li>
-              <li><a class="dropdown-item" href="#">Necklaces</a></li>
-              <li><a class="dropdown-item" href="#">Bracelets</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Earrings" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Rings" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Necklaces" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Bracelets" %}</a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Perfume</a>
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{% trans "Perfume" %}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Clothes Perfume</a></li>
-              <li><a class="dropdown-item" href="#">Deodorant</a></li>
-              <li><a class="dropdown-item" href="#">Fragrances</a></li>
-              <li><a class="dropdown-item" href="#">Air Freshener</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Clothes Perfume" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Deodorant" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Fragrances" %}</a></li>
+              <li><a class="dropdown-item" href="#">{% trans "Air Freshener" %}</a></li>
             </ul>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="#">Blog</a>
+            <a class="nav-link" href="#">{% trans "Blog" %}</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="#">Hot Offers</a>
+            <a class="nav-link" href="#">{% trans "Hot Offers" %}</a>
           </li>
         </ul>
       </div>
@@ -647,25 +664,25 @@
   <!-- Mobile Offcanvas Menu -->
   <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title">Menu</h5>
+      <h5 class="offcanvas-title">{% trans "Menu" %}</h5>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-      <a href="{% url 'home' %}" class="mobile-nav-link">Home</a>
-      <a href="{% url 'product_list' %}" class="mobile-nav-link">Products</a>
+      <a href="{% url 'home' %}" class="mobile-nav-link">{% trans "Home" %}</a>
+      <a href="{% url 'product_list' %}" class="mobile-nav-link">{% trans "Products" %}</a>
       
       {% if user.is_authenticated %}
-        <a href="{% url 'my_orders' %}" class="mobile-nav-link">My Orders</a>
-        <a href="{% url 'dashboard' %}" class="mobile-nav-link">Dashboard</a>
-        <a href="{% url 'profile' %}" class="mobile-nav-link">Profile</a>
-        <a href="{% url 'wallet' %}" class="mobile-nav-link">Wallet</a>
-        <a href="{% url 'logout' %}" class="mobile-nav-link">Logout</a>
+        <a href="{% url 'my_orders' %}" class="mobile-nav-link">{% trans "My Orders" %}</a>
+        <a href="{% url 'dashboard' %}" class="mobile-nav-link">{% trans "Dashboard" %}</a>
+        <a href="{% url 'profile' %}" class="mobile-nav-link">{% trans "Profile" %}</a>
+        <a href="{% url 'wallet' %}" class="mobile-nav-link">{% trans "Wallet" %}</a>
+        <a href="{% url 'logout' %}" class="mobile-nav-link">{% trans "Logout" %}</a>
       {% else %}
-        <a href="{% url 'login' %}" class="mobile-nav-link">Login</a>
-        <a href="{% url 'register' %}" class="mobile-nav-link">Register</a>
+        <a href="{% url 'login' %}" class="mobile-nav-link">{% trans "Login" %}</a>
+        <a href="{% url 'register' %}" class="mobile-nav-link">{% trans "Register" %}</a>
       {% endif %}
       
-      <a href="#" class="mobile-nav-link">Hot Offers</a>
+      <a href="#" class="mobile-nav-link">{% trans "Hot Offers" %}</a>
 
       <div class="mobile-currency-section">
         <h6>Currency ({{ user_currency }})</h6>
@@ -745,33 +762,33 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6 col-lg-3 mb-4">
-          <h5>Popular Categories</h5>
-          <a href="#">Fashion</a>
-          <a href="#">Electronics</a>
-          <a href="#">Cosmetics</a>
-          <a href="#">Health & Beauty</a>
-          <a href="#">Watches</a>
-          <a href="#">Accessories</a>
+          <h5>{% trans "Popular Categories" %}</h5>
+          <a href="#">{% trans "Fashion" %}</a>
+          <a href="#">{% trans "Electronics" %}</a>
+          <a href="#">{% trans "Cosmetics" %}</a>
+          <a href="#">{% trans "Health & Beauty" %}</a>
+          <a href="#">{% trans "Watches" %}</a>
+          <a href="#">{% trans "Accessories" %}</a>
         </div>
 
         <div class="col-md-6 col-lg-3 mb-4">
-          <h5>Quick Links</h5>
-          <a href="#">New Arrivals</a>
-          <a href="#">Best Sellers</a>
-          <a href="#">Hot Offers</a>
-          <a href="#">Price Drops</a>
-          <a href="#">Contact Us</a>
-          <a href="#">Sitemap</a>
+          <h5>{% trans "Quick Links" %}</h5>
+          <a href="#">{% trans "New Arrivals" %}</a>
+          <a href="#">{% trans "Best Sellers" %}</a>
+          <a href="#">{% trans "Hot Offers" %}</a>
+          <a href="#">{% trans "Price Drops" %}</a>
+          <a href="#">{% trans "Contact Us" %}</a>
+          <a href="#">{% trans "Sitemap" %}</a>
         </div>
 
         <div class="col-md-6 col-lg-3 mb-4">
-          <h5>Customer Care</h5>
-          <a href="#">About Us</a>
-          <a href="#">Delivery Information</a>
-          <a href="#">Terms & Conditions</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Returns & Refunds</a>
-          <a href="#">Secure Payment</a>
+          <h5>{% trans "Customer Care" %}</h5>
+          <a href="#">{% trans "About Us" %}</a>
+          <a href="#">{% trans "Delivery Information" %}</a>
+          <a href="#">{% trans "Terms & Conditions" %}</a>
+          <a href="#">{% trans "Privacy Policy" %}</a>
+          <a href="#">{% trans "Returns & Refunds" %}</a>
+          <a href="#">{% trans "Secure Payment" %}</a>
         </div>
 
         <div class="col-md-6 col-lg-3 mb-4">

@@ -1,0 +1,339 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-01 15:44+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\app\settings.py:54
+msgid "English"
+msgstr "Turanci"
+
+#: .\app\settings.py:55
+msgid "French"
+msgstr "Faransanci"
+
+#: .\app\settings.py:56
+msgid "Swahili"
+msgstr "Kiswahili"
+
+#: .\app\settings.py:57
+msgid "Hausa"
+msgstr "Hausa"
+
+#: .\app\settings.py:58
+msgid "Yorùbá"
+msgstr "Yarabawa"
+
+#: .\app\settings.py:59
+msgid "Igbo"
+msgstr "Igbo"
+
+#: .\app\settings.py:60
+msgid "Arabic"
+msgstr "Larabci"
+
+#: .\templates\base.html:493
+msgid "Free Shipping"
+msgstr "Jigilar Kyauta"
+
+#: .\templates\base.html:493
+msgid "This Weekend For New Users"
+msgstr "Wannan karshen mako ga sababbin masu amfani"
+
+#: .\templates\base.html:599 .\templates\base.html:671
+msgid "Home"
+msgstr "Gida"
+
+#: .\templates\base.html:603 .\templates\main\home.html:288
+msgid "Categories"
+msgstr "Rukunoni"
+
+#: .\templates\base.html:605 .\templates\base.html:767
+msgid "Electronics"
+msgstr "Kayan Lantarki"
+
+#: .\templates\base.html:606 .\templates\base.html:766
+msgid "Fashion"
+msgstr "Kayan Salo"
+
+#: .\templates\base.html:607 .\templates\base.html:633
+msgid "Jewelry"
+msgstr "Kayan Adon"
+
+#: .\templates\base.html:608 .\templates\base.html:768
+msgid "Cosmetics"
+msgstr "Kayan shafa"
+
+#: .\templates\base.html:613
+msgid "Men's"
+msgstr "Maza"
+
+#: .\templates\base.html:615
+msgid "Shirts"
+msgstr "Riguna"
+
+#: .\templates\base.html:616
+msgid "Shorts & Jeans"
+msgstr "Shorts da Jeans"
+
+#: .\templates\base.html:617
+msgid "Safety Shoes"
+msgstr "Takalman Tsaro"
+
+#: .\templates\base.html:618
+msgid "Wallets"
+msgstr "Mifuko ya fedha"
+
+#: .\templates\base.html:623
+msgid "Women's"
+msgstr "Mata"
+
+#: .\templates\base.html:625
+msgid "Dresses"
+msgstr "Riguna"
+
+#: .\templates\base.html:626 .\templates\base.html:635
+msgid "Earrings"
+msgstr "'Yan kunne"
+
+#: .\templates\base.html:627 .\templates\base.html:637
+msgid "Necklaces"
+msgstr "Abun wuya"
+
+#: .\templates\base.html:628
+msgid "Makeup Kits"
+msgstr "Kayan Fuska"
+
+#: .\templates\base.html:636
+msgid "Rings"
+msgstr "Zobba"
+
+#: .\templates\base.html:638
+msgid "Bracelets"
+msgstr "'Yan hannu"
+
+#: .\templates\base.html:643
+msgid "Perfume"
+msgstr "Turare"
+
+#: .\templates\base.html:645
+msgid "Clothes Perfume"
+msgstr "Turaren tufafi"
+
+#: .\templates\base.html:646
+msgid "Deodorant"
+msgstr "Deodorant"
+
+#: .\templates\base.html:647
+msgid "Fragrances"
+msgstr "Kamshi"
+
+#: .\templates\base.html:648
+msgid "Air Freshener"
+msgstr "Fesa iska"
+
+#: .\templates\base.html:653
+msgid "Blog"
+msgstr "Blog"
+
+#: .\templates\base.html:657 .\templates\base.html:685
+#: .\templates\base.html:778
+msgid "Hot Offers"
+msgstr "Tayoyin Zafi"
+
+#: .\templates\base.html:667
+msgid "Menu"
+msgstr "Menu"
+
+#: .\templates\base.html:672
+msgid "Products"
+msgstr "Kayayyaki"
+
+#: .\templates\base.html:675
+msgid "My Orders"
+msgstr "Umarni Na"
+
+#: .\templates\base.html:676
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: .\templates\base.html:677
+msgid "Profile"
+msgstr "Bayani"
+
+#: .\templates\base.html:678
+msgid "Wallet"
+msgstr "Aljihun kudi"
+
+#: .\templates\base.html:679
+msgid "Logout"
+msgstr "Fita"
+
+#: .\templates\base.html:681
+msgid "Login"
+msgstr "Shiga"
+
+#: .\templates\base.html:682
+msgid "Register"
+msgstr "Yi rijista"
+
+#: .\templates\base.html:765
+msgid "Popular Categories"
+msgstr ""
+
+#: .\templates\base.html:769
+msgid "Health & Beauty"
+msgstr ""
+
+#: .\templates\base.html:770
+msgid "Watches"
+msgstr ""
+
+#: .\templates\base.html:771 .\templates\main\home.html:196
+msgid "Accessories"
+msgstr ""
+
+#: .\templates\base.html:775
+msgid "Quick Links"
+msgstr ""
+
+#: .\templates\base.html:776 .\templates\main\home.html:342
+msgid "New Arrivals"
+msgstr ""
+
+#: .\templates\base.html:777
+msgid "Best Sellers"
+msgstr ""
+
+#: .\templates\base.html:779
+msgid "Price Drops"
+msgstr ""
+
+#: .\templates\base.html:780
+msgid "Contact Us"
+msgstr ""
+
+#: .\templates\base.html:781
+msgid "Sitemap"
+msgstr ""
+
+#: .\templates\base.html:785
+msgid "Customer Care"
+msgstr ""
+
+#: .\templates\base.html:786
+msgid "About Us"
+msgstr ""
+
+#: .\templates\base.html:787
+msgid "Delivery Information"
+msgstr ""
+
+#: .\templates\base.html:788
+msgid "Terms & Conditions"
+msgstr ""
+
+#: .\templates\base.html:789
+msgid "Privacy Policy"
+msgstr ""
+
+#: .\templates\base.html:790
+msgid "Returns & Refunds"
+msgstr ""
+
+#: .\templates\base.html:791
+msgid "Secure Payment"
+msgstr ""
+
+#: .\templates\main\home.html:46
+msgid "Trending Item"
+msgstr ""
+
+#: .\templates\main\home.html:47
+#, fuzzy
+#| msgid "Fashion"
+msgid "Fashion Sale"
+msgstr "Kayan Salo"
+
+#: .\templates\main\home.html:48 .\templates\main\home.html:64
+#: .\templates\main\home.html:81 .\templates\main\home.html:98
+msgid "Starting at"
+msgstr "Farawa daga"
+
+#: .\templates\main\home.html:49 .\templates\main\home.html:65
+#: .\templates\main\home.html:82 .\templates\main\home.html:99
+msgid "Shop Now"
+msgstr "Sayi Yanzu"
+
+#: .\templates\main\home.html:63
+msgid "Modern Sunglasses"
+msgstr "Gilashin Rana Na Zamani"
+
+#: .\templates\main\home.html:79 .\templates\main\home.html:96
+#, fuzzy
+#| msgid "Hot Offers"
+msgid "Sale Offer"
+msgstr "Tayoyin Zafi"
+
+#: .\templates\main\home.html:80 .\templates\main\home.html:97
+msgid "New Fashion Summer Sale"
+msgstr "Sabon Talla na Lokacin Rani"
+
+#: .\templates\main\home.html:125
+msgid "Shop By Category"
+msgstr "Sayi Ta Rukuni"
+
+#: .\templates\main\home.html:139
+msgid "Bags"
+msgstr "Jakunkuna"
+
+#: .\templates\main\home.html:158
+msgid "Winter Wear"
+msgstr "Tufafin Sanyi"
+
+#: .\templates\main\home.html:177
+msgid "Glasses & Lens"
+msgstr "Gilashi & Lens"
+
+#: .\templates\main\home.html:215
+#, fuzzy
+#| msgid "Shirts"
+msgid "T-Shirts"
+msgstr "Riguna"
+
+#: .\templates\main\home.html:234
+msgid "Tan Tops"
+msgstr "Tops na Tan"
+
+#: .\templates\main\home.html:253
+msgid "Trousers"
+msgstr "Wando"
+
+#: .\templates\main\home.html:272
+msgid "Belts"
+msgstr "Bel"
+
+#: .\templates\main\home.html:274
+msgid "Show All"
+msgstr "Nuna Duka"
+
+#: .\templates\main\home.html:413
+msgid "Trending"
+msgstr "Shahara"
+
+#: .\templates\main\home.html:486
+msgid "Deal of the Day"
+msgstr ""

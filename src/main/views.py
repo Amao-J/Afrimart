@@ -22,7 +22,10 @@ from main.utils.currency import convert_currency, get_user_currency,set_user_cur
 def home(request):
     """Home page with featured products and discount handling"""
     # Get featured products or latest 12 products
-    products = Product.objects.filter(is_featured=True).order_by('-created_at')[:12]
+    products = Product.objects.order_by('-created_at')[:12]
+    deal_of_the_day_products = Product.objects.filter(is_deal_of_the_day=True, stock__gt=0).order_by('-created_at')[:12]
+    treding_products = Product.objects.filter(is_trending=True, stock__gt=0).order_by('-created_at')[:12]
+    featured_products = Product.objects.filter(is_featured=True, stock__gt=0).order_by('-created_at')[:12]
     
     # If no featured products, get latest products
     if not products.exists():
@@ -67,7 +70,10 @@ def home(request):
         'categories': categories,
         'total_products': Product.objects.count(),
         'supported_currencies': SUPPORTED_CURRENCIES,
-        'user_currency': get_user_currency(request)
+        'user_currency': get_user_currency(request),
+        'deal_of_the_day_products':deal_of_the_day_products,
+        'trending_products':treding_products,
+        'featured_products':featured_products,
     }
     return render(request, 'main/home.html', context)
 
