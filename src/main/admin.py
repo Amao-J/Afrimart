@@ -510,6 +510,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 # Customize admin site header
-admin.site.site_header = "Techfy-NG Admin"
-admin.site.site_title = "Techfy-NG Admin Portal"
-admin.site.index_title = "Welcome to Techfy-NG Administration"
+admin.site.site_header = "Afrimart Admin Portal"
+admin.site.site_title = "Afrimart Admin Portal"
+admin.site.index_title = "Welcome to Afrimart Administration"

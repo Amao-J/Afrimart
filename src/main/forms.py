@@ -136,18 +136,17 @@ class RegisterForm(forms.Form):
             first_name=data['first_name'],
             last_name=data['last_name']
         )
-        profile = UserProfile.objects.create(
-            user=user,
-            phone=data.get('phone_full', ''),
-            is_seller=data.get('is_seller', False),
-            seller_store_name=data.get('seller_store_name', ''),
-            seller_description=data.get('seller_description', '')
-        )
-        
+        # Use get_or_create to avoid race condition with the post_save signal that also creates a profile
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        # Update profile fields
+        profile.phone = data.get('phone_full', '')
+        profile.is_seller = data.get('is_seller', False)
+        profile.seller_store_name = data.get('seller_store_name', '')
+        profile.seller_description = data.get('seller_description', '')
         # If seller, set application date
         if data.get('is_seller'):
             profile.seller_application_date = timezone.now()
-            profile.save()
+        profile.save()
         
         # Create wallet will be handled elsewhere (view)
         return user
