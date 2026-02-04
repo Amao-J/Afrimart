@@ -3,843 +3,375 @@
 {% load static %}
 {% load currency_tags %}
 {% load i18n %}
-{% block title %}Home{% endblock %} {% block content %}
 
-<!-- Hero Carousel -->
-<div class="container-fluid px-0">
-  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="0"
-        class="active"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="1"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="2"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="3"
-      ></button>
-    </div>
+{% block title %}Afrimart | Premium African Marketplace{% endblock %}
 
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img
-          src="{% static 'assets/images/banner-2.png' %}"
-          class="d-block w-100"
-          alt="Fashion Sale"
-          style="max-height: 500px; object-fit: cover"
-        />
-        <div
-          class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-4 rounded"
-        >
-          <p class="text-uppercase text-white-50 mb-2">{% trans "Trending Item" %}</p>
-          <h2 class="display-4 fw-bold">{% trans "Fashion Sale" %}</h2>
-          <p class="fs-5 mb-3">{% trans "Starting at" %} {% format_price 20000 %}</p>
-          <a href="#" class="btn btn-success btn-lg px-5">{% trans "Shop Now" %}</a>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img
-          src="{% static 'assets/images/banner-1.jpg' %}"
-          class="d-block w-100"
-          alt="Sunglasses"
-          style="max-height: 500px; object-fit: cover"
-        />
-        <div
-          class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-4 rounded"
-        >
-          <h2 class="display-4 fw-bold">{% trans "Modern Sunglasses" %}</h2>
-          <p class="fs-5 mb-3">{% trans "Starting at" %} {% format_price 15000 %}</p>
-          <a href="#" class="btn btn-success btn-lg px-5">{% trans "Shop Now" %}</a>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img
-          src="{% static 'assets/images/banner-2.png' %}"
-          class="d-block w-100"
-          alt="Summer Sale"
-          style="max-height: 500px; object-fit: cover"
-        />
-        <div
-          class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-4 rounded"
-        >
-          <p class="text-uppercase text-white-50 mb-2">{% trans "Sale Offer" %}</p>
-          <h2 class="display-4 fw-bold">{% trans "New Fashion Summer Sale" %}</h2>
-          <p class="fs-5 mb-3">{% trans "Starting at" %} {% format_price 30000 %}</p>
-          <a href="#" class="btn btn-success btn-lg px-5">{% trans "Shop Now" %}</a>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img
-          src="{% static 'assets/images/banner-1.jpg' %}"
-          class="d-block w-100"
-          alt="Summer Collection"
-          style="max-height: 500px; object-fit: cover"
-        />
-        <div
-          class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-4 rounded"
-        >
-          <p class="text-uppercase text-white-50 mb-2">{% trans "Sale Offer" %}</p>
-          <h2 class="display-4 fw-bold">{% trans "New Fashion Summer Sale" %}</h2>
-          <p class="fs-5 mb-3">{% trans "Starting at" %} {% format_price 40000 %}</p>
-          <a href="#" class="btn btn-success btn-lg px-5">{% trans "Shop Now" %}</a>
-        </div>
-      </div>
-    </div>
-
-    <button
-      class="carousel-control-prev"
-      type="button"
-      data-bs-target="#heroCarousel"
-      data-bs-slide="prev"
-    >
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button
-      class="carousel-control-next"
-      type="button"
-      data-bs-target="#heroCarousel"
-      data-bs-slide="next"
-    >
-      <span class="carousel-control-next-icon"></span>
-    </button>
-  </div>
-</div>
-
-<!-- Categories Section -->
-<div class="container my-5">
-  <h2 class="text-center mb-4 fw-bold">{% trans "Shop By Category" %}</h2>
-  <div class="row g-3">
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/bags.svg' %}"
-            alt="Bags"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Bags" %}</h5>
-          <p class="text-muted small mb-2">(53)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/sweater.svg' %}"
-            alt="Winter Wear"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Winter Wear" %}</h5>
-          <p class="text-muted small mb-2">(58)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/glasses.svg' %}"
-            alt="Glasses"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Glasses & Lens" %}</h5>
-          <p class="text-muted small mb-2">(68)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/accessories.svg' %}"
-            alt="Shorts"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Accessories" %}</h5>
-          <p class="text-muted small mb-2">(84)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/tees.svg' %}"
-            alt="T-Shirts"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "T-Shirts" %}</h5>
-          <p class="text-muted small mb-2">(35)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/tops.svg' %}"
-            alt="Tops"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Tan Tops" %}</h5>
-          <p class="text-muted small mb-2">(16)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/trouser.svg' %}"
-            alt="Trousers"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Trousers" %}</h5>
-          <p class="text-muted small mb-2">(27)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">Show All</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-md-4 col-lg-3">
-      <div class="card border-0 text-center h-100">
-        <div
-          class="card-body d-flex flex-column align-items-center justify-content-center"
-          style="background-color: #f5f5f5; border-radius: 10px"
-        >
-          <img
-            src="{% static 'assets/images/belts.svg' %}"
-            alt="Belts"
-            width="50"
-            class="mb-3"
-          />
-          <h5 class="card-title mb-1">{% trans "Belts" %}</h5>
-          <p class="text-muted small mb-2">(39)</p>
-          <a href="#" class="btn btn-sm btn-outline-success">{% trans "Show All" %}</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Products Section -->
-<div class="container my-5">
-  <div class="row">
-    <!-- Sidebar -->
-    <div class="col-lg-3 mb-4">
-      <div class="card border-0" style="background-color: #f5f5f5">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0">{% trans "Categories" %}</h5>
-        </div>
-        <div class="card-body p-0">
-          <div class="accordion accordion-flush" id="categoryAccordion">
-            {% for category in categories %}
-            <div class="accordion-item bg-transparent border-0">
-              <h2 class="accordion-header">
-                <button
-                  class="accordion-button collapsed bg-transparent"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#category{{ forloop.counter }}"
-                >
-                  <img
-                    src="{% static 'assets/images/tags.svg' %}"
-                    alt="{{ category.name }}"
-                    width="20"
-                    class="me-2"
-                  />
-                  {{ category.name }}
-                </button>
-              </h2>
-              <div
-                id="category{{ forloop.counter }}"
-                class="accordion-collapse collapse"
-                data-bs-parent="#categoryAccordion"
-              >
-                <div class="accordion-body">
-                  <ul class="list-unstyled mb-0">
-                    {% for product in category.products.all|slice:":4" %}
-                    <li class="mb-2">
-                      <a
-                        href="/product/{{ product.id }}/"
-                        class="text-decoration-none text-dark small"
-                      >
-                        {{ product.name|truncatechars:20 }}
-                      </a>
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="col-lg-9">
-      <!-- New Arrivals & Trending -->
-      <div class="row mb-5">
-        <div class="col-md-6 mb-4">
-          <h3 class="mb-3 fw-bold">{% trans "New Arrivals" %}</h3>
-          <div class="row g-3">
-            {% for product in products|slice:":4" %}
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #f5f5f5">
-                <div class="card-body">
-                  <div class="d-flex">
-                    <a href="/product/{{ product.id }}/" class="me-3">
-                      {% if product.get_primary_image %}
-                      <img
-                        src="{{ product.get_primary_image }}"
-                        alt="{{ product.name }}"
-                        style="
-                          width: 80px;
-                          height: 80px;
-                          object-fit: cover;
-                          border-radius: 8px;
-                        "
-                      />
-                      {% else %}
-                      <div
-                        style="
-                          width: 80px;
-                          height: 80px;
-                          background-color: #e0e0e0;
-                          border-radius: 8px;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                        "
-                      >
-                        <ion-icon name="image-outline"></ion-icon>
-                      </div>
-                      {% endif %}
-                    </a>
-                    <div class="flex-grow-1">
-                      <a
-                        href="/product/{{ product.id }}/"
-                        class="text-decoration-none text-dark"
-                      >
-                        <h6 class="mb-1">
-                          {{ product.name|truncatechars:35 }}
-                        </h6>
-                      </a>
-                      <p class="text-muted small mb-2">
-                        {{ product.category.name }}
-                      </p>
-                      <div>
-                        {% if product.has_discount %}
-                        <span class="fw-bold text-success"
-                          >{{ product.converted_price }}</span
-                        >
-                        <del class="text-muted small ms-2"
-                          >{{ product.converted_original_price }}</del
-                        >
-                        {% else %}
-                        <span class="fw-bold text-success"
-                          >{{ product.converted_price }}</span
-                        >
-                        {% endif %}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-          <h3 class="mb-3 fw-bold">{% trans "Trending" %}</h3>
-          <div class="row g-3">
-            {% for product in products|slice:":4" %}
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #f5f5f5">
-                <div class="card-body">
-                  <div class="d-flex">
-                    <a href="/product/{{ product.id }}/" class="me-3">
-                      {% if product.get_primary_image %}
-                      <img
-                        src="{{ product.get_primary_image }}"
-                        alt="{{ product.name }}"
-                        style="
-                          width: 80px;
-                          height: 80px;
-                          object-fit: cover;
-                          border-radius: 8px;
-                        "
-                      />
-                      {% else %}
-                      <div
-                        style="
-                          width: 80px;
-                          height: 80px;
-                          background-color: #e0e0e0;
-                          border-radius: 8px;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                        "
-                      >
-                        <ion-icon name="image-outline"></ion-icon>
-                      </div>
-                      {% endif %}
-                    </a>
-                    <div class="flex-grow-1">
-                      <a
-                        href="/product/{{ product.id }}/"
-                        class="text-decoration-none text-dark"
-                      >
-                        <h6 class="mb-1">
-                          {{ product.name|truncatechars:35 }}
-                        </h6>
-                      </a>
-                      <p class="text-muted small mb-2">
-                        {{ product.category.name }}
-                      </p>
-                      <div>
-                        {% if product.has_discount %}
-                        <span class="fw-bold text-success"
-                          >{{ product.converted_price }}</span
-                        >
-                        <del class="text-muted small ms-2"
-                          >{{ product.converted_original_price }}</del
-                        >
-                        {% else %}
-                        <span class="fw-bold text-success"
-                          >{{ product.converted_price }}</span
-                        >
-                        {% endif %}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-
-      <!-- Deal of the Day -->
-      <div class="mb-5">
-        <h3 class="mb-3 fw-bold">{% trans "Deal of the Day" %}</h3>
-        <div class="row">
-          {% for product in products|slice:":2" %}
-            <div class="col-md-6 mb-4">
-            <div class="card border-0 h-100">
-              <div class="position-relative">
-              {% if product.get_primary_image %}
-              <img
-                src="{{ product.get_primary_image }}"
-                alt="{{ product.name }}"
-                class="card-img-top"
-                style="height: 300px; object-fit: cover"
-              />
-              {% else %}
-              <div
-                style="
-                height: 300px;
-                background-color: #f0f0f0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                "
-              >
-                <ion-icon
-                name="image-outline"
-                style="font-size: 48px"
-                ></ion-icon>
-              </div>
-              {% endif %}
-              {% if product.has_discount %}
-              <span class="position-absolute top-0 start-0 badge bg-danger m-2">
-                {{ product.discount_percentage|default:"0" }}%
-              </span>
-              {% endif %}
-              </div>
-              <div class="card-body">
-              <div class="mb-2">
-                {% for i in "12345" %}
-                {% if forloop.counter <= product.rating|default:3 %}
-                  <ion-icon name="star" class="text-warning"></ion-icon>
-                {% else %}
-                  <ion-icon name="star-outline" class="text-warning"></ion-icon>
-                {% endif %}
-                {% endfor %}
-              </div>
-              <h5 class="card-title">
-                <a
-                href="/product/{{ product.id }}/"
-                class="text-decoration-none text-dark"
-                >{{ product.name }}</a
-                >
-              </h5>
-              <p class="card-text text-muted small">
-                {{ product.description|truncatechars:100 }}
-              </p>
-              <div class="mb-3">
-                <span class="h4 text-success fw-bold"
-                >{{ product.converted_price }}</span
-                >
-                {% if product.has_discount %}
-                <del class="text-muted ms-2"
-                >{{ product.converted_original_price }}</del
-                >
-                {% endif %}
-              </div>
-              <button class="btn btn-success w-100 mb-3" onclick="addToCartAjax({{ product.id }})">Add to Cart</button>
-
-              <div class="mb-3">
-                <div
-                class="d-flex justify-content-between text-muted small mb-2"
-                >
-                <span>
-                  Already Sold:
-                  <strong>{{ product.total_sold|default:"0" }}</strong>
-                </span>
-                <span>
-                  Available: <strong>{{ product.stock|default:"0" }}</strong>
-                </span>
-                </div>
-                {% with total=product.total_sold|add:product.stock %}
-                {% if total > 0 %}
-                {% widthratio product.total_sold total 100 as sold_percent %}
-                <div class="progress" style="height: 8px">
-                <div
-                  class="progress-bar bg-success"
-                  style="width: {{ sold_percent }}%"
-                ></div>
-                </div>
-                {% else %}
-                <div class="progress" style="height: 8px">
-                <div
-                  class="progress-bar bg-success"
-                  style="width: 0%"
-                ></div>
-                </div>
-                {% endif %}
-                {% endwith %}
-              </div>
-
-              {% if product.deal_end %}
-              <div class="alert alert-success border-0 text-center">
-                <p class="small mb-2 fw-bold">Hurry Up! Offer ends in:</p>
-                <div class="d-flex justify-content-center gap-2" data-deal-end="{{ product.deal_end|date:'c' }}">
-                <div class="text-center">
-                  <div class="fw-bold deal-days">--</div>
-                  <div class="small">Days</div>
-                </div>
-                <div class="text-center">
-                  <div class="fw-bold deal-hours">--</div>
-                  <div class="small">Hours</div>
-                </div>
-                <div class="text-center">
-                  <div class="fw-bold deal-minutes">--</div>
-                  <div class="small">Min</div>
-                </div>
-                <div class="text-center">
-                  <div class="fw-bold deal-seconds">--</div>
-                  <div class="small">Sec</div>
-                </div>
-                </div>
-              </div>
-              {% endif %}
-              </div>
-            </div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Product Grid -->
-      <div>
-        <h3 class="mb-4 fw-bold">All Products</h3>
-        <div class="row g-4">
-          {% for product in products %}
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="card border-0 h-100 position-relative">
-              <div
-                class="position-relative overflow-hidden"
-                style="border-radius: 8px 8px 0 0"
-              >
-                {% if product.get_primary_image %}
-                <img
-                  src="{{ product.get_primary_image }}"
-                  alt="{{ product.name }}"
-                  class="card-img-top"
-                  style="height: 250px; object-fit: cover"
-                />
-                {% else %}
-                <div
-                  style="
-                    height: 250px;
-                    background-color: #f0f0f0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                >
-                  <ion-icon
-                    name="image-outline"
-                    style="font-size: 48px"
-                  ></ion-icon>
-                </div>
-                {% endif %} {% if product.has_discount %}
-                <span
-                  class="position-absolute top-0 start-0 badge bg-danger m-2"
-                  >{{ product.discount_percentage|default:"0" }}%</span
-                >
-                {% elif product.is_featured %}
-                <span
-                  class="position-absolute top-0 start-0 badge bg-success m-2"
-                  >New</span
-                >
-                {% endif %}
-
-                <div class="position-absolute top-0 end-0 m-2">
-                  <button
-                    class="btn btn-sm btn-light rounded-circle mb-1"
-                    style="width: 35px; height: 35px"
-                  >
-                    <ion-icon name="heart-outline"></ion-icon>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-light rounded-circle mb-1"
-                    style="width: 35px; height: 35px"
-                  >
-                    <ion-icon name="eye-outline"></ion-icon>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-light rounded-circle"
-                    style="width: 35px; height: 35px"
-                    onclick="addToCartAjax({{ product.id }})"
-                    title="Add to Cart"
-                  >
-                    <ion-icon name="bag-add-outline"></ion-icon>
-                  </button>
-                </div>
-              </div>
-
-              <div class="card-body">
-                <p class="text-success small mb-1">
-                  {{ product.category.name }}
-                </p>
-                <h6 class="card-title mb-2">
-                  <a
-                    href="/product/{{ product.id }}/"
-                    class="text-decoration-none text-dark"
-                    >{{ product.name|truncatechars:30 }}</a
-                  >
-                </h6>
-                <div class="mb-2">
-                  <ion-icon name="star" class="text-warning small"></ion-icon>
-                  <ion-icon name="star" class="text-warning small"></ion-icon>
-                  <ion-icon name="star" class="text-warning small"></ion-icon>
-                  <ion-icon
-                    name="star-outline"
-                    class="text-warning small"
-                  ></ion-icon>
-                  <ion-icon
-                    name="star-outline"
-                    class="text-warning small"
-                  ></ion-icon>
-                </div>
-                <div>
-                  <span class="fw-bold text-success"
-                    >{{ product.converted_price }}</span
-                  >
-                  {% if product.has_discount %}
-                  <del class="text-muted small ms-1"
-                    >{{ product.converted_original_price }}</del
-                  >
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+{% block content %}
 <style>
-  .btn-success {
-    background-color: #2e6e1f;
-    border-color: #2e6e1f;
-  }
+    :root {
+        --primary-green: #2e6e1f;
+        --soft-bg: #fcfcfc;
+        --border-color: #eeeeee;
+        --text-main: #1a1a1a;
+    }
 
-  .btn-success:hover {
-    background-color: #1a4012;
-    border-color: #1a4012;
-  }
+    body {
+        background-color: var(--soft-bg);
+        color: var(--text-main);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
-  .btn-outline-success {
-    color: #2e6e1f;
-    border-color: #2e6e1f;
-  }
+    /* Modern Flat UI Reset */
+    .card, .btn, .accordion-item, .progress, .form-control, .form-select {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        border: 1px solid var(--border-color);
+    }
 
-  .btn-outline-success:hover {
-    background-color: #2e6e1f;
-    border-color: #2e6e1f;
-    color: white;
-  }
+    .btn-success { background-color: var(--primary-green); border-color: var(--primary-green); }
+    .btn-success:hover { background-color: #1a4012; border-color: #1a4012; }
+    .text-success { color: var(--primary-green) !important; }
 
-  .text-success {
-    color: #2e6e1f !important;
-  }
+    /* Hero Bento Grid */
+    .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 280px);
+        gap: 15px;
+        margin-bottom: 50px;
+    }
 
-  .bg-success {
-    background-color: #2e6e1f !important;
-  }
+    .hero-item {
+        position: relative;
+        overflow: hidden;
+        background-color: #f8f8f8;
+        border: 1px solid var(--border-color);
+    }
 
-  .progress-bar.bg-success {
-    background-color: #2e6e1f !important;
-  }
+    .hero-main { grid-column: span 2; grid-row: span 2; }
+    .hero-sub { grid-column: span 1; grid-row: span 1; }
+    
+    .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 40px;
+        z-index: 2;
+        width: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    }
 
-  .alert-success {
-    background-color: #f0f8f0;
-    border-color: #2e6e1f;
-    color: #1a4012;
-  }
+    .hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
 
-  .carousel-indicators button {
-    background-color: #2e6e1f;
-  }
+    .hero-item:hover .hero-img { transform: scale(1.05); }
+
+    /* Category Navigation */
+    .category-pills {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 20px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+
+    .pill-link {
+        padding: 10px 28px;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        transition: 0.2s;
+        background: #fff;
+    }
+    .pill-link:hover, .pill-link.active { 
+        border-color: var(--text-main); 
+        background: var(--text-main);
+        color: #fff;
+    }
+
+    /* Product Grid */
+    .product-card {
+        border: 1px solid var(--border-color);
+        background: #fff;
+        transition: border-color 0.3s ease;
+    }
+    .product-card:hover { border-color: var(--text-main); }
+    
+    .opacity-hover {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .product-card:hover .opacity-hover { opacity: 1; }
+
+    /* Modern Sidebar Accordion */
+    .filter-accordion .accordion-button {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 1.25rem 0;
+        color: var(--text-main);
+        background: transparent;
+    }
+    .filter-accordion .accordion-button:not(.collapsed) {
+        color: var(--primary-green);
+        box-shadow: none;
+    }
+    .filter-accordion .accordion-item {
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+    }
 </style>
 
+<div class="container mt-4">
+    <div class="hero-grid">
+        <div class="hero-item hero-main">
+          <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?q=80&w=2070&auto=format&fit=crop"
+          class="hero-img" alt="Authentic African Craftsmanship">
+            <div class="hero-content">
+                <span class="text-white-50 text-uppercase small mb-2 d-block" style="letter-spacing: 2px;">Marketplace Selection</span>
+                <h1 class="display-4 text-white fw-bold mb-3">Authentic African <br>Craftsmanship.</h1>
+                <p class="text-white-50 mb-4 fs-5">Empowering African creators on a global stage.</p>
+                <a href="#" class="btn btn-light btn-lg px-5">Shop Marketplace</a>
+            </div>
+        </div>
+
+        <div class="hero-item hero-sub">
+          <img src="https://images.unsplash.com/photo-1622445275463-afa2ab738c34?q=80&w=2070&auto=format&fit=crop"
+          class="hero-img" alt="African Modern Textiles">     
+            <div class="hero-content p-4">
+                <h5 class="text-white mb-0">Modern Textiles</h5>
+                <a href="#" class="text-white-50 small text-decoration-none">View Collection &rarr;</a>
+            </div>
+        </div>
+
+        <div class="hero-item hero-sub">
+          <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2070&auto=format&fit=crop"
+          class="hero-img" alt="African Home Decor">
+
+            <div class="hero-content p-4">
+                <h5 class="text-white mb-0">Home Decor</h5>
+                <a href="#" class="text-white-50 small text-decoration-none">Discover More &rarr;</a>
+            </div>
+        </div>
+
+        <div class="hero-item hero-sub">
+          <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1976&auto=format&fit=crop"
+          class="hero-img" alt="New African Fashion Arrivals">     
+            <div class="hero-content p-4">
+                <h5 class="text-white mb-0">New Arrivals</h5>
+                <a href="#" class="text-white-50 small text-decoration-none">Explore Now &rarr;</a>
+            </div>
+        </div>
+
+        <div class="hero-item hero-sub bg-dark d-flex align-items-center justify-content-center">
+            <div class="text-center p-4">
+                <h4 class="text-white fw-bold mb-2">AFRIMART</h4>
+                <p class="text-white-50 x-small mb-0">THE NEW CONTINENTAL STANDARD</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="category-pills">
+        <a href="#" class="pill-link active">All Feed</a>
+        {% for category in categories|slice:":5" %}
+            <a href="#" class="pill-link">{{ category.name }}</a>
+        {% endfor %}
+        <a href="#" class="pill-link">Contemporary Art</a>
+        <a href="#" class="pill-link">Organic Beauty</a>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-lg-3 d-none d-lg-block pe-lg-5">
+            <div class="accordion filter-accordion" id="sideNav">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCats">
+                            Categories
+                        </button>
+                    </h2>
+                    <div id="collapseCats" class="accordion-collapse collapse show">
+                        <div class="accordion-body px-0 pt-0">
+                            <ul class="list-unstyled mb-0">
+                                {% for category in categories %}
+                                <li class="py-1">
+                                    <a href="#" class="text-muted small text-decoration-none d-flex justify-content-between align-items-center">
+                                        {{ category.name }}
+                                        <span class="x-small">({{ category.products.count }})</span>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegions">
+                            Sourcing Region
+                        </button>
+                    </h2>
+                    <div id="collapseRegions" class="accordion-collapse collapse">
+                        <div class="accordion-body px-0 pt-0">
+                            <ul class="list-unstyled mb-0">
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Western Africa</a></li>
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Eastern Africa</a></li>
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Northern Africa</a></li>
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Southern Africa</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-6 col-md-4">
+                    <div class="product-card h-100 d-flex flex-column">
+                        <div class="position-relative overflow-hidden" style="padding-top: 130%;">
+                            {% if product.get_primary_image %}
+                                <img src="{{ product.get_primary_image }}" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1920&auto=format&fit=crop" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover; opacity: 0.5;" alt="Placeholder">
+                            {% endif %}
+                            
+                            <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2 opacity-hover">
+                                <button class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="heart-outline"></ion-icon></button>
+                                <button onclick="addToCartAjax({{ product.id }})" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="cart-outline"></ion-icon></button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 flex-grow-1 d-flex flex-column">
+                            <span class="text-muted" style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">{{ product.category.name }}</span>
+                            <h6 class="fw-bold my-2" style="font-size: 0.9rem; line-height: 1.4;">
+                                <a href="/product/{{ product.id }}/" class="text-decoration-none text-dark">{{ product.name|truncatechars:40 }}</a>
+                            </h6>
+                            <div class="mt-auto pt-2 border-top d-flex align-items-baseline">
+                                <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
+                                {% if product.has_discount %}
+                                    <del class="text-muted x-small ms-2">{{ product.converted_original_price }}</del>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-5">Our marketplace is preparing new stock. Check back shortly.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="position-fixed bottom-0 end-0 p-4" style="z-index: 9999;"></div>
+
 <script>
-  function addToCartAjax(productId) {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-                      document.querySelector('[name="csrfmiddlewaretoken"]')?.value ||
-                      getCookie('csrftoken');
+    function addToCartAjax(productId) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+        const formData = new FormData();
+        formData.append('quantity', 1);
 
-    const formData = new FormData();
-    formData.append('quantity', 1);
-
-    fetch(`/cart/ajax/add/${productId}/`, {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': csrfToken,
-      },
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Show success message
-        showNotification(data.message, 'success');
-        // Update cart count if there's a cart count element
-        const cartCountEl = document.getElementById('cart-count');
-        if (cartCountEl) {
-          cartCountEl.textContent = data.cart_count;
-        }
-      } else {
-        showNotification(data.message, 'error');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      showNotification('Failed to add to cart', 'error');
-    });
-  }
-
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
+        fetch(`/cart/ajax/add/${productId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                spawnToast(data.message, 'success');
+                const cartCountEl = document.getElementById('cart-count');
+                if (cartCountEl) cartCountEl.textContent = data.cart_count;
+            } else {
+                spawnToast(data.message, 'danger');
+            }
+        })
+        .catch(() => spawnToast('Request Failed', 'danger'));
     }
-    return cookieValue;
-  }
 
-  function showNotification(message, type = 'info') {
-    // Create a simple notification
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-    alertDiv.setAttribute('role', 'alert');
-    alertDiv.innerHTML = `
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    // Insert at the top of the page
-    const container = document.querySelector('.container:first-of-type') || document.body;
-    container.insertBefore(alertDiv, container.firstChild);
-    
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      alertDiv.remove();
-    }, 5000);
-  }
+    function spawnToast(message, type) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center animate__animated animate__fadeInRight`;
+        toast.style.minWidth = '280px';
+        toast.innerHTML = `<div class="small fw-bold">${message}</div>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
 
-{% endblock %} {% block footer %}{% endblock %}
+{% endblock %}
+
+{% block footer %}
+<footer class="bg-white border-top mt-5 py-5">
+    <div class="container">
+        <div class="row gy-4 mb-5">
+            <div class="col-md-4">
+                <h4 class="fw-bold mb-3" style="letter-spacing: -1px;">afrimart</h4>
+                <p class="text-muted small">The definitive marketplace for authentic African craft, textiles, and modern design. Sourced directly, delivered globally.</p>
+            </div>
+            <div class="col-6 col-md-2 offset-md-2">
+                <h6 class="fw-bold text-uppercase small mb-3">Shop</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="#" class="text-muted text-decoration-none">All Collections</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">New Arrivals</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Featured Vendors</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2">
+                <h6 class="fw-bold text-uppercase small mb-3">Service</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="#" class="text-muted text-decoration-none">Shipping Info</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Returns Policy</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="pt-4 border-top d-flex justify-content-between align-items-center">
+            <p class="mb-0 x-small text-muted">&copy; 2026 Afrimart Marketplace. All Rights Reserved.</p>
+            <div class="d-flex gap-3 text-muted">
+                <ion-icon name="logo-instagram"></ion-icon>
+                <ion-icon name="logo-facebook"></ion-icon>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
