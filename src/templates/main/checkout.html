@@ -1,107 +1,548 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load currency_tags %}
 {% load humanize %}
 
-{% block title %}Checkout{% endblock %}
+{% block title %}Checkout - Afrimart{% endblock %}
 
 {% block content %}
+
 <div class="container my-5">
-  <nav aria-label="breadcrumb" class="mb-3">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'cart' %}">Cart</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none" style="color: #2E6E1F;">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'view_cart' %}" class="text-decoration-none" style="color: #2E6E1F;">Cart</a></li>
       <li class="breadcrumb-item active">Checkout</li>
     </ol>
   </nav>
 
-  <div class="row">
-    <div class="col-lg-8">
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Shipping Information</h5>
-        </div>
-        <div class="card-body">
-          <form method="post">
-            {% csrf_token %}
+  <!-- Page Title -->
+  <div class="mb-4">
+    <h1 class="fw-bold">Checkout</h1>
+    <p class="text-muted">Complete your order</p>
+  </div>
 
-            <div class="mb-3">
-              <label class="form-label">Address</label>
-              <textarea name="shipping_address" class="form-control" rows="3" required>{{ request.POST.shipping_address|default:'' }}</textarea>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">City</label>
-                <input type="text" name="shipping_city" class="form-control" required value="{{ request.POST.shipping_city|default:'' }}">
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label class="form-label">State/Region</label>
-                <input type="text" name="shipping_state" class="form-control" required value="{{ request.POST.shipping_state|default:'' }}">
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Phone</label>
-              <input type="text" name="shipping_phone" class="form-control" required value="{{ request.POST.shipping_phone|default:'' }}">
-            </div>
-
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-success">Place Order</button>
-              <a href="{% url 'cart' %}" class="btn btn-outline-secondary">Back to Cart</a>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Items in your order</h5>
-        </div>
-        <div class="card-body">
-          {% if cart_items %}
-            <ul class="list-group">
-              {% for item in cart_items %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{{ item.product.name }}</strong><br>
-                    <small class="text-muted">Qty: {{ item.quantity }} • ₦{{ item.product.price|floatformat:2 }}</small>
-                  </div>
-                  <div class="fw-bold">₦{{ item.subtotal|floatformat:2 }}</div>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="mb-0">Your cart is empty.</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="card position-sticky" style="top: 100px;">
-        <div class="card-header text-white" style="background-color: #2E6E1F;">
-          <h5 class="mb-0">Order Summary</h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex justify-content-between mb-2">
-            <span>Items ({{ cart_count }})</span>
-            <strong>₦{{ cart_total|floatformat:2 }}</strong>
+  <!-- Progress Steps -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center position-relative">
+        <div class="progress-line"></div>
+        
+        <div class="step-item active text-center">
+          <div class="step-circle active">
+            <ion-icon name="cart"></ion-icon>
           </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Shipping</span>
-            <span class="text-success fw-bold">FREE</span>
+          <small class="d-block mt-2 fw-semibold">Cart</small>
+        </div>
+        
+        <div class="step-item active text-center">
+          <div class="step-circle active">
+            <ion-icon name="information-circle"></ion-icon>
           </div>
-          <hr>
-          <div class="d-flex justify-content-between mb-3">
-            <span class="h5">Total</span>
-            <span class="h5 fw-bold text-success">₦{{ cart_total|floatformat:2 }}</span>
+          <small class="d-block mt-2 fw-semibold">Information</small>
+        </div>
+        
+        <div class="step-item text-center">
+          <div class="step-circle">
+            <ion-icon name="card"></ion-icon>
           </div>
-
-          <p class="small text-muted">Proceeding will create an order per seller and you will be redirected to complete payment for each order.</p>
-          <a href="{% url 'cart' %}" class="btn btn-outline-secondary w-100 mb-2">Edit Cart</a>
+          <small class="d-block mt-2">Payment</small>
+        </div>
+        
+        <div class="step-item text-center">
+          <div class="step-circle">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
+          <small class="d-block mt-2">Complete</small>
         </div>
       </div>
     </div>
   </div>
+
+  <form method="POST" id="checkoutForm">
+    {% csrf_token %}
+    
+    <div class="row">
+      <!-- Left Column - Forms -->
+      <div class="col-lg-7 mb-4">
+        
+        <!-- Shipping Information -->
+        <div class="card border-0 mb-4">
+          <div class="card-header text-white" style="background-color: #2E6E1F;">
+            <h5 class="mb-0">
+              <ion-icon name="location" class="me-2"></ion-icon>
+              Shipping Information
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label fw-semibold">First Name *</label>
+                <input type="text" class="form-control" id="firstName" name="first_name" value="{{ user.first_name }}" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label fw-semibold">Last Name *</label>
+                <input type="text" class="form-control" id="lastName" name="last_name" value="{{ user.last_name }}" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">Email Address *</label>
+              <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+              <small class="text-muted">Order confirmation will be sent to this email</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="phone" class="form-label fw-semibold">Phone Number *</label>
+              <input type="tel" class="form-control" id="phone" name="shipping_phone" value="{{ request.POST.shipping_phone|default:'' }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="address" class="form-label fw-semibold">Street Address *</label>
+              <textarea name="shipping_address" class="form-control" id="address" rows="2" placeholder="House number and street name" required>{{ request.POST.shipping_address|default:'' }}</textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="city" class="form-label fw-semibold">City *</label>
+                <input type="text" class="form-control" id="city" name="shipping_city" value="{{ request.POST.shipping_city|default:'' }}" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="state" class="form-label fw-semibold">State/Province *</label>
+                <input type="text" class="form-control" id="state" name="shipping_state" value="{{ request.POST.shipping_state|default:'' }}" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="zipCode" class="form-label fw-semibold">Postal/ZIP Code</label>
+                <input type="text" class="form-control" id="zipCode" name="zip_code" value="{{ request.POST.zip_code|default:'' }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="country" class="form-label fw-semibold">Country *</label>
+                <select class="form-select" id="country" name="country" required>
+                  <option value="">Select Country</option>
+                  <option value="NG" selected>Nigeria</option>
+                  <option value="GH">Ghana</option>
+                  <option value="KE">Kenya</option>
+                  <option value="ZA">South Africa</option>
+                  <option value="US">United States</option>
+                  <option value="GB">United Kingdom</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="orderNotes" class="form-label fw-semibold">Order Notes (optional)</label>
+              <textarea class="form-control" id="orderNotes" name="order_notes" rows="3" placeholder="Special delivery instructions...">{{ request.POST.order_notes|default:'' }}</textarea>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="saveAddress" name="save_address">
+              <label class="form-check-label" for="saveAddress">
+                Save this address for future orders
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Method -->
+        <div class="card border-0 mb-4">
+          <div class="card-header text-white" style="background-color: #2E6E1F;">
+            <h5 class="mb-0">
+              <ion-icon name="car" class="me-2"></ion-icon>
+              Shipping Method
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="form-check mb-3 p-3 border rounded">
+              <input class="form-check-input" type="radio" name="shipping_method" id="standardShipping" value="standard" checked>
+              <label class="form-check-label w-100" for="standardShipping">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Standard Shipping</strong>
+                    <p class="mb-0 small text-muted">5-7 business days</p>
+                  </div>
+                  <strong class="text-success">FREE</strong>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-check mb-3 p-3 border rounded">
+              <input class="form-check-input" type="radio" name="shipping_method" id="expressShipping" value="express">
+              <label class="form-check-label w-100" for="expressShipping">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Express Shipping</strong>
+                    <p class="mb-0 small text-muted">2-3 business days</p>
+                  </div>
+                  <strong>₦5,000</strong>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-check p-3 border rounded">
+              <input class="form-check-input" type="radio" name="shipping_method" id="nextDayShipping" value="nextday">
+              <label class="form-check-label w-100" for="nextDayShipping">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Next Day Delivery</strong>
+                    <p class="mb-0 small text-muted">1 business day</p>
+                  </div>
+                  <strong>₦10,000</strong>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="card border-0 mb-4">
+          <div class="card-header text-white" style="background-color: #2E6E1F;">
+            <h5 class="mb-0">
+              <ion-icon name="card" class="me-2"></ion-icon>
+              Payment Method
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="form-check mb-3 p-3 border rounded">
+              <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="card" checked>
+              <label class="form-check-label" for="creditCard">
+                <strong>Credit/Debit Card</strong>
+                <div class="mt-2">
+                  <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" width="40">
+                  <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" width="40">
+                  <img src="https://img.icons8.com/color/48/000000/amex.png" alt="Amex" width="40">
+                </div>
+              </label>
+            </div>
+
+            <div id="cardDetails" class="ms-4 mb-3">
+              <div class="mb-3">
+                <label for="cardNumber" class="form-label fw-semibold">Card Number</label>
+                <input type="text" class="form-control" id="cardNumber" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="expiryDate" class="form-label fw-semibold">Expiry Date</label>
+                  <input type="text" class="form-control" id="expiryDate" name="card_expiry" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="cvv" class="form-label fw-semibold">CVV</label>
+                  <input type="text" class="form-control" id="cvv" name="card_cvv" placeholder="123" maxlength="4">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-check mb-3 p-3 border rounded">
+              <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+              <label class="form-check-label" for="paypal">
+                <strong>PayPal</strong>
+                <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal" width="40" class="ms-2">
+              </label>
+            </div>
+
+            <div class="form-check p-3 border rounded">
+              <input class="form-check-input" type="radio" name="payment_method" id="bankTransfer" value="bank">
+              <label class="form-check-label" for="bankTransfer">
+                <strong>Bank Transfer</strong>
+                <p class="mb-0 small text-muted">Instructions will be sent via email</p>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="card border-0 mb-4">
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="termsCheck" required>
+              <label class="form-check-label" for="termsCheck">
+                I have read and agree to the <a href="#" style="color: #2E6E1F;">Terms & Conditions</a> and <a href="#" style="color: #2E6E1F;">Privacy Policy</a>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column - Order Summary -->
+      <div class="col-lg-5">
+        <div class="card border-0 position-sticky" style="top: 100px;">
+          <div class="card-header text-white" style="background-color: #2E6E1F;">
+            <h5 class="mb-0">Order Summary</h5>
+          </div>
+          <div class="card-body">
+            
+            <!-- Cart Items -->
+            <div class="mb-3" style="max-height: 300px; overflow-y: auto;">
+              {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="d-flex mb-3 pb-3 border-bottom">
+                  <div class="me-3">
+                    {% if item.product.cloudinary_url %}
+                      <img src="{{ item.product.cloudinary_url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    {% elif item.product.image %}
+                      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    {% else %}
+                      <div style="width: 60px; height: 60px; background-color: #f0f0f0; border-radius: 8px;"></div>
+                    {% endif %}
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">{{ item.product.name|truncatechars:30 }}</h6>
+                    <small class="text-muted">Qty: {{ item.quantity }} • ₦{{ item.product.price|floatformat:2 }}</small>
+                  </div>
+                  <div class="text-end">
+                    <strong style="color: #2E6E1F;">₦{{ item.subtotal|floatformat:2 }}</strong>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <p class="text-muted text-center">Your cart is empty</p>
+              {% endif %}
+            </div>
+
+            <!-- Coupon Code -->
+            <div class="mb-3">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Coupon code" id="couponCode" name="coupon_code">
+                <button class="btn" type="button" style="background-color: #2E6E1F; color: white;">Apply</button>
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Pricing Details -->
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal ({{ cart_count }} items)</span>
+              <span class="fw-semibold">₦{{ cart_total|floatformat:2 }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping</span>
+              <span class="fw-semibold text-success" id="shippingCost">FREE</span>
+            </div>
+
+            {% if discount_amount %}
+            <div class="d-flex justify-content-between mb-2 text-success">
+              <span>Discount</span>
+              <span class="fw-semibold">-₦{{ discount_amount|floatformat:2 }}</span>
+            </div>
+            {% endif %}
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-4">
+              <span class="h5 fw-bold">Total</span>
+              <span class="h4 fw-bold" style="color: #2E6E1F;" id="totalAmount">₦{{ cart_total|floatformat:2 }}</span>
+            </div>
+
+            <p class="small text-muted mb-3">Proceeding will create an order per seller and you will be redirected to complete payment for each order.</p>
+
+            <!-- Place Order Button -->
+            <button type="submit" class="btn btn-lg w-100 mb-3" style="background-color: #2E6E1F; color: white; border: none;">
+              <ion-icon name="checkmark-circle" class="me-2"></ion-icon>
+              Place Order
+            </button>
+
+            <!-- Back to Cart -->
+            <a href="{% url 'view_cart' %}" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+              <ion-icon name="arrow-back-outline" class="me-2"></ion-icon>
+              Back to Cart
+            </a>
+
+            <div class="text-center">
+              <small class="text-muted">
+                <ion-icon name="lock-closed"></ion-icon>
+                Secure checkout - Your payment information is safe
+              </small>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="mt-4 pt-3 border-top">
+              <div class="row text-center g-2">
+                <div class="col-4">
+                  <ion-icon name="shield-checkmark" style="font-size: 30px; color: #2E6E1F;"></ion-icon>
+                  <p class="small mb-0 mt-1">Secure Payment</p>
+                </div>
+                <div class="col-4">
+                  <ion-icon name="refresh" style="font-size: 30px; color: #2E6E1F;"></ion-icon>
+                  <p class="small mb-0 mt-1">Easy Returns</p>
+                </div>
+                <div class="col-4">
+                  <ion-icon name="headset" style="font-size: 30px; color: #2E6E1F;"></ion-icon>
+                  <p class="small mb-0 mt-1">24/7 Support</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
 </div>
+
+<style>
+  /* Progress Steps */
+  .progress-line {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e0e0e0;
+    z-index: 0;
+  }
+
+  .step-item {
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: white;
+    border: 3px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #999;
+    margin: 0 auto;
+    transition: all 0.3s;
+  }
+
+  .step-circle.active {
+    background-color: #2E6E1F;
+    border-color: #2E6E1F;
+    color: white;
+  }
+
+  .step-item.active small {
+    color: #2E6E1F;
+  }
+
+  /* Form Controls */
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #2E6E1F;
+    box-shadow: 0 0 0 0.2rem rgba(46, 110, 31, 0.25);
+  }
+
+  .form-check-input:checked {
+    background-color: #2E6E1F;
+    border-color: #2E6E1F;
+  }
+
+  .form-check-input:focus {
+    border-color: #2E6E1F;
+    box-shadow: 0 0 0 0.2rem rgba(46, 110, 31, 0.25);
+  }
+
+  /* Radio Button Styling */
+  .form-check .border {
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .form-check .border:hover {
+    background-color: #f8f9fa;
+  }
+
+  .form-check-input:checked ~ .form-check-label {
+    color: #2E6E1F;
+  }
+
+  /* Card Shadow */
+  .card {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  /* Button Hover */
+  .btn[style*="background-color: #2E6E1F"]:hover {
+    background-color: #1a4012 !important;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+  }
+</style>
+
+<script>
+  // Card number formatting
+  const cardNumber = document.getElementById('cardNumber');
+  if (cardNumber) {
+    cardNumber.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\s/g, '');
+      let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+      e.target.value = formattedValue;
+    });
+  }
+
+  // Expiry date formatting
+  const expiryDate = document.getElementById('expiryDate');
+  if (expiryDate) {
+    expiryDate.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+      }
+      e.target.value = value;
+    });
+  }
+
+  // CVV validation
+  const cvv = document.getElementById('cvv');
+  if (cvv) {
+    cvv.addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+  }
+
+  // Shipping method cost update
+  document.querySelectorAll('input[name="shipping_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const shippingCost = document.getElementById('shippingCost');
+      if (this.value === 'standard') {
+        shippingCost.textContent = 'FREE';
+        shippingCost.classList.add('text-success');
+      } else if (this.value === 'express') {
+        shippingCost.textContent = '₦5,000';
+        shippingCost.classList.remove('text-success');
+      } else if (this.value === 'nextday') {
+        shippingCost.textContent = '₦10,000';
+        shippingCost.classList.remove('text-success');
+      }
+    });
+  });
+
+  // Payment method toggle
+  document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const cardDetails = document.getElementById('cardDetails');
+      if (this.value === 'card') {
+        cardDetails.style.display = 'block';
+      } else {
+        cardDetails.style.display = 'none';
+      }
+    });
+  });
+
+  // Form validation
+  document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    const termsCheck = document.getElementById('termsCheck');
+    if (!termsCheck.checked) {
+      e.preventDefault();
+      alert('Please accept the terms and conditions to continue.');
+    }
+  });
+</script>
+
 {% endblock %}
