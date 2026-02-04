@@ -6,422 +6,179 @@
 {% block content %}
 <div class="container my-5 py-5">
     <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-10">
-            <div class="card border-0 overflow-hidden">
-                <div class="row g-0">
-                    <!-- Left Side - Image/Branding -->
-                    <div class="col-md-12 d-none d-md-block" style="background: linear-gradient(135deg, #2E6E1F 0%, #1a4012 100%);">
-                        <div class="d-flex flex-column justify-content-center align-items-center h-100 p-4 text-white">
-                            <div class="mb-4">
-                                <img src="{% static 'assets/images/logo/logo.png' %}" alt="Afrimart" class="img-fluid" style="max-width: 150px; filter: brightness(0) invert(1);">
+        <div class="col-md-10 col-lg-8">
+           
+            <div class="card border p-4 p-lg-5 shadow-0">
+                <div class="text-center mb-4">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'assets/images/logo.png' %}" alt="Afrimart" style="height: 34px; width: auto;">
+                    </a>
+                </div>
+                <div class="mb-5 text-center">
+                    <h3 class="fw-bold mb-1">Create Account</h3>
+                    <p class="text-muted small">Join thousands of happy customers and quality vendors</p>
+                </div>
+
+                <ul class="nav nav-pills mb-5 d-flex" role="tablist">
+                    <li class="nav-item flex-fill" role="presentation">
+                        <button class="nav-link active w-100 py-2" id="buyer-tab" data-bs-toggle="tab" data-bs-target="#buyer-content" type="button" role="tab">
+                            <ion-icon name="cart-outline" class="me-2"></ion-icon>
+                            Buyer
+                        </button>
+                    </li>
+                    <li class="nav-item flex-fill" role="presentation">
+                        <button class="nav-link w-100 py-2" id="seller-tab" data-bs-toggle="tab" data-bs-target="#seller-content" type="button" role="tab">
+                            <ion-icon name="storefront-outline" class="me-2"></ion-icon>
+                            Seller
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="buyer-content" role="tabpanel">
+                        <form method="post" id="buyerForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="is_seller" value="off">
+
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">First Name</label>
+                                    <input type="text" name="{{ form.first_name.name }}" id="id_first_name_buyer" class="form-control form-control-lg bg-light {% if form.first_name.errors %}is-invalid{% endif %}" placeholder="First name" value="{{ form.first_name.value|default:'' }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">Last Name</label>
+                                    <input type="text" name="{{ form.last_name.name }}" id="id_last_name_buyer" class="form-control form-control-lg bg-light {% if form.last_name.errors %}is-invalid{% endif %}" placeholder="Last name" value="{{ form.last_name.value|default:'' }}" required>
+                                </div>
                             </div>
-                          
-                            <p class="text-center mb-4">Your one-stop shop for quality products across Africa</p>
 
-                            <div class="mt-4" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-                                <div class="d-flex align-items-center">
-                                    <ion-icon name="checkmark-circle" class="me-1" style="font-size: 15px;"></ion-icon>
-                                    <span style="font-size: 14px;">Secure Shopping</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <ion-icon name="checkmark-circle" class="me-1" style="font-size: 15px;"></ion-icon>
-                                    <span style="font-size: 14px;">Fast Delivery</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <ion-icon name="checkmark-circle" class="me-1" style="font-size: 15px;"></ion-icon>
-                                    <span style="font-size: 14px;">24/7 Support</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Side - Registration Form -->
-                    <div class="col-md-12">
-                        <div class="p-4 p-lg-5">
-                            <div class="mb-4 text-center">
-                                <h2 class="fw-bold mb-2">Create Account</h2>
-                                <p class="text-muted">Join thousands of happy customers</p>
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold text-uppercase text-muted">Username</label>
+                                <input type="text" name="{{ form.username.name }}" id="id_username_buyer" class="form-control form-control-lg bg-light {% if form.username.errors %}is-invalid{% endif %}" placeholder="Choose username" value="{{ form.username.value|default:'' }}" required>
                             </div>
 
-                            <!-- Account Type Tabs -->
-                            <ul class="nav nav-pills mb-4" role="tablist">
-                                <li class="nav-item flex-fill" role="presentation">
-                                    <button class="nav-link active w-100" id="buyer-tab" data-bs-toggle="tab" data-bs-target="#buyer-content" type="button" role="tab">
-                                        <ion-icon name="cart-outline" class="me-2"></ion-icon>
-                                        Buyer
-                                    </button>
-                                </li>
-                                <li class="nav-item flex-fill" role="presentation">
-                                    <button class="nav-link w-100" id="seller-tab" data-bs-toggle="tab" data-bs-target="#seller-content" type="button" role="tab">
-                                        <ion-icon name="storefront-outline" class="me-2"></ion-icon>
-                                        Seller
-                                    </button>
-                                </li>
-                            </ul>
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold text-uppercase text-muted">Email Address</label>
+                                <input type="email" name="{{ form.email.name }}" id="id_email_buyer" class="form-control form-control-lg bg-light {% if form.email.errors %}is-invalid{% endif %}" placeholder="email@example.com" value="{{ form.email.value|default:'' }}" required>
+                            </div>
 
-                            <!-- Tab Content -->
-                            <div class="tab-content">
-                                <!-- Buyer Registration -->
-                                <div class="tab-pane fade show active" id="buyer-content" role="tabpanel">
-                                    <form method="post" id="buyerForm">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="is_seller" value="off">
-
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label for="id_first_name_buyer" class="form-label fw-semibold">
-                                                    <ion-icon name="person-outline" class="me-1"></ion-icon>
-                                                    First Name
-                                                </label>
-                                                <input 
-                                                    type="text" 
-                                                    name="{{ form.first_name.name }}" 
-                                                    id="id_first_name_buyer"
-                                                    class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
-                                                    placeholder="Enter first name"
-                                                    value="{{ form.first_name.value|default:'' }}"
-                                                    required
-                                                >
-                                                {% if form.first_name.errors %}
-                                                    <div class="invalid-feedback">{{ form.first_name.errors.0 }}</div>
-                                                {% endif %}
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label for="id_last_name_buyer" class="form-label fw-semibold">
-                                                    <ion-icon name="person-outline" class="me-1"></ion-icon>
-                                                    Last Name
-                                                </label>
-                                                <input 
-                                                    type="text" 
-                                                    name="{{ form.last_name.name }}" 
-                                                    id="id_last_name_buyer"
-                                                    class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
-                                                    placeholder="Enter last name"
-                                                    value="{{ form.last_name.value|default:'' }}"
-                                                    required
-                                                >
-                                                {% if form.last_name.errors %}
-                                                    <div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_username_buyer" class="form-label fw-semibold">
-                                                <ion-icon name="at-outline" class="me-1"></ion-icon>
-                                                Username
-                                            </label>
-                                            <input 
-                                                type="text" 
-                                                name="{{ form.username.name }}" 
-                                                id="id_username_buyer"
-                                                class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
-                                                placeholder="Choose a unique username"
-                                                value="{{ form.username.value|default:'' }}"
-                                                required
-                                            >
-                                            <small class="text-muted">This will be your unique identifier</small>
-                                            {% if form.username.errors %}
-                                                <div class="invalid-feedback">{{ form.username.errors.0 }}</div>
-                                            {% endif %}
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_email_buyer" class="form-label fw-semibold">
-                                                <ion-icon name="mail-outline" class="me-1"></ion-icon>
-                                                Email Address
-                                            </label>
-                                            <input 
-                                                type="email" 
-                                                name="{{ form.email.name }}" 
-                                                id="id_email_buyer"
-                                                class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
-                                                placeholder="Enter your email"
-                                                value="{{ form.email.value|default:'' }}"
-                                                required
-                                            >
-                                            {% if form.email.errors %}
-                                                <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
-                                            {% endif %}
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_country_code_buyer" class="form-label fw-semibold">
-                                                <ion-icon name="call-outline" class="me-1"></ion-icon>
-                                                Phone Number
-                                            </label>
-                                            <div class="input-group">
-                                                {{ form.country_code }}
-                                                <input 
-                                                    type="tel" 
-                                                    name="{{ form.phone.name }}" 
-                                                    id="id_phone_buyer"
-                                                    class="form-control {% if form.phone.errors %}is-invalid{% endif %}" 
-                                                    placeholder="Enter phone number"
-                                                    value="{{ form.phone.value|default:'' }}"
-                                                    required
-                                                >
-                                                {% if form.phone.errors %}
-                                                    <div class="invalid-feedback">{{ form.phone.errors.0 }}</div>
-                                                {% endif %}
-                                            </div>
-                                            <small class="text-muted">Enter number without country code</small>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_password1_buyer" class="form-label fw-semibold">
-                                                <ion-icon name="lock-closed-outline" class="me-1"></ion-icon>
-                                                Password
-                                            </label>
-                                            <div class="position-relative">
-                                                <input 
-                                                    type="password" 
-                                                    name="{{ form.password1.name }}" 
-                                                    id="id_password1_buyer"
-                                                    class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
-                                                    placeholder="Create a strong password"
-                                                    required
-                                                >
-                                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y toggle-password" style="text-decoration: none; color: #6c757d;">
-                                                    <ion-icon name="eye-outline"></ion-icon>
-                                                </button>
-                                                {% if form.password1.errors %}
-                                                    <div class="invalid-feedback">{{ form.password1.errors.0 }}</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_password2_buyer" class="form-label fw-semibold">
-                                                <ion-icon name="lock-closed-outline" class="me-1"></ion-icon>
-                                                Confirm Password
-                                            </label>
-                                            <div class="position-relative">
-                                                <input 
-                                                    type="password" 
-                                                    name="{{ form.password2.name }}" 
-                                                    id="id_password2_buyer"
-                                                    class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
-                                                    placeholder="Confirm your password"
-                                                    required
-                                                >
-                                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y toggle-password" style="text-decoration: none; color: #6c757d;">
-                                                    <ion-icon name="eye-outline"></ion-icon>
-                                                </button>
-                                                {% if form.password2.errors %}
-                                                    <div class="invalid-feedback">{{ form.password2.errors.0 }}</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-lg w-100 mb-3" style="background-color: #2E6E1F; color: white; border: none;">
-                                            <ion-icon name="person-add-outline" class="me-2"></ion-icon>
-                                            Create Account
-                                        </button>
-                                    </form>
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold text-uppercase text-muted">Phone Number</label>
+                                <div class="input-group input-group-lg">
+                                    {{ form.country_code }}
+                                    <input type="tel" name="{{ form.phone.name }}" id="id_phone_seller" class="form-control bg-light" placeholder="Phone number" required>
                                 </div>
-
-                                <!-- Seller Registration -->
-                                <div class="tab-pane fade" id="seller-content" role="tabpanel">
-                                    <div class="alert border-0 mb-4" style="background-color: #f0f8f0; color: #1a4012;">
-                                        <div class="d-flex">
-                                            <ion-icon name="information-circle" style="font-size: 24px; margin-right: 10px;"></ion-icon>
-                                            <div>
-                                                <strong>Become a Seller</strong>
-                                                <p class="mb-0 small">Join our seller network and reach thousands of customers across Africa!</p>
-                                            </div>
-                                        </div>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="{{ form.password1.name }}" id="id_password1_buyer" class="form-control form-control-lg bg-light border-end-0" placeholder="••••••••" required>
+                                        <button type="button" class="input-group-text bg-light border-start-0 px-3 toggle-password"><ion-icon name="eye-outline"></ion-icon></button>
                                     </div>
-
-                                    <form method="post" id="sellerForm">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="is_seller" value="on">
-
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label for="id_first_name_seller" class="form-label fw-semibold">
-                                                    <ion-icon name="person-outline" class="me-1"></ion-icon>
-                                                    First Name
-                                                </label>
-                                                <input 
-                                                    type="text" 
-                                                    name="{{ form.first_name.name }}" 
-                                                    id="id_first_name_seller"
-                                                    class="form-control" 
-                                                    placeholder="Enter first name"
-                                                    required
-                                                >
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label for="id_last_name_seller" class="form-label fw-semibold">
-                                                    <ion-icon name="person-outline" class="me-1"></ion-icon>
-                                                    Last Name
-                                                </label>
-                                                <input 
-                                                    type="text" 
-                                                    name="{{ form.last_name.name }}" 
-                                                    id="id_last_name_seller"
-                                                    class="form-control" 
-                                                    placeholder="Enter last name"
-                                                    required
-                                                >
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_username_seller" class="form-label fw-semibold">
-                                                <ion-icon name="at-outline" class="me-1"></ion-icon>
-                                                Username
-                                            </label>
-                                            <input 
-                                                type="text" 
-                                                name="{{ form.username.name }}" 
-                                                id="id_username_seller"
-                                                class="form-control" 
-                                                placeholder="Choose a unique username"
-                                                required
-                                            >
-                                            <small class="text-muted">This will be your unique identifier</small>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_email_seller" class="form-label fw-semibold">
-                                                <ion-icon name="mail-outline" class="me-1"></ion-icon>
-                                                Email Address
-                                            </label>
-                                            <input 
-                                                type="email" 
-                                                name="{{ form.email.name }}" 
-                                                id="id_email_seller"
-                                                class="form-control" 
-                                                placeholder="Enter your email"
-                                                required
-                                            >
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_country_code_seller" class="form-label fw-semibold">
-                                                <ion-icon name="call-outline" class="me-1"></ion-icon>
-                                                Phone Number
-                                            </label>
-                                            <div class="input-group">
-                                                {{ form.country_code }}
-                                                <input 
-                                                    type="tel" 
-                                                    name="{{ form.phone.name }}" 
-                                                    id="id_phone_seller"
-                                                    class="form-control" 
-                                                    placeholder="Enter phone number"
-                                                    required
-                                                >
-                                            </div>
-                                            <small class="text-muted">Enter number without country code</small>
-                                        </div>
-
-                                        <!-- Store Information -->
-                                        <div class="card border-0 mb-3" style="background-color: #f5f5f5;">
-                                            <div class="card-body">
-                                                <h6 class="fw-bold mb-3" style="color: #2E6E1F;">
-                                                    <ion-icon name="storefront-outline" class="me-2"></ion-icon>
-                                                    Store Information
-                                                </h6>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="id_store_name" class="form-label fw-semibold">Store Name</label>
-                                                    <input 
-                                                        type="text" 
-                                                        name="{{ form.seller_store_name.name }}" 
-                                                        id="id_store_name"
-                                                        class="form-control" 
-                                                        placeholder="Your store name"
-                                                        required
-                                                    >
-                                                    <small class="text-muted">This is how customers will find you</small>
-                                                </div>
-
-                                                <div class="mb-0">
-                                                    <label for="id_store_description" class="form-label fw-semibold">Store Description</label>
-                                                    <textarea 
-                                                        name="{{ form.seller_description.name }}" 
-                                                        id="id_store_description"
-                                                        class="form-control" 
-                                                        rows="3"
-                                                        placeholder="Tell customers about your business..."
-                                                        required
-                                                    ></textarea>
-                                                    <small class="text-muted">Describe what you sell and what makes you unique</small>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_password1_seller" class="form-label fw-semibold">
-                                                <ion-icon name="lock-closed-outline" class="me-1"></ion-icon>
-                                                Password
-                                            </label>
-                                            <div class="position-relative">
-                                                <input 
-                                                    type="password" 
-                                                    name="{{ form.password1.name }}" 
-                                                    id="id_password1_seller"
-                                                    class="form-control" 
-                                                    placeholder="Create a strong password"
-                                                    required
-                                                >
-                                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y toggle-password" style="text-decoration: none; color: #6c757d;">
-                                                    <ion-icon name="eye-outline"></ion-icon>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="id_password2_seller" class="form-label fw-semibold">
-                                                <ion-icon name="lock-closed-outline" class="me-1"></ion-icon>
-                                                Confirm Password
-                                            </label>
-                                            <div class="position-relative">
-                                                <input 
-                                                    type="password" 
-                                                    name="{{ form.password2.name }}" 
-                                                    id="id_password2_seller"
-                                                    class="form-control" 
-                                                    placeholder="Confirm your password"
-                                                    required
-                                                >
-                                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y toggle-password" style="text-decoration: none; color: #6c757d;">
-                                                    <ion-icon name="eye-outline"></ion-icon>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" id="termsCheck" required>
-                                            <label class="form-check-label" for="termsCheck">
-                                                I agree to the <a href="#" style="color: #2E6E1F;">Seller Terms & Conditions</a>
-                                            </label>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-lg w-100 mb-3" style="background-color: #2E6E1F; color: white; border: none;">
-                                            <ion-icon name="storefront-outline" class="me-2"></ion-icon>
-                                            Apply as Seller
-                                        </button>
-                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">Confirm Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="{{ form.password2.name }}" id="id_password2_buyer" class="form-control form-control-lg bg-light border-end-0" placeholder="••••••••" required>
+                                        <button type="button" class="input-group-text bg-light border-start-0 px-3 toggle-password"><ion-icon name="eye-outline"></ion-icon></button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Login Link -->
-                            <div class="text-center mt-4 pt-3 border-top">
-                                <p class="mb-0 text-muted">
-                                    Already have an account? 
-                                    <a href="{% url 'login' %}" class="fw-bold text-decoration-none" style="color: #2E6E1F;">
-                                        Login here
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
+                            <button type="submit" class="btn btn-lg w-100 py-3 text-uppercase fw-bold text-white border-0" style="background-color: var(--primary-green); font-size: 14px; letter-spacing: 1px;">
+                                <ion-icon name="person-add-outline" class="me-2"></ion-icon> Create Buyer Account
+                            </button>
+                        </form>
                     </div>
+
+                    <div class="tab-pane fade" id="seller-content" role="tabpanel">
+                        <form method="post" id="sellerForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="is_seller" value="on">
+
+                            <div class="mb-4 p-3 border-start border-4 border-success bg-light text-success fw-semibold small">
+                                <ion-icon name="information-circle-outline" class="me-1"></ion-icon> Register as a vendor to sell your products on Afrimart.
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">First Name</label>
+                                    <input type="text" name="{{ form.first_name.name }}" id="id_first_name_seller" class="form-control form-control-lg bg-light" placeholder="First name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">Last Name</label>
+                                    <input type="text" name="{{ form.last_name.name }}" id="id_last_name_seller" class="form-control form-control-lg bg-light" placeholder="Last name" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold text-uppercase text-muted">Username</label>
+                                <input type="text" name="{{ form.username.name }}" id="id_username_seller" class="form-control form-control-lg bg-light" placeholder="Choose store username" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold text-uppercase text-muted">Email Address</label>
+                                <input type="email" name="{{ form.email.name }}" id="id_email_seller" class="form-control form-control-lg bg-light" placeholder="business@email.com" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold text-uppercase text-muted">Phone Number</label>
+                                <div class="input-group input-group-lg">
+                                    {{ form.country_code }}
+                                    <input type="tel" name="{{ form.phone.name }}" id="id_phone_seller" class="form-control bg-light" placeholder="Phone number" required>
+                                </div>
+                            </div>
+
+                            <div class="card border p-3 mb-4 bg-light">
+                                <h6 class="fw-bold mb-3" style="color: var(--primary-green); font-size: 13px; text-transform: uppercase;">Store Details</h6>
+                                <div class="mb-3">
+                                    <label class="form-label x-small fw-bold text-muted">Store Name</label>
+                                    <input type="text" name="{{ form.seller_store_name.name }}" id="id_store_name" class="form-control bg-white" placeholder="Brand Name" required>
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label x-small fw-bold text-muted">Description</label>
+                                    <textarea name="{{ form.seller_description.name }}" id="id_store_description" class="form-control bg-white" rows="3" placeholder="Tell us about your products..." required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="{{ form.password1.name }}" id="id_password1_seller" class="form-control form-control-lg bg-light border-end-0" placeholder="••••••••" required>
+                                        <button type="button" class="input-group-text bg-light border-start-0 px-3 toggle-password"><ion-icon name="eye-outline"></ion-icon></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label x-small fw-bold text-uppercase text-muted">Confirm Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="{{ form.password2.name }}" id="id_password2_seller" class="form-control form-control-lg bg-light border-end-0" placeholder="••••••••" required>
+                                        <button type="button" class="input-group-text bg-light border-start-0 px-3 toggle-password"><ion-icon name="eye-outline"></ion-icon></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="sellerTerms" required>
+                                <label class="form-check-label x-small text-muted fw-bold" for="sellerTerms">
+                                    I AGREE TO THE <a href="#" style="color: var(--primary-green);">SELLER TERMS & CONDITIONS</a>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-lg w-100 py-3 text-uppercase fw-bold text-white border-0" style="background-color: var(--primary-green); font-size: 14px; letter-spacing: 1px;">
+                                <ion-icon name="storefront-outline" class="me-2"></ion-icon> Apply as Seller
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="text-center mt-5 pt-3 border-top">
+                    <p class="mb-0 small text-muted">
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="fw-bold text-decoration-none" style="color: var(--primary-green);">
+                            Login here
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -429,133 +186,74 @@
 </div>
 
 <style>
+
+.form-control {
+      font-size: 16px !important;
+    }
+
+    /* Global Flat UI resets for Register Page */
+    .card, .form-control, .input-group-text, .btn, .nav-link, .form-check-input { border-radius: 0 !important; }
+    .form-control, .input-group-text { border-color: var(--border-light); }
+    .x-small { font-size: 11px; }
+
+    /* Custom Input Group styling for Country Code Select */
+    .input-group select { max-width: 100px; border-right: none; font-size: 13px; background-color: #f8f8f8; }
+
     /* Nav Pills Styling */
     .nav-pills .nav-link {
-        color: #6c757d;
-        background-color: #f5f5f5;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.3s;
+        color: var(--text-muted);
+        background: #f8f8f8;
+        border: 1px solid var(--border-light);
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        transition: 0.3s ease;
     }
-
-    .nav-pills .nav-link:hover {
-        background-color: #e9ecef;
-    }
-
+    
     .nav-pills .nav-link.active {
-        background-color: #2E6E1F;
-        color: white;
+        background-color: var(--primary-green) !important;
+        border-color: var(--primary-green);
+        color: #fff;
     }
 
-    /* Form Controls */
     .form-control:focus {
-        border-color: #2E6E1F;
-        box-shadow: 0 0 0 0.2rem rgba(46, 110, 31, 0.25);
+        border-color: var(--primary-green);
+        box-shadow: none;
+        background: #fff;
     }
 
     .form-check-input:checked {
-        background-color: #2E6E1F;
-        border-color: #2E6E1F;
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
     }
 
-    .form-check-input:focus {
-        border-color: #2E6E1F;
-        box-shadow: 0 0 0 0.2rem rgba(46, 110, 31, 0.25);
-    }
-
-    /* Input Group */
-    .input-group select {
-        max-width: 120px;
-        border-right: 0;
-    }
-
-    .input-group input {
-        border-left: 0;
-    }
-
-    /* Password Toggle */
-    .toggle-password {
-        border: none;
-        background: none;
-        padding: 0;
-        margin-right: 10px;
-        z-index: 10;
-    }
-
-    .toggle-password:focus {
-        box-shadow: none;
-    }
-
-    /* Button Hover */
-    .btn[style*="background-color: #2E6E1F"]:hover {
-        background-color: #1a4012 !important;
-    }
-
-    /* Card Shadow */
-    .card {
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-    }
-
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-        .card {
-            margin-top: 20px;
-        }
-    }
+    .toggle-password { cursor: pointer; border-left: none; }
 </style>
 
 <script>
-    // Password toggle functionality
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('input');
-            const icon = this.querySelector('ion-icon');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.setAttribute('name', 'eye-off-outline');
-            } else {
-                input.type = 'password';
-                icon.setAttribute('name', 'eye-outline');
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.closest('.input-group').querySelector('input');
+                const icon = this.querySelector('ion-icon');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.setAttribute('name', 'eye-off-outline');
+                } else {
+                    input.type = 'password';
+                    icon.setAttribute('name', 'eye-outline');
+                }
+            });
         });
-    });
 
-    // Phone number validation
-    document.querySelectorAll('input[type="tel"]').forEach(input => {
-        input.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            
-            if (value.startsWith('0')) {
-                value = value.substring(1);
-            }
-            
-            if (value.length > 15) {
-                value = value.substring(0, 15);
-            }
-            
-            e.target.value = value;
-        });
-    });
-
-    // Password confirmation validation
-    document.querySelectorAll('input[name="password2"]').forEach(input => {
-        input.addEventListener('input', function() {
-            const formId = this.closest('form').id;
-            const password1Selector = formId === 'buyerForm' ? '#id_password1_buyer' : '#id_password1_seller';
-            const password1 = document.querySelector(password1Selector).value;
-            const password2 = this.value;
-            
-            if (password1 !== password2 && password2.length > 0) {
-                this.setCustomValidity('Passwords do not match');
-                this.classList.add('is-invalid');
-            } else {
-                this.setCustomValidity('');
-                this.classList.remove('is-invalid');
-            }
+        // Basic phone validation (numbers only)
+        document.querySelectorAll('input[type="tel"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
         });
     });
 </script>
-
 {% endblock %}
