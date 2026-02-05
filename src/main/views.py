@@ -116,6 +116,10 @@ def product_list(request):
     }
     return render(request, 'main/product_list.html', context)
 
+def marketplace(request):
+    products = Product.objects.filter(stock__gt=0).order_by("-created_at")
+    return render(request, "main/marketplace.html", {"products": products})
+
 
 def product_detail(request, product_id):
     """Product detail page"""

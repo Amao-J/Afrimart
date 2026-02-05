@@ -220,10 +220,19 @@
     <nav class="secondary-nav d-none d-lg-block">
         <div class="container d-flex justify-content-center">
             <ul class="nav">
-                <li><a href="{% url 'home' %}" class="nav-link active">{% trans "Home" %}</a></li>
-                <li><a href="#" class="nav-link">{% trans "Marketplace" %}</a></li>
+                <li>
+                    <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' or request.path == '/en/' %}active{% endif %}">
+                        {% trans "Home" %}
+                    </a>
+                </li>
+    
+                <li>
+                    <a href="{% url 'marketplace' %}" class="nav-link {% if 'marketplace' in request.path %}active{% endif %}">
+                        {% trans "Marketplace" %}
+                    </a>
+                </li>
                 <li><a href="#" class="nav-link">{% trans "Textiles" %}</a></li>
-                <li><a href="#" class="nav-link">{% trans "Artisan" %}</a></li>
+                <li><a href="#" class="nav-link">{% trans "New Arrivals" %}</a></li>
                 <li><a href="#" class="nav-link text-danger">{% trans "Sale" %}</a></li>
             </ul>
         </div>

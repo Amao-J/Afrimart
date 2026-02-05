@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/', auth.logout_view, name='logout'),
     path('profile/', auth.profile_view, name='profile'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('marketplace/', views.marketplace, name='marketplace'),
    
     path('cart/', views.cart_view, name='cart'),
     

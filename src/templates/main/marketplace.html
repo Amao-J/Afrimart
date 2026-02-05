@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+{% load currency_tags %}
+{% load i18n %}
+
+{% block title %}Marketplace Feed | Afrimart{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-green: #2e6e1f;
+        --soft-bg: #fcfcfc;
+        --border-color: #eeeeee;
+        --text-main: #1a1a1a;
+    }
+
+    /* Industrial Flat UI Reset */
+    .card, .btn, .accordion-item, .progress, .form-control, .form-select {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-success { background-color: var(--primary-green); border-color: var(--primary-green); }
+    .btn-success:hover { background-color: #1a4012; border-color: #1a4012; }
+
+    /* Category Navigation */
+    .category-pills {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 20px;
+        scrollbar-width: none;
+    }
+    .category-pills::-webkit-scrollbar { display: none; }
+
+    .pill-link {
+        padding: 10px 28px;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        transition: 0.2s;
+        background: #fff;
+    }
+    .pill-link:hover, .pill-link.active { 
+        border-color: var(--text-main); 
+        background: var(--text-main);
+        color: #fff;
+    }
+
+    /* Product Grid */
+    .product-card {
+        border: 1px solid var(--border-color);
+        background: #fff;
+        transition: border-color 0.3s ease;
+    }
+    .product-card:hover { border-color: var(--primary-green); }
+    
+    .opacity-hover {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .product-card:hover .opacity-hover { opacity: 1; }
+
+    /* Modern Sidebar Accordion */
+    .filter-accordion .accordion-button {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 1.25rem 0;
+        color: var(--text-main);
+        background: transparent;
+    }
+    .filter-accordion .accordion-button:not(.collapsed) {
+        color: var(--primary-green);
+        box-shadow: none;
+    }
+    .filter-accordion .accordion-item {
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+</style>
+
+<section class="py-5 mb-5 mt-4" style="background-color: var(--primary-green); color: #fff;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 fw-bold mb-2" style="letter-spacing: -2px;">Marketplace Feed</h1>
+                <p class="text-white-50 mb-0">The new continental standard for verified quality and secure global trade.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <span class="x-small fw-bold text-uppercase border border-white border-opacity-25 p-2 px-3" style="font-size: 10px;">
+                    <ion-icon name="globe-outline" class="me-1 align-middle"></ion-icon> Global Fulfillment Available
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="category-pills">
+        <a href="{% url 'marketplace' %}" class="pill-link {% if not request.GET.category %}active{% endif %}">All Items</a>
+        {% for category in categories %}
+            <a href="?category={{ category.id }}" class="pill-link {% if request.GET.category == category.id|stringformat:'s' %}active{% endif %}">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-lg-3 d-none d-lg-block pe-lg-5">
+            <div class="accordion filter-accordion" id="sideNav">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCats">
+                            Categories
+                        </button>
+                    </h2>
+                    <div id="collapseCats" class="accordion-collapse collapse show">
+                        <div class="accordion-body px-0 pt-0">
+                            <ul class="list-unstyled mb-0">
+                                {% for category in categories %}
+                                <li class="py-1">
+                                    <a href="?category={{ category.id }}" class="text-muted small text-decoration-none d-flex justify-content-between align-items-center">
+                                        {{ category.name }}
+                                        <span style="font-size: 10px;">({{ category.products.count }})</span>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice">
+                            Price Filter
+                        </button>
+                    </h2>
+                    <div id="collapsePrice" class="accordion-collapse collapse">
+                        <div class="accordion-body px-0 pt-0">
+                            <form method="GET" class="mt-2">
+                                {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
+                                <input type="number" name="min" class="form-control form-control-sm mb-2" placeholder="Min Price">
+                                <input type="number" name="max" class="form-control form-control-sm mb-2" placeholder="Max Price">
+                                <button type="submit" class="btn btn-dark btn-sm w-100 fw-bold" style="font-size: 10px;">APPLY</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 p-4 border bg-white shadow-0 text-center">
+                <ion-icon name="shield-checkmark-outline" class="text-success fs-2 mb-2"></ion-icon>
+                <h6 class="fw-bold x-small text-uppercase mb-2" style="font-size: 10px;">Safe Trade</h6>
+                <p class="extra-small text-muted mb-0" style="font-size: 11px;">Afrimart Escrow secures every transaction.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-6 col-md-4">
+                    <div class="product-card h-100 d-flex flex-column">
+                        <div class="position-relative overflow-hidden" style="padding-top: 130%;">
+                            {% if product.get_primary_image %}
+                                <img src="{{ product.get_primary_image }}" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-light d-flex align-items-center justify-content-center text-muted">
+                                    <ion-icon name="cube-outline" style="font-size: 40px; opacity: 0.1;"></ion-icon>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2 opacity-hover">
+                                <button class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="heart-outline"></ion-icon></button>
+                                <button onclick="addToCartAjax({{ product.id }})" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="cart-outline"></ion-icon></button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 flex-grow-1 d-flex flex-column">
+                            <span class="text-muted" style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">{{ product.category.name }}</span>
+                            <h6 class="fw-bold my-2" style="font-size: 0.9rem; line-height: 1.4;">
+                                <a href="/product/{{ product.id }}/" class="text-decoration-none text-dark">{{ product.name|truncatechars:40 }}</a>
+                            </h6>
+                            <div class="mt-auto pt-2 border-top d-flex align-items-baseline">
+                                <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
+                                {% if product.has_discount %}
+                                    <del class="text-muted" style="font-size: 10px; margin-left: 8px;">{{ product.converted_original_price }}</del>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-5">Inventory is being processed. Please check back shortly.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="position-fixed bottom-0 end-0 p-4" style="z-index: 9999;"></div>
+
+<script>
+    function addToCartAjax(productId) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+        const formData = new FormData();
+        formData.append('quantity', 1);
+
+        fetch(`/cart/ajax/add/${productId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                spawnToast(data.message, 'success');
+                const cartCountEl = document.getElementById('cart-count');
+                if (cartCountEl) cartCountEl.textContent = data.cart_count;
+            } else {
+                spawnToast(data.message, 'danger');
+            }
+        })
+        .catch(() => spawnToast('Request Failed', 'danger'));
+    }
+
+    function spawnToast(message, type) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center animate__animated animate__fadeInRight`;
+        toast.style.minWidth = '280px';
+        toast.innerHTML = `<div class="small fw-bold">${message}</div>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}
+
+{% block footer %}
+<footer class="bg-white border-top mt-5 py-5">
+    <div class="container">
+        <div class="row gy-4 mb-5">
+            <div class="col-md-4">
+                <h4 class="fw-bold mb-3" style="letter-spacing: -1px;">afrimart</h4>
+                <p class="text-muted small">The definitive marketplace for authentic African craft, textiles, and modern design. Sourced directly, delivered globally.</p>
+            </div>
+            <div class="col-6 col-md-2 offset-md-2">
+                <h6 class="fw-bold text-uppercase small mb-3">Shop</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="#" class="text-muted text-decoration-none">All Collections</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">New Arrivals</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Featured Vendors</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md-2">
+                <h6 class="fw-bold text-uppercase small mb-3">Service</h6>
+                <ul class="list-unstyled small">
+                    <li><a href="#" class="text-muted text-decoration-none">Shipping Info</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Returns Policy</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="pt-4 border-top d-flex justify-content-between align-items-center">
+            <p class="mb-0 x-small text-muted">&copy; 2026 Afrimart Marketplace. All Rights Reserved.</p>
+            <div class="d-flex gap-3 text-muted">
+                <ion-icon name="logo-instagram"></ion-icon>
+                <ion-icon name="logo-facebook"></ion-icon>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
