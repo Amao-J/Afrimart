@@ -1,37 +1,104 @@
 {% extends 'base.html' %}
 
-{% block title %}Top up Wallet{% endblock %}
+{% block title %}Top up Wallet - Afrimart{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container my-5 py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Top up Wallet</h5>
-                </div>
-                <div class="card-body">
-                    <p class="mb-3">Current balance: <strong>{{ wallet_balance }}</strong></p>
+        <div class="col-md-6 col-lg-5">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold h2 mb-1" style="letter-spacing: -1px;">Refill Funds</h1>
+                <p class="text-muted small">Instant marketplace credit for seamless transactions</p>
+            </div>
 
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Amount (NGN)</label>
-                            <input type="number" step="0.01" name="amount" class="form-control" required placeholder="Enter amount to top up">
-                        </div>
-
-                        <button class="btn btn-success w-100">Top up (Simulate)</button>
-                    </form>
-
-                    <hr>
-                    <p class="small text-muted">Note: This page simulates a top-up by directly crediting the wallet. For real payments, integrate a payment provider (e.g., Flutterwave) to handle card/transfer flows.</p>
-
-                    <div class="mt-3">
-                        <a href="{% url 'wallet' %}" class="btn btn-link">Back to Wallet</a>
+            <div class="card border p-4 p-md-5 shadow-0 bg-white">
+                <div class="mb-4 pb-4 border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="x-small fw-bold text-uppercase text-muted mb-1" style="letter-spacing: 1px;">Current Balance</h6>
+                        <h4 class="fw-bold mb-0 text-success">{{ wallet_balance }}</h4>
                     </div>
+                    <ion-icon name="wallet-outline" class="fs-1 text-muted opacity-25"></ion-icon>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label x-small fw-bold text-uppercase text-muted mb-2" style="letter-spacing: 1px;">Amount to Top Up</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0 text-muted small fw-bold">NGN</span>
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                name="amount" 
+                                class="form-control bg-light border-start-0 shadow-none" 
+                                required 
+                                placeholder="0.00"
+                                style="font-size: 16px; font-weight: 600;"
+                            >
+                        </div>
+                        <p class="extra-small text-muted mt-2">Funds will be available immediately for marketplace use.</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-lg w-100 py-3 text-uppercase fw-bold text-white border-0 mb-3" 
+                            style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1.5px;">
+                        <ion-icon name="flash-outline" class="me-2 align-middle"></ion-icon> Confirm Top Up
+                    </button>
+                    
+                    <a href="{% url 'wallet' %}" class="btn btn-outline-dark w-100 py-3 text-uppercase fw-bold shadow-none" 
+                       style="font-size: 11px; letter-spacing: 1px;">
+                        Return to My Wallet
+                    </a>
+                </form>
+
+                <div class="mt-5 p-3 bg-light border">
+                    <div class="d-flex gap-3">
+                        <ion-icon name="information-circle-outline" class="text-success fs-4"></ion-icon>
+                        <div>
+                            <h6 class="fw-bold mb-1 x-small text-uppercase">Development Note</h6>
+                            <p class="text-muted extra-small mb-0">This transaction is currently in simulation mode. Production builds will integrate secure continental payment gateways like Flutterwave or Paystack.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-4 mt-5 text-muted opacity-50">
+                <div class="text-center">
+                    <ion-icon name="shield-checkmark-outline" class="fs-4"></ion-icon>
+                    <p class="extra-small text-uppercase fw-bold mt-1">Encrypted</p>
+                </div>
+                <div class="text-center">
+                    <ion-icon name="lock-closed-outline" class="fs-4"></ion-icon>
+                    <p class="extra-small text-uppercase fw-bold mt-1">Private</p>
+                </div>
+                <div class="text-center">
+                    <ion-icon name="sync-outline" class="fs-4"></ion-icon>
+                    <p class="extra-small text-uppercase fw-bold mt-1">Instant</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Force Afrimart Identity Resets */
+    .card, .form-control, .input-group-text, .btn, .bg-light { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+    
+    .form-control:focus {
+        border-color: var(--primary-green);
+        background: #fff;
+    }
+
+    .btn-outline-dark:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .btn:hover {
+        filter: brightness(1.1);
+        transition: 0.3s ease;
+    }
+</style>
 {% endblock %}
