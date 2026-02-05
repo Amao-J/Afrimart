@@ -1,101 +1,150 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Add Product - Afrimart{% endblock %}
+{% block title %}Add Product - Afrimart Marketplace{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h1 class="mb-4">Add New Product</h1>
+<div class="container my-5 py-3">
+    <div class="row align-items-end border-bottom pb-4 mb-5 g-4">
+        <div class="col-md-8 text-center text-md-start">
+            <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">List New Product</h1>
+            <p class="text-muted small mb-0">Expand your marketplace reach by adding authentic African inventory</p>
+        </div>
+        <div class="col-md-4 text-center text-md-end">
+            <a href="{% url 'seller_products' %}" class="text-muted small fw-bold text-uppercase text-decoration-none">
+                <ion-icon name="arrow-back-outline" class="me-1 align-middle"></ion-icon> Cancel & Return
+            </a>
+        </div>
+    </div>
 
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <div class="card">
-                    <div class="card-body">
-                        <!-- Basic Information -->
-                        <h5 class="card-title mb-3">Product Information</h5>
+                <div class="card border shadow-0 bg-white">
+                    <div class="card-body p-4 p-md-5">
+                        <h5 class="fw-bold text-uppercase mb-4 pb-3 border-bottom" style="font-size: 13px; letter-spacing: 1px;">
+                            1. Core Information
+                        </h5>
 
-                        <div class="mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">Product Name *</label>
+                        <div class="mb-4">
+                            <label for="{{ form.name.id_for_label }}" class="form-label x-small fw-bold text-uppercase text-muted">Product Name *</label>
                             {{ form.name }}
                             {% if form.name.errors %}
-                                <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
+                                <div class="text-danger x-small mt-1">{{ form.name.errors.0 }}</div>
                             {% endif %}
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">Description *</label>
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label x-small fw-bold text-uppercase text-muted">Detailed Description *</label>
                             {{ form.description }}
                             {% if form.description.errors %}
-                                <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+                                <div class="text-danger x-small mt-1">{{ form.description.errors.0 }}</div>
                             {% endif %}
                         </div>
 
-                        <div class="row">
+                        <h5 class="fw-bold text-uppercase mb-4 mt-5 pb-3 border-bottom" style="font-size: 13px; letter-spacing: 1px;">
+                            2. Pricing & Logistics
+                        </h5>
+
+                        <div class="row g-4">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.price.id_for_label }}" class="form-label">Price (₦) *</label>
-                                    {{ form.price }}
-                                    {% if form.price.errors %}
-                                        <div class="invalid-feedback d-block">{{ form.price.errors }}</div>
-                                    {% endif %}
-                                </div>
+                                <label for="{{ form.price.id_for_label }}" class="form-label x-small fw-bold text-uppercase text-muted">Price (₦) *</label>
+                                {{ form.price }}
+                                {% if form.price.errors %}
+                                    <div class="text-danger x-small mt-1">{{ form.price.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.category.id_for_label }}" class="form-label">Category *</label>
-                                    {{ form.category }}
-                                    {% if form.category.errors %}
-                                        <div class="invalid-feedback d-block">{{ form.category.errors }}</div>
-                                    {% endif %}
-                                </div>
+                                <label for="{{ form.category.id_for_label }}" class="form-label x-small fw-bold text-uppercase text-muted">Marketplace Category *</label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger x-small mt-1">{{ form.category.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.stock.id_for_label }}" class="form-label x-small fw-bold text-uppercase text-muted">Initial Stock Quantity *</label>
+                                {{ form.stock }}
+                                {% if form.stock.errors %}
+                                    <div class="text-danger x-small mt-1">{{ form.stock.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.discount_percentage.id_for_label }}" class="form-label x-small fw-bold text-uppercase text-muted">Discount Percentage (%)</label>
+                                {{ form.discount_percentage }}
+                                {% if form.discount_percentage.errors %}
+                                    <div class="text-danger x-small mt-1">{{ form.discount_percentage.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.stock.id_for_label }}" class="form-label">Stock Quantity *</label>
-                                    {{ form.stock }}
-                                    {% if form.stock.errors %}
-                                        <div class="invalid-feedback d-block">{{ form.stock.errors }}</div>
-                                    {% endif %}
-                                </div>
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="form-check">
+                                {{ form.is_featured }}
+                                <label class="form-check-label x-small fw-bold text-uppercase text-muted" for="{{ form.is_featured.id_for_label }}">
+                                    Highlight as Featured Product
+                                </label>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="{{ form.discount_percentage.id_for_label }}" class="form-label">Discount % (0-100)</label>
-                                    {{ form.discount_percentage }}
-                                    {% if form.discount_percentage.errors %}
-                                        <div class="invalid-feedback d-block">{{ form.discount_percentage.errors }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            {{ form.is_featured }}
-                            <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
-                                Mark as Featured
-                            </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-check"></i> Create Product
+                <div class="mt-5 d-flex gap-3">
+                    <button type="submit" class="btn btn-lg py-3 px-5 text-uppercase fw-bold text-white border-0 shadow-none flex-grow-1" 
+                            style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1.5px;">
+                        <ion-icon name="checkmark-circle-outline" class="me-2 align-middle"></ion-icon> Create Product
                     </button>
-                    <a href="{% url 'seller_products' %}" class="btn btn-secondary btn-lg ms-2">Cancel</a>
+                    <a href="{% url 'seller_products' %}" class="btn btn-outline-dark btn-lg px-5 py-3 text-uppercase fw-bold shadow-none" 
+                       style="font-size: 11px; letter-spacing: 1px;">
+                        Discard
+                    </a>
                 </div>
             </form>
 
-            <div class="alert alert-info mt-4">
-                <i class="fas fa-info-circle"></i>
-                <strong>Note:</strong> After creating the product, you'll be able to upload images for it.
+            <div class="mt-5 p-4 border bg-light d-flex gap-3">
+                <ion-icon name="information-circle-outline" class="text-success fs-4"></ion-icon>
+                <div>
+                    <h6 class="fw-bold mb-1 x-small text-uppercase">Asset Management</h6>
+                    <p class="text-muted extra-small mb-0">After initial creation, you will be redirected to the media manager to upload high-resolution product imagery and certifications.</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Industrial UI Identity Resets */
+    .card, .btn, .form-control, .form-select, .border, .bg-light, .form-check-input { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+    
+    /* Django Form Integration Styling */
+    .form-control, .form-select {
+        border: 1px solid var(--border-light);
+        padding: 12px 15px;
+        font-size: 14px;
+        background-color: #f8f8f8;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-green);
+        background-color: #fff;
+        box-shadow: none;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+
+    .btn:hover {
+        filter: brightness(1.1);
+        transition: 0.3s ease-in-out;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+    }
+</style>
 {% endblock %}

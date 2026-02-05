@@ -1,73 +1,83 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Seller Account Pending - Afrimart{% endblock %}
+{% block title %}Application Pending - Afrimart{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card border-info shadow-lg">
-                <div class="card-body text-center py-5">
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card border bg-white p-4 p-md-5 shadow-0">
+                <div class="text-center">
                     <div class="mb-4">
-                        <i class="fas fa-hourglass-half fa-5x text-warning"></i>
+                        <ion-icon name="time-outline" style="font-size: 80px; color: var(--primary-green); opacity: 0.8;"></ion-icon>
                     </div>
                     
-                    <h2 class="card-title mb-3">Your Seller Account is Pending Approval</h2>
-                    
-                    <p class="card-text lead mb-4">
-                        Thank you for joining Afrimart as a seller! Your account has been submitted for review.
-                    </p>
-                    
-                    <div class="alert alert-info mb-4">
-                        <h5 class="alert-heading mb-3">What Happens Next?</h5>
-                        <ul class="text-start" style="max-width: 400px; margin: auto;">
-                            <li>Our team will review your seller information</li>
-                            <li>We'll verify your business details</li>
-                            <li>You'll receive an email confirmation once approved</li>
-                            <li>Approval typically takes 1-2 business days</li>
-                        </ul>
-                    </div>
+                    <h2 class="fw-bold h3 mb-2" style="letter-spacing: -1px;">Application Under Review</h2>
+                    <p class="text-muted small mb-5">Thank you for joining the Afrimart marketplace. Our curators are currently verifying your credentials.</p>
+                </div>
 
-                    {% if store_name %}
-                        <div class="card bg-light mb-4">
-                            <div class="card-body">
-                                <h6 class="card-subtitle text-muted">Your Store Information</h6>
-                                <h5 class="card-title mt-2">{{ store_name }}</h5>
-                            </div>
+                <div class="row g-3 mb-5 text-start">
+                    <div class="col-md-6">
+                        <div class="p-3 border bg-light h-100">
+                            <h6 class="x-small fw-bold text-uppercase text-success mb-2" style="letter-spacing: 1px;">Verification</h6>
+                            <p class="extra-small text-muted mb-0">Our team is manually reviewing your seller profile and business documentation.</p>
                         </div>
-                    {% endif %}
-
-                    <div class="d-flex gap-2 justify-content-center">
-                        <a href="{% url 'profile' %}" class="btn btn-primary">
-                            <i class="fas fa-user-edit"></i> View Your Profile
-                        </a>
-                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-home"></i> Browse Afrimart
-                        </a>
                     </div>
-
-                    <hr class="my-4">
-
-                    <div class="text-muted">
-                        <p class="mb-2">
-                            <strong>Need Help?</strong><br>
-                            <a href="mailto:support@afrimart.com">Contact our support team</a>
-                        </p>
+                    <div class="col-md-6">
+                        <div class="p-3 border bg-light h-100">
+                            <h6 class="x-small fw-bold text-uppercase text-success mb-2" style="letter-spacing: 1px;">Timeline</h6>
+                            <p class="extra-small text-muted mb-0">The approval process typically takes 24-48 business hours.</p>
+                        </div>
                     </div>
+                </div>
+
+                {% if store_name %}
+                    <div class="border p-4 mb-5 bg-white text-center">
+                        <span class="x-small fw-bold text-uppercase text-muted d-block mb-2" style="letter-spacing: 1px;">Reserved Brand Identity</span>
+                        <h4 class="fw-bold mb-0" style="color: var(--primary-green);">{{ store_name }}</h4>
+                    </div>
+                {% endif %}
+
+                <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                    <a href="{% url 'profile' %}" class="btn btn-dark py-3 px-4 text-uppercase fw-bold border-0 flex-grow-1" 
+                       style="background-color: var(--primary-green); font-size: 12px; letter-spacing: 1px;">
+                        <ion-icon name="person-circle-outline" class="me-2 align-middle"></ion-icon> Complete Your Profile
+                    </a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-dark py-3 px-4 text-uppercase fw-bold" 
+                       style="font-size: 11px; letter-spacing: 1px;">
+                        Browse Marketplace
+                    </a>
+                </div>
+
+                <div class="mt-5 pt-4 border-top text-center">
+                    <p class="extra-small text-muted text-uppercase fw-bold mb-1">Assistance Required?</p>
+                    <a href="mailto:contactus@afrimart.africa" class="small fw-bold text-dark text-decoration-underline">contactus@afrimart.africa</a>
                 </div>
             </div>
 
-            <div class="alert alert-light mt-4">
-                <i class="fas fa-lightbulb"></i>
-                <strong>Tip:</strong> While you wait for approval, you can complete your profile and prepare your product listings.
+            <div class="mt-4 p-3 border bg-light d-flex align-items-center gap-3">
+                <ion-icon name="bulb-outline" class="text-success fs-4"></ion-icon>
+                <p class="extra-small text-muted mb-0"><strong>Tip:</strong> Ensure your bank details are correctly set in your profile to avoid payout delays after approval.</p>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .card {
-        border-radius: 10px;
+    /* Industrial UI Identity Resets */
+    .card, .btn, .border, .bg-light, .badge { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+
+    .btn:hover {
+        filter: brightness(1.1);
+        transition: 0.3s ease;
+    }
+
+    .btn-outline-dark:hover {
+        background-color: #000;
+        color: #fff;
     }
 </style>
 {% endblock %}

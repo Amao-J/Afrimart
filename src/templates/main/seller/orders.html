@@ -1,33 +1,31 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block title %}Seller Orders - Afrimart{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h1>My Orders</h1>
-            <p class="text-muted">Orders from customers who purchased your products</p>
-        </div>
+<div class="container my-5 py-3">
+    <div class="border-bottom pb-3 mb-5">
+        <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">Order Management</h1>
+        <p class="text-muted small mb-0">Track and fulfill incoming marketplace transactions</p>
     </div>
 
-    <!-- Status Filter -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="btn-group" role="group">
-                <a href="{% url 'seller_orders' %}" class="btn btn-outline-primary {% if not status_filter %}active{% endif %}">
-                    All Orders
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'seller_orders' %}" class="filter-pill {% if not status_filter %}active{% endif %}">
+                    All Transactions
                 </a>
-                <a href="{% url 'seller_orders' %}?status=pending" class="btn btn-outline-warning {% if status_filter == 'pending' %}active{% endif %}">
+                <a href="{% url 'seller_orders' %}?status=pending" class="filter-pill {% if status_filter == 'pending' %}active{% endif %}">
                     Pending
                 </a>
-                <a href="{% url 'seller_orders' %}?status=processing" class="btn btn-outline-info {% if status_filter == 'processing' %}active{% endif %}">
+                <a href="{% url 'seller_orders' %}?status=processing" class="filter-pill {% if status_filter == 'processing' %}active{% endif %}">
                     Processing
                 </a>
-                <a href="{% url 'seller_orders' %}?status=shipped" class="btn btn-outline-secondary {% if status_filter == 'shipped' %}active{% endif %}">
+                <a href="{% url 'seller_orders' %}?status=shipped" class="filter-pill {% if status_filter == 'shipped' %}active{% endif %}">
                     Shipped
                 </a>
-                <a href="{% url 'seller_orders' %}?status=delivered" class="btn btn-outline-success {% if status_filter == 'delivered' %}active{% endif %}">
+                <a href="{% url 'seller_orders' %}?status=delivered" class="filter-pill {% if status_filter == 'delivered' %}active{% endif %}">
                     Delivered
                 </a>
             </div>
@@ -36,56 +34,58 @@
 
     {% if orders %}
         <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Amount</th>
-                        <th>Items</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
+            <table class="table table-hover align-middle border bg-white">
+                <thead class="bg-light">
+                    <tr class="x-small fw-bold text-uppercase text-muted" style="letter-spacing: 1px;">
+                        <th class="border-0 px-3 py-3">Reference</th>
+                        <th class="border-0 py-3">Client</th>
+                        <th class="border-0 py-3 text-center">Volume</th>
+                        <th class="border-0 py-3">Value</th>
+                        <th class="border-0 py-3">Logistics Status</th>
+                        <th class="border-0 py-3">Timeline</th>
+                        <th class="border-0 py-3 text-end pe-3">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="small fw-semibold text-dark">
                     {% for order in orders %}
                         <tr>
-                            <td>
-                                <strong>#{{ order.id }}</strong>
+                            <td class="px-3 py-4">
+                                <span class="text-muted">#</span>{{ order.id }}
                             </td>
                             <td>
-                                {{ order.buyer.get_full_name|default:order.buyer.username }}
-                                <br>
-                                <small class="text-muted">{{ order.buyer.email }}</small>
+                                <div class="d-flex flex-column">
+                                    <span>{{ order.buyer.get_full_name|default:order.buyer.username }}</span>
+                                    <span class="extra-small text-muted fw-normal">{{ order.buyer.email }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border fw-bold">{{ order.items.count }} Item(s)</span>
                             </td>
                             <td>
-                                <strong>₦{{ order.total_amount|floatformat:2 }}</strong>
-                                <br>
-                                <small class="text-muted">{{ order.currency }}</small>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">{{ order.items.count }} item(s)</span>
+                                <div class="d-flex flex-column">
+                                    <span class="text-success">₦{{ order.total_amount|floatformat:2 }}</span>
+                                    <span class="extra-small text-muted opacity-75 uppercase">{{ order.currency }}</span>
+                                </div>
                             </td>
                             <td>
                                 {% if order.status == 'pending' %}
-                                    <span class="badge bg-warning">Pending</span>
+                                    <span class="status-indicator bg-warning"></span> <span class="x-small text-uppercase">Pending</span>
                                 {% elif order.status == 'processing' %}
-                                    <span class="badge bg-info">Processing</span>
+                                    <span class="status-indicator bg-info"></span> <span class="x-small text-uppercase">Processing</span>
                                 {% elif order.status == 'shipped' %}
-                                    <span class="badge bg-secondary">Shipped</span>
+                                    <span class="status-indicator bg-secondary"></span> <span class="x-small text-uppercase">Shipped</span>
                                 {% elif order.status == 'delivered' %}
-                                    <span class="badge bg-success">Delivered</span>
+                                    <span class="status-indicator" style="background-color: var(--primary-green);"></span> <span class="x-small text-uppercase text-success">Delivered</span>
                                 {% elif order.status == 'cancelled' %}
-                                    <span class="badge bg-danger">Cancelled</span>
+                                    <span class="status-indicator bg-danger"></span> <span class="x-small text-uppercase text-danger">Cancelled</span>
                                 {% endif %}
                             </td>
                             <td>
-                                <small>{{ order.created_at|date:"M d, Y" }}</small>
+                                <span class="extra-small text-muted">{{ order.created_at|date:"M d, Y" }}</span>
                             </td>
-                            <td>
-                                <a href="{% url 'seller_order_detail' order.id %}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View
+                            <td class="text-end pe-3">
+                                <a href="{% url 'seller_order_detail' order.id %}" class="btn btn-sm btn-outline-dark text-uppercase fw-bold p-2 px-3" style="font-size: 10px; letter-spacing: 1px;">
+                                    Inspect &rarr;
                                 </a>
                             </td>
                         </tr>
@@ -94,14 +94,58 @@
             </table>
         </div>
     {% else %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
+        <div class="text-center py-5 border bg-white shadow-0">
+            <ion-icon name="receipt-outline" style="font-size: 60px;" class="text-muted opacity-25 mb-3"></ion-icon>
             {% if status_filter %}
-                No orders with status "{{ status_filter }}"
+                <h5 class="fw-bold">No {{ status_filter }} orders found</h5>
+                <p class="text-muted small">Try filtering by a different status or check back later.</p>
+                <a href="{% url 'seller_orders' %}" class="text-success small fw-bold text-decoration-none">View All Orders &rarr;</a>
             {% else %}
-                You don't have any orders yet. Keep working on your products!
+                <h5 class="fw-bold">Awaiting Transactions</h5>
+                <p class="text-muted small">You haven't received any orders yet. Ensure your products are listed and active.</p>
             {% endif %}
         </div>
     {% endif %}
 </div>
+
+<style>
+    /* Industrial UI Overrides */
+    .btn, .table, .border, .bg-light, .badge { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+
+    /* Filter Pills Style */
+    .filter-pill {
+        padding: 8px 20px;
+        border: 1px solid var(--border-light);
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.2s ease-in-out;
+        background: #fff;
+    }
+    .filter-pill:hover { border-color: var(--text-main); color: var(--text-main); }
+    .filter-pill.active { border-color: var(--primary-green); color: #fff; background-color: var(--primary-green); }
+
+    /* Custom Status Dots */
+    .status-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50% !important; /* Keep indicators as dots */
+        margin-right: 5px;
+    }
+
+    /* Sublte Table Styling */
+    .table-hover tbody tr:hover {
+        background-color: #fcfcfc !important;
+        border-left: 3px solid var(--primary-green);
+        transition: 0.1s;
+    }
+    
+    .table td, .table th { border-color: var(--border-light); }
+</style>
 {% endblock %}
