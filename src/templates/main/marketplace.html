@@ -171,7 +171,7 @@
             <div class="row g-4">
                 {% for product in products %}
                 <div class="col-6 col-md-4">
-                    <div class="product-card h-100 d-flex flex-column">
+                    <a href="/product/{{ product.id }}/" class="product-card h-100 d-flex flex-column">
                         <div class="position-relative overflow-hidden" style="padding-top: 130%;">
                             {% if product.get_primary_image %}
                                 <img src="{{ product.get_primary_image }}" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
@@ -190,7 +190,7 @@
                         <div class="p-3 flex-grow-1 d-flex flex-column">
                             <span class="text-muted" style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">{{ product.category.name }}</span>
                             <h6 class="fw-bold my-2" style="font-size: 0.9rem; line-height: 1.4;">
-                                <a href="/product/{{ product.id }}/" class="text-decoration-none text-dark">{{ product.name|truncatechars:40 }}</a>
+                                {{ product.name|truncatechars:40 }}
                             </h6>
                             <div class="mt-auto pt-2 border-top d-flex align-items-baseline">
                                 <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
@@ -199,7 +199,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 {% empty %}
                 <div class="col-12 text-center py-5">
@@ -207,6 +207,34 @@
                 </div>
                 {% endfor %}
             </div>
+
+    <nav class="mt-5 pt-4 border-top">
+        <ul class="pagination justify-content-center border-0 gap-2">
+          
+                <li class="page-item">
+                    <a class="page-link border text-dark text-uppercase fw-bold px-3 py-2" style="font-size: 10px; letter-spacing: 1px;" href="">
+                        &larr; Prev
+                    </a>
+                </li>
+        
+                    <li class="page-item active">
+                        <span class="page-link border-0 text-white fw-bold px-3 py-2" style="background-color: var(--primary-green); font-size: 10px;">1</span>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link border text-dark fw-bold px-3 py-2" style="font-size: 10px;" href="">2</a>
+                    </li>
+
+            
+                <li class="page-item">
+                    <a class="page-link border text-dark text-uppercase fw-bold px-3 py-2" style="font-size: 10px; letter-spacing: 1px;" href="">
+                        Next &rarr;
+                    </a>
+                </li>
+            
+        </ul>
+    </nav>
+    
         </div>
     </div>
 </div>
