@@ -27,4 +27,5 @@ urlpatterns = [
 
 urlpatterns += i18n_patterns(
     path('', include('main.urls')),
+    path('escrow/', include('escrow.urls')),
 )

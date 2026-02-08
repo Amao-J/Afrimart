@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Escrow Transaction - {{ escrow.transaction_id }}{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-3">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="{% url 'escrow:dashboard' %}" class="text-decoration-none text-muted small mb-2 d-block">
+        <ion-icon name="arrow-back" class="align-middle"></ion-icon> Back to Dashboard
+      </a>
+      <h1 class="fw-bold h3 mb-0" style="letter-spacing: -1px;">
+        Escrow Transaction
+      </h1>
+      <p class="text-muted small mb-0">{{ escrow.transaction_id }}</p>
+    </div>
+    <div class="text-end">
+      {% if escrow.status == 'pending_payment' %}
+        <span class="badge bg-warning text-dark px-3 py-2 fs-6">Pending Payment</span>
+      {% elif escrow.status == 'in_escrow' %}
+        <span class="badge bg-info px-3 py-2 fs-6">In Escrow</span>
+      {% elif escrow.status == 'shipped' %}
+        <span class="badge bg-primary px-3 py-2 fs-6">Shipped</span>
+      {% elif escrow.status == 'delivered' %}
+        <span class="badge bg-success px-3 py-2 fs-6">Delivered</span>
+      {% elif escrow.status == 'completed' %}
+        <span class="badge bg-success px-3 py-2 fs-6">Completed</span>
+      {% elif escrow.status == 'disputed' %}
+        <span class="badge bg-danger px-3 py-2 fs-6">Disputed</span>
+      {% elif escrow.status == 'refunded' %}
+        <span class="badge bg-secondary px-3 py-2 fs-6">Refunded</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column -->
+    <div class="col-lg-8">
+      <!-- Transaction Info -->
+      <div class="border bg-white p-4 mb-4">
+        <h5 class="fw-bold text-uppercase mb-4 border-bottom pb-3" style="font-size: 13px; letter-spacing: 1px;">
+          Transaction Information
+        </h5>
+        
+        <div class="row g-4">
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Order Number</p>
+            <p class="fw-bold mb-0">
+              <a href="{% url 'order_detail' escrow.order.id %}" class="text-decoration-none">
+                #{{ escrow.order.id }}
+              </a>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Escrow Amount</p>
+            <p class="fw-bold mb-0 text-success">₦{{ escrow.amount|floatformat:2|intcomma }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Escrow Fee (2.5%)</p>
+            <p class="fw-bold mb-0">₦{{ escrow.escrow_fee|floatformat:2|intcomma }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Total Paid</p>
+            <p class="fw-bold mb-0">₦{{ escrow.total_amount|floatformat:2|intcomma }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Buyer</p>
+            <p class="fw-bold mb-0">{{ escrow.buyer.get_full_name|default:escrow.buyer.username }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Seller</p>
+            <p class="fw-bold mb-0">{{ escrow.seller.get_full_name|default:escrow.seller.username }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Created</p>
+            <p class="fw-bold mb-0">{{ escrow.created_at|date:"F d, Y g:i A" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Days in Escrow</p>
+            <p class="fw-bold mb-0">{{ escrow.days_in_escrow }} days</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status History -->
+      {% if status_history %}
+      <div class="border bg-white p-4 mb-4">
+        <h5 class="fw-bold text-uppercase mb-4 border-bottom pb-3" style="font-size: 13px; letter-spacing: 1px;">
+          Transaction Timeline
+        </h5>
+        
+        <div class="timeline">
+          {% for history in status_history %}
+          <div class="timeline-item">
+            <div class="timeline-marker bg-success"></div>
+            <div class="timeline-content">
+              <p class="fw-bold small mb-1">{{ history.new_status|title|replace:"_":" " }}</p>
+              <p class="x-small text-muted mb-1">{{ history.reason }}</p>
+              <p class="extra-small text-muted mb-0">{{ history.created_at|date:"F d, Y g:i A" }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Dispute Section -->
+      {% if dispute %}
+      <div class="border border-danger bg-white p-4">
+        <h5 class="fw-bold text-uppercase mb-4 text-danger" style="font-size: 13px; letter-spacing: 1px;">
+          <ion-icon name="warning" class="align-middle"></ion-icon>
+          Active Dispute
+        </h5>
+        <div class="alert alert-danger mb-3">
+          <p class="fw-bold small mb-1">Status: {{ dispute.get_status_display }}</p>
+          <p class="small mb-1"><strong>Reason:</strong> {{ dispute.get_reason_display }}</p>
+        </div>
+        {% if is_buyer and dispute.buyer_evidence %}
+          <p class="small mb-2"><strong>Your Evidence:</strong></p>
+          <p class="small text-muted mb-3">{{ dispute.buyer_evidence }}</p>
+        {% endif %}
+        {% if is_seller and dispute.seller_evidence %}
+          <p class="small mb-2"><strong>Your Response:</strong></p>
+          <p class="small text-muted mb-3">{{ dispute.seller_evidence }}</p>
+        {% endif %}
+        <p class="x-small text-muted mb-0">Opened {{ dispute.days_open }} days ago</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right Column - Actions -->
+    <div class="col-lg-4">
+      <div class="border bg-white p-4 position-sticky" style="top: 120px;">
+        <h5 class="fw-bold text-uppercase mb-4 border-bottom pb-3" style="font-size: 13px; letter-spacing: 1px;">
+          Actions
+        </h5>
+
+        {% if is_buyer %}
+          {% if escrow.status == 'pending_payment' %}
+            <a href="{% url 'escrow:payment' escrow.id %}" class="btn btn-success w-100 fw-bold text-uppercase mb-3">
+              <ion-icon name="card" class="align-middle me-1"></ion-icon>
+              Complete Payment
+            </a>
+          
+          {% elif can_confirm_delivery %}
+            <form method="POST" action="{% url 'escrow:confirm_delivery' escrow.id %}" class="mb-3">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary w-100 fw-bold text-uppercase mb-2" 
+                      onclick="return confirm('Confirm you received this order in good condition?')">
+                <ion-icon name="checkmark-circle" class="align-middle me-1"></ion-icon>
+                Confirm Delivery
+              </button>
+            </form>
+          
+          {% elif can_release %}
+            <form method="POST" action="{% url 'escrow:release_funds' escrow.id %}" class="mb-3">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success w-100 fw-bold text-uppercase mb-2" 
+                      onclick="return confirm('Release ₦{{ escrow.amount|floatformat:2|intcomma }} to seller? This cannot be undone.')">
+                <ion-icon name="cash" class="align-middle me-1"></ion-icon>
+                Release Payment
+              </button>
+            </form>
+            <p class="x-small text-muted mb-4 text-center">
+              Release ₦{{ escrow.amount|floatformat:2|intcomma }} to seller
+            </p>
+          
+          {% elif escrow.status == 'completed' %}
+            <div class="alert alert-success mb-0">
+              <ion-icon name="checkmark-circle" class="align-middle me-1"></ion-icon>
+              <strong>Completed</strong>
+              <p class="small mb-0 mt-2">This transaction is complete.</p>
+            </div>
+          
+          {% elif escrow.status == 'refunded' %}
+            <div class="alert alert-info mb-0">
+              <ion-icon name="checkmark-circle" class="align-middle me-1"></ion-icon>
+              <strong>Refunded</strong>
+              <p class="small mb-0 mt-2">₦{{ escrow.total_amount|floatformat:2|intcomma }} refunded to your wallet.</p>
+            </div>
+          {% endif %}
+
+          {% if can_dispute and not dispute %}
+            <a href="{% url 'escrow:raise_dispute' escrow.id %}" 
+               class="btn btn-outline-danger w-100 fw-bold text-uppercase mb-3">
+              <ion-icon name="alert-circle" class="align-middle me-1"></ion-icon>
+              Report Problem
+            </a>
+          {% endif %}
+
+        {% elif is_seller %}
+          {% if can_ship %}
+            <a href="{% url 'escrow:mark_shipped' escrow.id %}" 
+               class="btn btn-primary w-100 fw-bold text-uppercase mb-3">
+              <ion-icon name="rocket" class="align-middle me-1"></ion-icon>
+              Mark as Shipped
+            </a>
+          
+          {% elif escrow.status in ['shipped', 'delivered'] %}
+            <div class="alert alert-warning mb-0">
+              <ion-icon name="time" class="align-middle me-1"></ion-icon>
+              <strong>Awaiting Buyer</strong>
+              <p class="small mb-0 mt-2">
+                You'll receive ₦{{ escrow.amount|floatformat:2|intcomma }} once buyer confirms delivery.
+              </p>
+            </div>
+          
+          {% elif escrow.status == 'completed' %}
+            <div class="alert alert-success mb-0">
+              <ion-icon name="checkmark-circle" class="align-middle me-1"></ion-icon>
+              <strong>Payment Received</strong>
+              <p class="small mb-0 mt-2">
+                ₦{{ escrow.amount|floatformat:2|intcomma }} credited to your wallet.
+              </p>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <!-- Help -->
+        <div class="border-top pt-4 mt-4">
+          <p class="x-small text-muted text-uppercase fw-bold mb-2">Need Help?</p>
+          <a href="{% url 'escrow:help' %}" class="btn btn-sm btn-outline-secondary w-100 fw-bold text-uppercase">
+            Escrow Guide
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .x-small { font-size: 11px; }
+  .extra-small { font-size: 10px; }
+  
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+  }
+  
+  .timeline-item {
+    position: relative;
+    padding-bottom: 30px;
+  }
+  
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+  
+  .timeline-marker {
+    position: absolute;
+    left: -25px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+  }
+</style>
+{% endblock %}

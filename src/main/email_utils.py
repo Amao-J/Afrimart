@@ -1,7 +1,7 @@
 # main/email_utils.py
 """
-Email utility functions for Techfy Africa E-Commerce Platform
-All emails sent from @techfy.africa domain
+Email utility functions for Afrimart Africa E-Commerce Platform
+All emails sent from @Afrimart.africa domain
 """
 
 from django.core.mail import EmailMultiAlternatives, send_mail
@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 def send_order_confirmation_email(order):
     """
     Send order confirmation email to buyer
-    From: orders@techfy.africa
+    From: orders@Afrimart.africa
     """
     try:
-        subject = f'Order Confirmation - #{order.id} - Techfy Africa'
+        subject = f'Order Confirmation - #{order.id} - Afrimart'
         
         context = {
             'order': order,
@@ -35,7 +35,7 @@ def send_order_confirmation_email(order):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Orders <{settings.ORDERS_EMAIL}>',
+            from_email=f'Afrimart Orders <{settings.ORDERS_EMAIL}>',
             to=[order.buyer.email],
             reply_to=[settings.SUPPORT_EMAIL],
         )
@@ -53,10 +53,10 @@ def send_order_confirmation_email(order):
 def send_payment_confirmation_email(order):
     """
     Send payment confirmation email to buyer
-    From: orders@techfy.africa
+  
     """
     try:
-        subject = f'Payment Received - Order #{order.id} - Techfy Africa'
+        subject = f'Payment Received - Order #{order.id} - Afrimart'
         
         context = {
             'order': order,
@@ -70,7 +70,7 @@ def send_payment_confirmation_email(order):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Orders <{settings.ORDERS_EMAIL}>',
+            from_email=f'Afrimart Orders <{settings.ORDERS_EMAIL}>',
             to=[order.buyer.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -87,7 +87,7 @@ def send_payment_confirmation_email(order):
 def send_order_shipped_email(order):
     """
     Send order shipped notification to buyer
-    From: orders@techfy.africa
+    From: orders@Afrimart.africa
     """
     try:
         subject = f'Your Order Has Been Shipped - #{order.id}'
@@ -105,7 +105,7 @@ def send_order_shipped_email(order):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Orders <{settings.ORDERS_EMAIL}>',
+            from_email=f'Afrimart Orders <{settings.ORDERS_EMAIL}>',
             to=[order.buyer.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -122,7 +122,7 @@ def send_order_shipped_email(order):
 def send_escrow_payment_received_email(escrow):
     """
     Notify buyer that escrow payment was received
-    From: escrow@techfy.africa
+   
     """
     try:
         subject = f'Escrow Payment Received - {escrow.transaction_id}'
@@ -141,7 +141,7 @@ def send_escrow_payment_received_email(escrow):
         email_buyer = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Escrow <{settings.ESCROW_EMAIL}>',
+            from_email=f'Afrimart Escrow <{settings.ESCROW_EMAIL}>',
             to=[escrow.buyer.email],
         )
         email_buyer.attach_alternative(html_content, "text/html")
@@ -152,7 +152,7 @@ def send_escrow_payment_received_email(escrow):
         email_seller = EmailMultiAlternatives(
             subject=seller_subject,
             body=text_content,
-            from_email=f'Techfy Escrow <{settings.ESCROW_EMAIL}>',
+            from_email=f'Afrimart Escrow <{settings.ESCROW_EMAIL}>',
             to=[escrow.seller.email],
         )
         email_seller.attach_alternative(html_content, "text/html")
@@ -169,7 +169,7 @@ def send_escrow_payment_received_email(escrow):
 def send_escrow_shipped_email(escrow):
     """
     Notify buyer that order has been shipped
-    From: escrow@techfy.africa
+    From: escrow@afrimart.africa
     """
     try:
         subject = f'Your Escrow Order Has Been Shipped - {escrow.transaction_id}'
@@ -187,7 +187,7 @@ def send_escrow_shipped_email(escrow):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Escrow <{settings.ESCROW_EMAIL}>',
+            from_email=f'Afrimart Escrow <{settings.ESCROW_EMAIL}>',
             to=[escrow.buyer.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -204,7 +204,7 @@ def send_escrow_shipped_email(escrow):
 def send_escrow_delivered_email(escrow):
     """
     Notify seller that delivery was confirmed
-    From: escrow@techfy.africa
+    From: escrow@Afrimart.africa
     """
     try:
         subject = f'Delivery Confirmed - {escrow.transaction_id}'
@@ -223,7 +223,7 @@ def send_escrow_delivered_email(escrow):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Escrow <{settings.ESCROW_EMAIL}>',
+            from_email=f'Afrimart Escrow <{settings.ESCROW_EMAIL}>',
             to=[escrow.seller.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -240,7 +240,7 @@ def send_escrow_delivered_email(escrow):
 def send_escrow_funds_released_email(escrow):
     """
     Notify seller that funds have been released
-    From: escrow@techfy.africa
+    From: escrow@Afrimart.africa
     """
     try:
         subject = f'Escrow Funds Released - ₦{escrow.amount:,.2f}'
@@ -258,7 +258,7 @@ def send_escrow_funds_released_email(escrow):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Escrow <{settings.ESCROW_EMAIL}>',
+            from_email=f'Afrimart Escrow <{settings.ESCROW_EMAIL}>',
             to=[escrow.seller.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -275,7 +275,7 @@ def send_escrow_funds_released_email(escrow):
 def send_escrow_dispute_email(dispute):
     """
     Notify both parties about dispute
-    From: escrow@techfy.africa
+    From: escrow@Afrimart.africa
     """
     try:
         escrow = dispute.escrow
@@ -296,7 +296,7 @@ def send_escrow_dispute_email(dispute):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Escrow <{settings.ESCROW_EMAIL}>',
+            from_email=f'Afrimart Escrow <{settings.ESCROW_EMAIL}>',
             to=recipients,
         )
         email.attach_alternative(html_content, "text/html")
@@ -313,7 +313,7 @@ def send_escrow_dispute_email(dispute):
 def send_order_cancelled_email(order):
     """
     Notify buyer that order was cancelled
-    From: orders@techfy.africa
+    From: orders@Afrimart.africa
     """
     try:
         subject = f'Order Cancelled - #{order.id}'
@@ -331,7 +331,7 @@ def send_order_cancelled_email(order):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Orders <{settings.ORDERS_EMAIL}>',
+            from_email=f'Afrimart Orders <{settings.ORDERS_EMAIL}>',
             to=[order.buyer.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -348,10 +348,10 @@ def send_order_cancelled_email(order):
 def send_welcome_email(user):
     """
     Send welcome email to new users
-    From: noreply@techfy.africa
+    From: noreply@Afrimart.africa
     """
     try:
-        subject = 'Welcome to Techfy Africa!'
+        subject = 'Welcome to Afrimart Africa!'
         
         context = {
             'user': user,
@@ -364,7 +364,7 @@ def send_welcome_email(user):
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=f'Techfy Africa <{settings.NOREPLY_EMAIL}>',
+            from_email=f'Afrimart Africa <{settings.NOREPLY_EMAIL}>',
             to=[user.email],
         )
         email.attach_alternative(html_content, "text/html")
@@ -381,8 +381,8 @@ def send_welcome_email(user):
 def send_low_stock_alert(product):
     """
     Alert admin about low stock
-    From: noreply@techfy.africa
-    To: admin@techfy.africa
+    From: noreply@Afrimart.africa
+    To: admin@Afrimart.africa
     """
     try:
         subject = f'Low Stock Alert - {product.name}'

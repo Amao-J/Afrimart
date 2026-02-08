@@ -116,12 +116,47 @@
         <div class="mb-5">
             <h5 class="fw-bold text-uppercase mb-4" style="font-size: 13px; letter-spacing: 1px;">3. Payment Secure Gateway</h5>
             <div class="border bg-white">
+                <!-- Escrow Payment Option (New) -->
+                <div class="p-3 border-bottom bg-light">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method" id="escrowPayment" value="escrow" checked>
+                        <label class="form-check-label fw-bold small" for="escrowPayment">
+                            <ion-icon name="shield-checkmark" class="text-success align-middle me-1"></ion-icon>
+                            Escrow Payment
+                        </label>
+                    </div>
+                    <div id="escrowDetails" class="mt-3 px-3">
+                        <div class="alert alert-success border-0 mb-0" style="background-color: #f0f9f4;">
+                            <h6 class="fw-bold small mb-2">
+                                <ion-icon name="information-circle" class="align-middle me-1"></ion-icon>
+                                What is Escrow Payment?
+                            </h6>
+                            <ul class="x-small mb-0 ps-3">
+                                <li>Your money is held securely until you confirm delivery</li>
+                                <li>Seller gets paid only after you're satisfied</li>
+                                <li>100% buyer protection against fraud</li>
+                                <li>Free dispute resolution service</li>
+                            </ul>
+                            <div class="mt-3 p-2 bg-white border-start border-success border-3">
+                                <p class="extra-small mb-1 text-muted"><strong>How it works:</strong></p>
+                                <ol class="extra-small mb-0 ps-3">
+                                    <li>Pay now → Money held in escrow</li>
+                                    <li>Seller ships your order</li>
+                                    <li>You receive & confirm delivery</li>
+                                    <li>Seller receives payment</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
                 <div class="p-3 border-bottom">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="card" checked>
-                        <label class="form-check-label fw-bold small" for="creditCard">Credit or Debit Card</label>
+                        <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="card">
+                        <label class="form-check-label fw-bold small" for="creditCard">Credit or Debit Card (Direct)</label>
                     </div>
-                    <div id="cardDetails" class="mt-4 px-3">
+                    <div id="cardDetails" class="mt-4 px-3" style="display: none;">
                         <div class="mb-3">
                             <label class="form-label x-small fw-bold text-muted">Card Number</label>
                             <input type="text" class="form-control bg-light border-0" id="cardNumber" placeholder="0000 0000 0000 0000">
@@ -138,6 +173,28 @@
                         </div>
                     </div>
                 </div>
+                <div class="p-3">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment_method" id="walletPayment" value="wallet">
+                <label class="form-check-label fw-bold small" for="walletPayment">
+                    <ion-icon name="wallet" class="text-primary align-middle me-1"></ion-icon>
+                    Pay with Wallet
+                </label>
+            </div>
+            <div id="walletDetails" class="mt-3 px-3" style="display: none;">
+                {% if user.is_authenticated %}
+                <p class="x-small text-muted mb-2">
+                    Available Balance: <strong class="text-success">₦{{ user.wallet.balance|floatformat:2|intcomma }}</strong>
+                </p>
+                {% if user.wallet.balance < cart_total %}
+                <div class="alert alert-warning border-0 mb-0 x-small">
+                    Insufficient balance. Please <a href="{% url 'wallet_top_up' %}">top up your wallet</a>.
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+                <!-- Bank Transfer Option -->
                 <div class="p-3">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="payment_method" id="bankTransfer" value="bank">
@@ -179,9 +236,18 @@
             <span class="text-muted small">Logistics</span>
             <span class="fw-bold small text-success" id="shippingCost">FREE</span>
           </div>
-          <div class="d-flex justify-content-between mb-4 border-bottom pb-3">
+          <div class="d-flex justify-content-between mb-2">
             <span class="text-muted small">VAT (7.5%)</span>
             <span class="fw-bold small">{{ cart_tax }}</span>
+          </div>
+          
+          <!-- Escrow Fee Display -->
+          <div class="d-flex justify-content-between mb-4 border-bottom pb-3" id="escrowFeeRow">
+            <span class="text-muted small">
+                <ion-icon name="shield-checkmark" class="text-success align-middle"></ion-icon>
+                Escrow Protection Fee (2.5%)
+            </span>
+            <span class="fw-bold small text-success" id="escrowFee">₦0</span>
           </div>
 
           <div class="d-flex justify-content-between align-items-center mb-4">
@@ -189,8 +255,9 @@
             <span class="h4 fw-bold mb-0 text-success" id="totalAmount">{{ cart_total }}</span>
           </div>
 
-          <button type="submit" class="btn btn-lg w-100 py-3 mb-3 border-0 text-white text-uppercase fw-bold" style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
-            Confirm Order & Pay
+          <button type="submit" class="btn btn-lg w-100 py-3 mb-3 border-0 text-white text-uppercase fw-bold" id="submitBtn" style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
+            <ion-icon name="shield-checkmark" class="align-middle me-1"></ion-icon>
+            Pay Securely with Escrow
           </button>
 
           <div class="form-check mb-4">
@@ -257,13 +324,55 @@
 </style>
 
 <script>
+
+  const cartTotal = parseFloat('{{ cart_total|cut:"₦"|cut:"," }}') || 0;
+  const escrowFeeAmount = (cartTotal * 0.025).toFixed(2);
+  const totalWithEscrow = (cartTotal + parseFloat(escrowFeeAmount)).toFixed(2);
+
   // Payment method toggle logic
   document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     radio.addEventListener('change', function() {
       const cardDetails = document.getElementById('cardDetails');
-      cardDetails.style.display = (this.value === 'card') ? 'block' : 'none';
+      const escrowDetails = document.getElementById('escrowDetails');
+      const escrowFeeRow = document.getElementById('escrowFeeRow');
+      const submitBtn = document.getElementById('submitBtn');
+      const totalAmountDisplay = document.getElementById('totalAmount');
+      const escrowFeeDisplay = document.getElementById('escrowFee');
+      const walletDetails = document.getElementById('walletDetails');
+
+      // Hide all detail sections first
+      cardDetails.style.display = 'none';
+      escrowDetails.style.display = 'none';
+      
+      // Show relevant section and update totals
+      if (this.value === 'card') {
+        cardDetails.style.display = 'block';
+        escrowFeeRow.style.display = 'none';
+        submitBtn.innerHTML = 'Confirm Order & Pay Now';
+        totalAmountDisplay.textContent = '₦' + cartTotal.toLocaleString();
+      } else if (this.value === 'escrow') {
+        escrowDetails.style.display = 'block';
+        escrowFeeRow.style.display = 'flex';
+        submitBtn.innerHTML = '<ion-icon name="shield-checkmark" class="align-middle me-1"></ion-icon> Pay Securely with Escrow';
+        escrowFeeDisplay.textContent = '₦' + parseFloat(escrowFeeAmount).toLocaleString();
+        totalAmountDisplay.textContent = '₦' + parseFloat(totalWithEscrow).toLocaleString();
+      } else if (this.value === 'bank') {
+        escrowFeeRow.style.display = 'none';
+        submitBtn.innerHTML = 'Confirm Order & Pay';
+        totalAmountDisplay.textContent = '₦' + cartTotal.toLocaleString();
+      }else if(this.value ==='wallet' ){
+          walletDetails.style.display = 'block';
+          escrowFeeRow.style.display = 'none';
+          submitBtn.innerHTML = '<ion-icon name="wallet" class="align-middle me-1"></ion-icon> Pay with Wallet';
+          totalAmountDisplay.textContent = '₦' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      }
+
+
     });
   });
+
+  // Trigger change on page load to set initial state
+  document.querySelector('input[name="payment_method"]:checked').dispatchEvent(new Event('change'));
 
   // Basic formatting for card inputs
   document.getElementById('cardNumber')?.addEventListener('input', (e) => {
