@@ -5,239 +5,200 @@
 {% block title %}Escrow Dashboard - Afrimart{% endblock %}
 
 {% block content %}
-<div class="container my-5 py-3">
-  <div class="row mb-5">
-    <div class="col-12">
-      <h1 class="fw-bold h2 mb-2" style="letter-spacing: -1px;">
-        <ion-icon name="shield-checkmark" class="align-middle text-success me-2"></ion-icon>
-        Escrow Protection Dashboard
-      </h1>
-      <p class="text-muted small mb-0">Secure payment protection for all your transactions</p>
-    </div>
-  </div>
-
-  <!-- Statistics Cards -->
-  <div class="row g-4 mb-5">
-    <div class="col-md-6">
-      <div class="border bg-white p-4">
-        <h5 class="fw-bold text-uppercase mb-4" style="font-size: 13px; letter-spacing: 1px;">
-          As Buyer
-        </h5>
-        <div class="row g-3">
-          <div class="col-4">
-            <div class="text-center">
-              <h3 class="fw-bold mb-1 text-success">₦{{ buyer_stats.total_held|floatformat:0|intcomma }}</h3>
-              <p class="x-small text-muted text-uppercase mb-0">In Escrow</p>
-            </div>
-          </div>
-          <div class="col-4 border-start border-end">
-            <div class="text-center">
-              <h3 class="fw-bold mb-1">{{ buyer_stats.pending_confirmation }}</h3>
-              <p class="x-small text-muted text-uppercase mb-0">Pending</p>
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="text-center">
-              <h3 class="fw-bold mb-1">{{ buyer_stats.total_released }}</h3>
-              <p class="x-small text-muted text-uppercase mb-0">Completed</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="border bg-white p-4">
-        <h5 class="fw-bold text-uppercase mb-4" style="font-size: 13px; letter-spacing: 1px;">
-          As Seller
-        </h5>
-        <div class="row g-3">
-          <div class="col-4">
-            <div class="text-center">
-              <h3 class="fw-bold mb-1 text-warning">₦{{ seller_stats.total_pending|floatformat:0|intcomma }}</h3>
-              <p class="x-small text-muted text-uppercase mb-0">Pending</p>
-            </div>
-          </div>
-          <div class="col-4 border-start border-end">
-            <div class="text-center">
-              <h3 class="fw-bold mb-1">{{ seller_stats.awaiting_delivery }}</h3>
-              <p class="x-small text-muted text-uppercase mb-0">Awaiting</p>
-            </div>
-          </div>
-          <div class="col-4">
-            <div class="text-center">
-              <h3 class="fw-bold mb-1">{{ seller_stats.total_received }}</h3>
-              <p class="x-small text-muted text-uppercase mb-0">Received</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <ul class="nav nav-tabs border-0 mb-4" id="escrowTabs">
-    <li class="nav-item">
-      <button class="nav-link active border-0 fw-bold x-small text-uppercase" 
-              data-bs-toggle="tab" 
-              data-bs-target="#buyerTab">
-        My Purchases
-      </button>
-    </li>
-    <li class="nav-item">
-      <button class="nav-link border-0 fw-bold x-small text-uppercase" 
-              data-bs-toggle="tab" 
-              data-bs-target="#sellerTab">
-        My Sales
-      </button>
-    </li>
-  </ul>
-
-  <div class="tab-content">
-    <!-- Buyer Transactions -->
-    <div class="tab-pane fade show active" id="buyerTab">
-      {% if buyer_transactions %}
-        <div class="border bg-white">
-          {% for transaction in buyer_transactions %}
-          <div class="p-4 {% if not forloop.last %}border-bottom{% endif %}">
-            <div class="row align-items-center">
-              <div class="col-md-6">
-                <h6 class="fw-bold mb-2">Order #{{ transaction.order.id }}</h6>
-                <p class="small text-muted mb-2">
-                  Seller: <span class="fw-bold">{{ transaction.seller.get_full_name|default:transaction.seller.username }}</span>
-                </p>
-                <p class="x-small text-muted mb-0">
-                  {{ transaction.created_at|date:"F d, Y" }} • 
-                  <span class="fw-bold">{{ transaction.days_in_escrow }} days in escrow</span>
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                {% if transaction.status == 'held' %}
-                  <span class="badge bg-warning text-dark px-3 py-2">Held in Escrow</span>
-                {% elif transaction.status == 'released' %}
-                  <span class="badge bg-success px-3 py-2">Released</span>
-                {% elif transaction.status == 'refunded' %}
-                  <span class="badge bg-info px-3 py-2">Refunded</span>
-                {% elif transaction.status == 'disputed' %}
-                  <span class="badge bg-danger px-3 py-2">Disputed</span>
-                {% endif %}
-                <p class="fw-bold mb-0 mt-2">₦{{ transaction.amount|floatformat:2|intcomma }}</p>
-              </div>
-              <div class="col-md-3 text-end">
-                <a href="{% url 'escrow_transaction_detail' transaction.escrow_reference %}" 
-                   class="btn btn-sm border fw-bold text-uppercase">
-                  View Details
-                </a>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        
-        <div class="text-center mt-4">
-          <a href="{% url 'escrow_history' %}?type=buyer" class="btn border fw-bold text-uppercase">
-            View All Purchase History
-          </a>
-        </div>
-      {% else %}
-        <div class="border bg-light text-center p-5">
-          <ion-icon name="shield-checkmark-outline" class="text-muted" style="font-size: 64px;"></ion-icon>
-          <h5 class="fw-bold mt-3 mb-2">No Escrow Purchases Yet</h5>
-          <p class="text-muted small mb-4">Your protected purchases will appear here</p>
-          <a href="{% url 'home' %}" class="btn btn-success fw-bold text-uppercase">Start Shopping</a>
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- Seller Transactions -->
-    <div class="tab-pane fade" id="sellerTab">
-      {% if seller_transactions %}
-        <div class="border bg-white">
-          {% for transaction in seller_transactions %}
-          <div class="p-4 {% if not forloop.last %}border-bottom{% endif %}">
-            <div class="row align-items-center">
-              <div class="col-md-6">
-                <h6 class="fw-bold mb-2">Order #{{ transaction.order.id }}</h6>
-                <p class="small text-muted mb-2">
-                  Buyer: <span class="fw-bold">{{ transaction.buyer.get_full_name|default:transaction.buyer.username }}</span>
-                </p>
-                <p class="x-small text-muted mb-0">
-                  {{ transaction.created_at|date:"F d, Y" }} • 
-                  <span class="fw-bold">{{ transaction.days_in_escrow }} days</span>
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                {% if transaction.status == 'held' %}
-                  <span class="badge bg-warning text-dark px-3 py-2">Awaiting Confirmation</span>
-                {% elif transaction.status == 'released' %}
-                  <span class="badge bg-success px-3 py-2">Payment Received</span>
-                {% elif transaction.status == 'refunded' %}
-                  <span class="badge bg-info px-3 py-2">Refunded</span>
-                {% elif transaction.status == 'disputed' %}
-                  <span class="badge bg-danger px-3 py-2">Disputed</span>
-                {% endif %}
-                <p class="fw-bold mb-0 mt-2">₦{{ transaction.amount|floatformat:2|intcomma }}</p>
-              </div>
-              <div class="col-md-3 text-end">
-                <a href="{% url 'escrow_transaction_detail' transaction.escrow_reference %}" 
-                   class="btn btn-sm border fw-bold text-uppercase">
-                  View Details
-                </a>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        
-        <div class="text-center mt-4">
-          <a href="{% url 'escrow_history' %}?type=seller" class="btn border fw-bold text-uppercase">
-            View All Sales History
-          </a>
-        </div>
-      {% else %}
-        <div class="border bg-light text-center p-5">
-          <ion-icon name="cash-outline" class="text-muted" style="font-size: 64px;"></ion-icon>
-          <h5 class="fw-bold mt-3 mb-2">No Escrow Sales Yet</h5>
-          <p class="text-muted small mb-4">Escrow payments for your sales will appear here</p>
-        </div>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Help Section -->
-  <div class="border bg-light p-4 mt-5">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <h6 class="fw-bold mb-2">
-          <ion-icon name="help-circle" class="align-middle me-1"></ion-icon>
-          Need Help with Escrow?
-        </h6>
-        <p class="small text-muted mb-0">
-          Learn how escrow protection works and how to manage your transactions
-        </p>
-      </div>
-      <div class="col-md-4 text-end">
-        <a href="{% url 'escrow_help' %}" class="btn border fw-bold text-uppercase">
-          View Guide
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
 <style>
-  .nav-tabs .nav-link {
-    color: #666;
-    padding: 12px 24px;
-  }
-  .nav-tabs .nav-link.active {
-    color: var(--primary-green);
-    border-bottom: 3px solid var(--primary-green) !important;
-    background: transparent;
-  }
-  .nav-tabs .nav-link:hover {
-    border-color: transparent;
-    background: #f8f9fa;
-  }
+    /* Industrial Identity Reset */
+    .card, .btn, .border, .bg-light, .badge, .nav-tabs .nav-link { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+    
+    /* Tabs Overhaul */
+    .nav-tabs .nav-link {
+        color: var(--text-main);
+        padding: 15px 30px;
+        border: 1px solid var(--border-light) !important;
+        background: #f8f8f8;
+        margin-right: -1px;
+    }
+    .nav-tabs .nav-link.active {
+        color: var(--primary-green);
+        border-bottom: 1px solid #fff !important;
+        background: #fff;
+        z-index: 2;
+    }
+    .tab-content-container { border: 1px solid var(--border-light); margin-top: -1px; background: #fff; }
+
+    /* Custom Status Badges */
+    .escrow-status {
+        padding: 4px 10px;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid transparent;
+    }
+    .status-held { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+    .status-released { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+    .status-disputed { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
 </style>
+
+<div class="container my-5 py-4">
+    <div class="border-bottom pb-4 mb-5">
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <span class="x-small fw-bold text-uppercase text-success" style="letter-spacing: 2px;">Secured Transaction Protocol</span>
+                <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">Escrow Control Centre</h1>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <p class="text-muted small mb-0 font-monospace">Verified Trust Standard</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="border p-4 bg-white h-100">
+                <h6 class="x-small fw-bold text-uppercase text-muted mb-4" style="letter-spacing: 1px;">Procurement Oversight (Buyer)</h6>
+                <div class="row g-0 text-center">
+                    <div class="col-4 px-2">
+                        <h4 class="fw-bold mb-1" style="color: var(--primary-green);">₦{{ buyer_stats.total_held|floatformat:0|intcomma }}</h4>
+                        <p class="extra-small text-muted text-uppercase mb-0 fw-bold">Active Held</p>
+                    </div>
+                    <div class="col-4 px-2 border-start">
+                        <h4 class="fw-bold mb-1">{{ buyer_stats.pending_confirmation }}</h4>
+                        <p class="extra-small text-muted text-uppercase mb-0 fw-bold">Pending</p>
+                    </div>
+                    <div class="col-4 px-2 border-start">
+                        <h4 class="fw-bold mb-1 text-muted">{{ buyer_stats.total_released }}</h4>
+                        <p class="extra-small text-muted text-uppercase mb-0 fw-bold">Settled</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="border p-4 bg-white h-100">
+                <h6 class="x-small fw-bold text-uppercase text-muted mb-4" style="letter-spacing: 1px;">Revenue Oversight (Seller)</h6>
+                <div class="row g-0 text-center">
+                    <div class="col-4 px-2">
+                        <h4 class="fw-bold mb-1 text-warning">₦{{ seller_stats.total_pending|floatformat:0|intcomma }}</h4>
+                        <p class="extra-small text-muted text-uppercase mb-0 fw-bold">Expected</p>
+                    </div>
+                    <div class="col-4 px-2 border-start">
+                        <h4 class="fw-bold mb-1">{{ seller_stats.awaiting_delivery }}</h4>
+                        <p class="extra-small text-muted text-uppercase mb-0 fw-bold">In Transit</p>
+                    </div>
+                    <div class="col-4 px-2 border-start">
+                        <h4 class="fw-bold mb-1 text-muted">{{ seller_stats.total_received }}</h4>
+                        <p class="extra-small text-muted text-uppercase mb-0 fw-bold">Completed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs border-0" id="escrowTabs">
+        <li class="nav-item">
+            <button class="nav-link active fw-bold x-small text-uppercase" data-bs-toggle="tab" data-bs-target="#buyerTab">
+                My Purchases
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-bold x-small text-uppercase" data-bs-toggle="tab" data-bs-target="#sellerTab">
+                My Sales
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content tab-content-container">
+        <div class="tab-pane fade show active p-0" id="buyerTab">
+            {% if buyer_transactions %}
+                {% for transaction in buyer_transactions %}
+                <div class="p-4 {% if not forloop.last %}border-bottom{% endif %}">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-6">
+                            <span class="font-monospace extra-small text-muted text-uppercase mb-1 d-block">Ref: {{ transaction.escrow_reference }}</span>
+                            <h6 class="fw-bold mb-1">Order #{{ transaction.order.id }}</h6>
+                            <p class="small text-muted mb-0">Vendor: <span class="text-dark fw-bold">{{ transaction.seller.get_full_name|default:transaction.seller.username }}</span></p>
+                        </div>
+                        <div class="col-md-3 text-md-center">
+                            {% if transaction.status == 'held' %}
+                                <span class="escrow-status status-held">Held in Escrow</span>
+                            {% elif transaction.status == 'released' %}
+                                <span class="escrow-status status-released">Released</span>
+                            {% else %}
+                                <span class="escrow-status border">{{ transaction.status|upper }}</span>
+                            {% endif %}
+                            <h6 class="fw-bold mb-0 mt-2">₦{{ transaction.amount|floatformat:2|intcomma }}</h6>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <a href="{% url 'escrow_transaction_detail' transaction.escrow_reference %}" class="btn btn-sm btn-outline-dark fw-bold text-uppercase x-small px-4">
+                                Audit Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="bg-light p-3 text-center border-top">
+                    <a href="{% url 'escrow_history' %}?type=buyer" class="x-small fw-bold text-uppercase text-decoration-none text-dark">Full Purchase Audit &rarr;</a>
+                </div>
+            {% else %}
+                <div class="p-5 text-center">
+                    <ion-icon name="shield-outline" class="text-muted opacity-25 mb-3" style="font-size: 48px;"></ion-icon>
+                    <p class="text-muted small mb-0">No active purchase protections detected.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade p-0" id="sellerTab">
+            {% if seller_transactions %}
+                {% for transaction in seller_transactions %}
+                <div class="p-4 {% if not forloop.last %}border-bottom{% endif %}">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-6">
+                            <span class="font-monospace extra-small text-muted text-uppercase mb-1 d-block">Settlement: {{ transaction.escrow_reference }}</span>
+                            <h6 class="fw-bold mb-1">Order #{{ transaction.order.id }}</h6>
+                            <p class="small text-muted mb-0">Buyer: <span class="text-dark fw-bold">{{ transaction.buyer.get_full_name|default:transaction.buyer.username }}</span></p>
+                        </div>
+                        <div class="col-md-3 text-md-center">
+                            {% if transaction.status == 'held' %}
+                                <span class="escrow-status status-held">Awaiting Delivery</span>
+                            {% elif transaction.status == 'released' %}
+                                <span class="escrow-status status-released">Paid to Wallet</span>
+                            {% else %}
+                                <span class="escrow-status border">{{ transaction.status|upper }}</span>
+                            {% endif %}
+                            <h6 class="fw-bold mb-0 mt-2">₦{{ transaction.amount|floatformat:2|intcomma }}</h6>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <a href="{% url 'escrow_transaction_detail' transaction.escrow_reference %}" class="btn btn-sm btn-outline-dark fw-bold text-uppercase x-small px-4">
+                                View Settlement
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="bg-light p-3 text-center border-top">
+                    <a href="{% url 'escrow_history' %}?type=seller" class="x-small fw-bold text-uppercase text-decoration-none text-dark">Full Sales Audit &rarr;</a>
+                </div>
+            {% else %}
+                <div class="p-5 text-center">
+                    <ion-icon name="cash-outline" class="text-muted opacity-25 mb-3" style="font-size: 48px;"></ion-icon>
+                    <p class="text-muted small mb-0">No pending escrow settlements detected.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-5 p-4 border bg-light">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h6 class="fw-bold mb-1 text-uppercase x-small" style="letter-spacing: 1px;">Escrow Technical Support</h6>
+                <p class="small text-muted mb-0">Having issues with a settlement or quality verification? Our dispute mediation team is available 24/7.</p>
+            </div>
+            <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'escrow:help' %}" class="btn btn-dark fw-bold text-uppercase x-small px-4 py-2" style="background: var(--primary-green); border: none;">Mediation Guide</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

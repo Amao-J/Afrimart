@@ -1,0 +1,243 @@
+{% extends 'base.html' %} {% load static %} {% load humanize %} {% block title
+%}My Orders - Afrimart {% block content %}
+<style>
+  /* Industrial UI Identity Resets */
+  .card,
+  .btn,
+  .border,
+  .bg-light,
+  .badge,
+  .pagination .page-link {
+    border-radius: 0 !important;
+  }
+  .x-small {
+    font-size: 11px;
+  }
+  .extra-small {
+    font-size: 10px;
+  }
+
+  /* Custom Flat Status Badges */
+  .order-status {
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    border: 1px solid #ddd;
+  }
+  .status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+  }
+  .status-shipped {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+  }
+  .status-delivered {
+    background: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+  }
+  .status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+  }
+
+  /* List Item Styling */
+  .order-row {
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .order-row:last-child {
+    border-bottom: none;
+  }
+</style>
+
+<div class="container my-5 py-4">
+  <div class="border-bottom pb-4 mb-5">
+    <div class="row align-items-end g-3">
+      <div class="col-md-6">
+        <span
+          class="x-small fw-bold text-uppercase text-success"
+          style="letter-spacing: 2px"
+          >Account Overview</span
+        >
+        <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px">
+          My Purchase History
+        </h1>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <div class="d-inline-flex gap-4">
+          <div class="text-center">
+            <span class="d-block fw-bold h5 mb-0"
+              >{{ orders.count|default:"0" }}</span
+            >
+            <span class="extra-small text-uppercase text-muted fw-bold"
+              >Total Orders</span
+            >
+          </div>
+          <div class="text-center border-start ps-4">
+            <span class="d-block fw-bold h5 mb-0 text-success"
+              >{{ pending_count|default:"0" }}</span
+            >
+            <span class="extra-small text-uppercase text-muted fw-bold"
+              >In Transit</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-5">
+    <div class="col-lg-3">
+      <div class="border bg-white sticky-top" style="top: 120px">
+        <div class="p-3 border-bottom bg-light">
+          <h6
+            class="x-small fw-bold text-uppercase mb-0"
+            style="letter-spacing: 1px"
+          >
+            Manage Account
+          </h6>
+        </div>
+        <a
+          href="{% url 'profile' %}"
+          class="d-block p-3 text-decoration-none border-bottom text-dark small fw-bold"
+          >Personal Information</a
+        >
+        <a
+          href="{% url 'my_orders' %}"
+          class="d-block p-3 text-decoration-none border-bottom text-success small fw-bold border-start border-4 border-success bg-light"
+          style="margin-left: -1px"
+          >Order History</a
+        >
+        <a
+          href="{% url 'wallet' %}"
+          class="d-block p-3 text-decoration-none border-bottom text-dark small fw-bold"
+          >My Wallet</a
+        >
+        <a
+          href="{% url 'escrow:dashboard' %}"
+          class="d-block p-3 text-decoration-none text-dark small fw-bold"
+          >Escrow Protection</a
+        >
+      </div>
+    </div>
+
+    <div class="col-lg-9">
+      {% if orders %}
+      <div class="border bg-white shadow-0">
+        <div
+          class="d-none d-md-flex p-3 bg-light border-bottom x-small fw-bold text-uppercase text-muted"
+          style="letter-spacing: 1px"
+        >
+          <div class="col-4">Order Details</div>
+          <div class="col-3 text-center">Status</div>
+          <div class="col-2 text-end">Total</div>
+          <div class="col-3 text-end">Action</div>
+        </div>
+
+        {% for order in orders %}
+        <div class="p-4 order-row">
+          <div class="row align-items-center g-3">
+            <div class="col-md-4">
+              <h6 class="fw-bold mb-1">#{{ order.id }}</h6>
+              <p class="extra-small text-muted text-uppercase mb-2">
+                {{ order.created_at|date:"M d, Y" }}
+              </p>
+              <p class="small text-muted mb-0">
+                {{ order.items.count }} Item{{ order.items.count|pluralize }}
+              </p>
+            </div>
+
+            <div class="col-md-3 text-md-center">
+              {% if order.status == 'pending' %}
+              <span class="order-status status-pending">Processing</span>
+              {% elif order.status == 'shipped' %}
+              <span class="order-status status-shipped">In Transit</span>
+              {% elif order.status == 'delivered' %}
+              <span class="order-status status-delivered">Delivered</span>
+              {% else %}
+              <span class="order-status status-cancelled"
+                >{{ order.status|upper }}</span
+              >
+              {% endif %}
+            </div>
+
+            <div class="col-md-2 text-md-end">
+              <h6 class="fw-bold mb-0">
+                ₦{{ order.total_amount|floatformat:2|intcomma }}
+              </h6>
+            </div>
+
+            <div class="col-md-3 text-end">
+              <a
+                href="{% url 'order_detail' order.id %}"
+                class="btn btn-sm btn-outline-dark fw-bold text-uppercase x-small px-4"
+              >
+                View Details
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if is_paginated %}
+      <nav class="mt-5">
+        <ul class="pagination justify-content-center gap-2 border-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a
+              class="page-link border text-dark x-small fw-bold"
+              href="?page={{ page_obj.previous_page_number }}"
+              >&larr; PREV</a
+            >
+          </li>
+          {% endif %}
+          <li class="page-item">
+            <span
+              class="page-link border-0 text-white fw-bold bg-dark x-small px-3"
+              >{{ page_obj.number }}</span
+            >
+          </li>
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a
+              class="page-link border text-dark x-small fw-bold"
+              href="?page={{ page_obj.next_page_number }}"
+              >NEXT &rarr;</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %} {% else %}
+      <div class="border p-5 text-center bg-white">
+        <ion-icon
+          name="bag-handle-outline"
+          class="text-muted opacity-25 mb-3"
+          style="font-size: 64px"
+        ></ion-icon>
+        <h5 class="fw-bold mb-2">No Orders Found</h5>
+        <p class="text-muted small mb-4">
+          You haven't placed any orders on Afrimart yet.
+        </p>
+        <a
+          href="{% url 'marketplace' %}"
+          class="btn btn-dark fw-bold text-uppercase x-small px-5 py-3"
+          style="background-color: var(--primary-green); border: none"
+        >
+          Start Shopping
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

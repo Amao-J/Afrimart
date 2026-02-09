@@ -1,224 +1,194 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Order #{{ order.id }} - Afrimart{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-12">
-            <h1 class="mb-4">Order #{{ order.id }}</h1>
+<style>
+    /* Industrial UI Identity Resets */
+    .card, .btn, .border, .bg-light, .badge, .table { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+    .text-main { color: var(--text-main); }
+    
+    /* Clean Table Styling */
+    .table thead th {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        border-top: none;
+        background-color: #f8f8f8;
+        padding: 15px;
+    }
+    .table td { padding: 15px; vertical-align: middle; font-size: 14px; }
+
+    /* Custom Flat Badges */
+    .status-badge {
+        padding: 5px 12px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        border: 1px solid #ddd;
+    }
+    .badge-pending { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+    .badge-success { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+    .badge-info { background: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+</style>
+
+<div class="container my-5 py-4">
+    <div class="mb-4">
+        <a href="{% url 'my_orders' %}" class="text-muted extra-small fw-bold text-uppercase text-decoration-none">
+            <ion-icon name="arrow-back-outline" class="align-middle me-1"></ion-icon> Back to Order History
+        </a>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end border-bottom pb-4 mb-5 gap-3">
+        <div>
+            <span class="x-small fw-bold text-uppercase text-muted" style="letter-spacing: 2px;">Marketplace Transaction</span>
+            <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">Order #{{ order.id }}</h1>
+        </div>
+        <div class="text-md-end">
+            <p class="extra-small fw-bold text-uppercase text-muted mb-1">Placed On</p>
+            <p class="small fw-bold mb-0">{{ order.created_at|date:"M d, Y" }}</p>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Order Information -->
-        <div class="col-md-8">
-            <!-- Order Status -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Status</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-0"><strong>Status:</strong></p>
-                            {% if order.status == 'pending' %}
-                                <span class="badge bg-warning">Pending</span>
-                            {% elif order.status == 'processing' %}
-                                <span class="badge bg-info">Processing</span>
-                            {% elif order.status == 'shipped' %}
-                                <span class="badge bg-secondary">Shipped</span>
-                            {% elif order.status == 'delivered' %}
-                                <span class="badge bg-success">Delivered</span>
-                            {% elif order.status == 'cancelled' %}
-                                <span class="badge bg-danger">Cancelled</span>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-0"><strong>Payment Status:</strong></p>
-                            {% if order.payment_status == 'pending' %}
-                                <span class="badge bg-warning">Pending</span>
-                            {% elif order.payment_status == 'paid' %}
-                                <span class="badge bg-success">Paid</span>
-                            {% elif order.payment_status == 'failed' %}
-                                <span class="badge bg-danger">Failed</span>
-                            {% elif order.payment_status == 'refunded' %}
-                                <span class="badge bg-info">Refunded</span>
-                            {% endif %}
-                        </div>
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <div class="border p-4 mb-4 bg-light">
+                <div class="row text-center">
+                    <div class="col">
+                        <p class="extra-small fw-bold text-uppercase mb-2 {% if order.status != 'cancelled' %}text-success{% endif %}">Confirmed</p>
+                        <div style="height: 4px; background: {% if order.status != 'cancelled' %}var(--primary-green){% else %}#ddd{% endif %};"></div>
+                    </div>
+                    <div class="col">
+                        <p class="extra-small fw-bold text-uppercase mb-2 {% if order.status == 'shipped' or order.status == 'delivered' %}text-success{% endif %}">Shipped</p>
+                        <div style="height: 4px; background: {% if order.status == 'shipped' or order.status == 'delivered' %}var(--primary-green){% else %}#ddd{% endif %};"></div>
+                    </div>
+                    <div class="col">
+                        <p class="extra-small fw-bold text-uppercase mb-2 {% if order.status == 'delivered' %}text-success{% endif %}">Delivered</p>
+                        <div style="height: 4px; background: {% if order.status == 'delivered' %}var(--primary-green){% else %}#ddd{% endif %};"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Order Items -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Items</h5>
+            <div class="border bg-white mb-5">
+                <div class="p-3 border-bottom bg-light">
+                    <h6 class="x-small fw-bold text-uppercase mb-0" style="letter-spacing: 1px;">Itemized Manifest</h6>
                 </div>
                 <div class="table-responsive">
                     <table class="table mb-0">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
+                                <th>Product Details</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in order.items.all %}
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'product_detail' item.product.id %}">
-                                            {{ item.product.name }}
-                                        </a>
-                                    </td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td>₦{{ item.price|floatformat:2 }}</td>
-                                    <td><strong>₦{{ item.get_total|floatformat:2 }}</strong></td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    <a href="{% url 'product_detail' item.product.id %}" class="fw-bold text-dark text-decoration-none hover-green">
+                                        {{ item.product.name }}
+                                    </a>
+                                </td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end text-muted">₦{{ item.price|floatformat:2 }}</td>
+                                <td class="text-end fw-bold text-main">₦{{ item.get_total|floatformat:2 }}</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Shipping Information -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Shipping Information</h5>
-                </div>
-                <div class="card-body">
-                    <p class="mb-1">
-                        <strong>Address:</strong><br>
-                        {{ order.shipping_address|linebreaks }}
-                    </p>
-                    {% if order.tracking_number %}
-                        <p class="mb-0 mt-3">
-                            <strong>Tracking Number:</strong><br>
-                            <code>{{ order.tracking_number }}</code>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="border p-4 h-100">
+                        <h6 class="x-small fw-bold text-uppercase text-muted mb-3" style="letter-spacing: 1px;">Shipping Destination</h6>
+                        <p class="small mb-0 text-main" style="line-height: 1.6;">
+                            {{ order.shipping_address|linebreaksbr }}
                         </p>
-                    {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border p-4 h-100">
+                        <h6 class="x-small fw-bold text-uppercase text-muted mb-3" style="letter-spacing: 1px;">Logistics Tracking</h6>
+                        {% if order.tracking_number %}
+                            <p class="extra-small fw-bold text-muted mb-1 uppercase">Reference Number</p>
+                            <code class="d-block p-2 bg-light border mb-2 text-dark">{{ order.tracking_number }}</code>
+                            <span class="status-badge badge-info">In Transit</span>
+                        {% else %}
+                            <p class="small text-muted italic">Tracking information will be available once the item is dispatched.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Order Summary / Payment Sidebar -->
-        <div class="col-md-4">
-            <!-- Customer Details -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Customer Details</h5>
+        <div class="col-lg-4">
+            <div class="border p-4 mb-4 bg-white text-center">
+                <h6 class="x-small fw-bold text-uppercase text-muted mb-3" style="letter-spacing: 1px;">Fulfillment Status</h6>
+                <div class="mb-3">
+                    {% if order.status == 'pending' %}
+                        <span class="status-badge badge-pending">Payment Pending</span>
+                    {% elif order.status == 'delivered' %}
+                        <span class="status-badge badge-success">Order Delivered</span>
+                    {% else %}
+                        <span class="status-badge badge-info">{{ order.status|upper }}</span>
+                    {% endif %}
                 </div>
-                <div class="card-body">
-                    <p class="mb-1">
-                        <strong>Name:</strong><br>
-                        {{ order.buyer.get_full_name|default:order.buyer.username }}
-                    </p>
-                    <p class="mb-1">
-                        <strong>Email:</strong><br>
-                        <a href="mailto:{{ order.buyer.email }}">{{ order.buyer.email }}</a>
-                    </p>
-                    {% if order.buyer.profile.phone %}
-                        <p class="mb-0">
-                            <strong>Phone:</strong><br>
-                            {{ order.buyer.profile.get_display_phone }}
-                        </p>
+                <hr>
+                <div class="mt-3">
+                    <h6 class="x-small fw-bold text-uppercase text-muted mb-3" style="letter-spacing: 1px;">Payment Status</h6>
+                    {% if order.payment_status == 'paid' %}
+                        <span class="status-badge badge-success">Settled</span>
+                    {% else %}
+                        <span class="status-badge badge-pending">{{ order.payment_status|upper }}</span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Order Summary -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Order Summary</h5>
+            <div class="border p-4 bg-white">
+                <h6 class="x-small fw-bold text-uppercase text-muted mb-4" style="letter-spacing: 1px;">Order Summary</h6>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="small text-muted">Subtotal</span>
+                    <span class="small fw-bold text-main">₦{{ order.total_amount|floatformat:2 }}</span>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
-                        <strong>₦{{ order.total_amount|floatformat:2 }}</strong>
-                    </div>
-                    {% if order.total_amount_usd %}
-                        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
-                            <span>USD Equivalent:</span>
-                            <strong>${{ order.total_amount_usd|floatformat:2 }}</strong>
-                        </div>
-                    {% endif %}
-                    <div class="d-flex justify-content-between">
-                        <strong>Total:</strong>
-                        <strong class="text-success">₦{{ order.total_amount|floatformat:2 }}</strong>
-                    </div>
-                    <p class="text-muted small mt-2 mb-0">
-                        Currency: {{ order.currency }}
-                    </p>
+                <div class="d-flex justify-content-between mb-4 border-bottom pb-2">
+                    <span class="small text-muted">Shipping Fee</span>
+                    <span class="small fw-bold text-main">₦0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-0">
+                    <span class="fw-bold text-uppercase x-small">Grand Total</span>
+                    <span class="h4 fw-bold mb-0" style="color: var(--primary-green);">₦{{ order.total_amount|floatformat:2 }}</span>
                 </div>
             </div>
 
-            <!-- Payment Options for buyer -->
             {% if request.user == order.buyer and order.payment_status == 'pending' %}
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">Complete Payment</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="small text-muted">Choose a payment method:</p>
-
-                        <form method="post" action="{% url 'pay_with_wallet' order.id %}" class="mb-2">
-                            {% csrf_token %}
-                            <button class="btn btn-success w-100">Pay with Wallet</button>
-                        </form>
-
-                        <a href="{% url 'initiate_bank_payment' order.id %}" class="btn btn-outline-primary w-100 mb-2">Pay with Bank (Bank Transfer)</a>
-
-                        <a href="{% url 'escrow:initiate' order.id %}" class="btn btn-outline-secondary w-100">Pay with Bank (Escrow)</a>
-
-                        <hr>
-                        <p class="small text-muted mb-0">Escrow fee (if using escrow): ₦{{ escrow_fee|floatformat:2 }} — total ₦{{ escrow_total|floatformat:2 }}</p>
-                    </div>
-                </div>
-            {% endif %}
-
-            <!-- Payment Details (if any) -->
-            {% if order.payments.all %}
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">Payment Method</h5>
-                    </div>
-                    <div class="card-body">
-                        {% for payment in order.payments.all %}
-                            <p class="mb-1">
-                                <strong>Method:</strong> {{ payment.get_payment_method_display|default:payment.payment_method }}
-                            </p>
-                            <p class="mb-0">
-                                <strong>Reference:</strong><br>
-                                <small>{{ payment.reference }}</small>
-                            </p>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-
-            <!-- Timestamps -->
-            <div class="card mt-3">
-                <div class="card-body">
-                    <p class="mb-1">
-                        <strong>Order Date:</strong><br>
-                        <small>{{ order.created_at|date:"M d, Y \a\t H:i" }}</small>
-                    </p>
-                    <p class="mb-0">
-                        <strong>Last Updated:</strong><br>
-                        <small>{{ order.updated_at|date:"M d, Y \a\t H:i" }}</small>
-                    </p>
-                </div>
+            <div class="mt-4">
+                <h6 class="x-small fw-bold text-uppercase text-muted mb-3" style="letter-spacing: 1px;">Required Action</h6>
+                <form method="post" action="{% url 'pay_with_wallet' order.id %}" class="mb-2">
+                    {% csrf_token %}
+                    <button class="btn btn-dark w-100 py-3 text-uppercase fw-bold x-small" style="background-color: var(--primary-green); border: none;">
+                        Pay with Wallet balance
+                    </button>
+                </form>
+                <a href="{% url 'escrow:initiate' order.id %}" class="btn btn-outline-dark w-100 py-3 text-uppercase fw-bold extra-small mt-1">
+                    Complete Escrow Settlement
+                </a>
             </div>
+            {% endif %}
         </div>
-    </div>
-
-    <!-- Back Link -->
-    <div class="mt-4">
-        <a href="{% url 'my_orders' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Orders
-        </a>
     </div>
 </div>
+
+<style>
+    .hover-green:hover { color: var(--primary-green) !important; }
+</style>
 {% endblock %}
