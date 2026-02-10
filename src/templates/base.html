@@ -68,6 +68,7 @@
         /* --- MOBILE MENU --- */
         .offcanvas-body .nav-section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 20px 20px 10px; background: #fbfbfb; }
         .offcanvas-link { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-light); font-size: 14px; font-weight: 500; }
+        .offcanvas-link.active { color: var(--primary-green); background: #f0fdf4; }
 
         /* --- FOOTER STYLES --- */
         footer.modern-footer { background: #000; color: #fff; padding: 85px 0 0; margin-top: 100px; }
@@ -119,10 +120,11 @@
             </a>
 
             <div class="search-container d-none d-lg-block mx-4 flex-grow-1">
-                <form action="{% url 'product_list' %}" method="GET">
-                    <input type="text" name="search" placeholder="{% trans 'Search for authentic products...' %}">
+                <form action="{% url 'product_list' %}" method="GET" id="searchForm">
+                    <input type="text" name="search" id="searchInput" placeholder="{% trans 'Search for authentic products...' %}" autocomplete="off">
                     <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
                 </form>
+                <div class="search-suggestions" id="searchSuggestions"></div>
             </div>
 
             <div class="d-flex align-items-center gap-4">
@@ -155,8 +157,8 @@
     <nav class="secondary-nav d-none d-lg-block">
         <div class="container d-flex justify-content-center">
             <ul class="nav">
-                <li><a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">{% trans "Home" %}</a></li>
-                <li><a href="{% url 'product_list' %}" class="nav-link">{% trans "All Products" %}</a></li>
+                <li><a href="{% url 'home' %}" class="nav-link {% if request.path == '/' or request.path == '/en/' %}active{% endif %}">{% trans "Home" %}</a></li>
+                <li><a href="{% url 'product_list' %}" class="nav-link {% if 'products' in request.path %}active{% endif %}">{% trans "All Products" %}</a></li>
                 <li><a href="#" class="nav-link">{% trans "New Arrivals" %}</a></li>
                 <li><a href="#" class="nav-link text-danger">{% trans "Sale" %}</a></li>
             </ul>
@@ -170,11 +172,11 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="nav-section-title">{% trans "Main Menu" %}</div>
-            <a href="{% url 'home' %}" class="offcanvas-link"><ion-icon name="home-outline"></ion-icon> {% trans "Home" %}</a>
-            <a href="{% url 'product_list' %}" class="offcanvas-link"><ion-icon name="grid-outline"></ion-icon> {% trans "Browse Products" %}</a>
+            <a href="{% url 'home' %}" class="offcanvas-link {% if request.path == '/' %}active{% endif %}"><ion-icon name="home-outline"></ion-icon> {% trans "Home" %}</a>
+            <a href="{% url 'product_list' %}" class="offcanvas-link {% if 'products' in request.path %}active{% endif %}"><ion-icon name="grid-outline"></ion-icon> {% trans "Browse Products" %}</a>
             <div class="nav-section-title">{% trans "Account & Finance" %}</div>
-            <a href="{% url 'profile' %}" class="offcanvas-link"><ion-icon name="person-outline"></ion-icon> {% trans "My Profile" %}</a>
-            <a href="{% url 'wallet' %}" class="offcanvas-link"><ion-icon name="wallet-outline"></ion-icon> {% trans "My Wallet" %}</a>
+            <a href="{% url 'profile' %}" class="offcanvas-link {% if 'profile' in request.path %}active{% endif %}"><ion-icon name="person-outline"></ion-icon> {% trans "My Profile" %}</a>
+            <a href="{% url 'wallet' %}" class="offcanvas-link {% if 'wallet' in request.path %}active{% endif %}"><ion-icon name="wallet-outline"></ion-icon> {% trans "My Wallet" %}</a>
             <div class="nav-section-title">{% trans "Support" %}</div>
             <a href="#" class="offcanvas-link"><ion-icon name="help-circle-outline"></ion-icon> {% trans "Help Center" %}</a>
         </div>

@@ -6,236 +6,244 @@
 
 {% block content %}
 
-<style>
-    /* Base Afrimart Reset & Identity */
-    .card, .btn, .form-control, .badge, .breadcrumb-item, .nav-link, .thumb-box, .tab-content, .table { border-radius: 0 !important; }
-    .x-small { font-size: 11px; }
-    .extra-small { font-size: 10px; }
-    
-    .thumb-box { width: 80px; height: 100px; cursor: pointer; border: 1px solid var(--border-color); flex-shrink: 0; }
-    .active-thumb { border-color: var(--primary-green) !important; border-width: 2px; }
-    
-    .nav-tabs .nav-link { color: #999; border: 1px solid transparent; border-bottom: 1px solid var(--border-color); }
-    .nav-tabs .nav-link.active { color: var(--primary-green); border: 1px solid var(--border-color); border-bottom: 1px solid #fff; }
+<div class="container my-5 py-3">
+  <nav aria-label="breadcrumb" class="mb-5">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted small">Home</a></li>
+      <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted small">{{ product.category.name }}</a></li>
+      <li class="breadcrumb-item active small text-dark fw-bold" aria-current="page">{{ product.name|truncatechars:40 }}</li>
+    </ol>
+  </nav>
 
-    /* Custom Mobile Responsiveness */
-    @media (max-width: 768px) {
-        .thumb-container {
-            display: flex !important;
-            flex-direction: row !important;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            scrollbar-width: none;
-        }
-        .thumb-container::-webkit-scrollbar { display: none; }
-        .thumb-box { width: 60px; height: 75px; }
-        
-        .main-image-container { min-height: 350px !important; height: 350px !important; }
-        #mainImage { max-height: 330px !important; }
-        
-        .product-title { font-size: 1.5rem !important; }
-        .price-text { font-size: 1.25rem !important; }
-        
-        .action-buttons { flex-direction: column !important; }
-        .action-buttons > button, .action-buttons > form { width: 100%; }
-        
-        .tab-content { padding: 25px !important; }
-    }
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <div class="row g-2">
+        <div class="col-md-2 d-none d-md-block">
+          <div class="d-flex flex-column gap-2">
+            {% if product.get_primary_image %}
+              <div class="border p-1 bg-white cursor-pointer active-thumb thumb-box">
+                  <img src="{{ product.get_primary_image }}" class="w-100 h-100 object-fit-cover" alt="Thumbnail">
+              </div>
+            {% endif %}
+            <div class="border p-1 bg-light thumb-box d-flex align-items-center justify-content-center">
+                 <ion-icon name="image-outline" class="text-muted"></ion-icon>
+            </div>
+          </div>
+        </div>
 
-    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type="number"] { -moz-appearance: textfield; }
-</style>
+        <div class="col-md-10">
+          <div class="border bg-white p-2 text-center position-relative h-100 d-flex align-items-center justify-content-center" style="min-height: 500px;">
+            {% if product.get_primary_image %}
+              <img src="{{ product.get_primary_image }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 600px; object-fit: contain;" id="mainImage">
+            {% else %}
+              <div class="text-muted">
+                <ion-icon name="image-outline" style="font-size: 100px; opacity: 0.2;"></ion-icon>
+              </div>
+            {% endif %}
+            
+            {% if product.has_discount %}
+                <span class="position-absolute top-0 start-0 m-3 badge bg-danger py-2 px-3 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 1px;">
+                    -{{ product.discount_percentage }}% Off
+                </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="container my-4 my-md-5 py-3">
-    <nav aria-label="breadcrumb" class="mb-4 mb-md-5">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted small">Home</a></li>
-            <li class="breadcrumb-item small text-muted text-uppercase fw-bold">{{ product.category.name }}</li>
-            <li class="breadcrumb-item active small text-dark fw-bold d-none d-md-inline-block">{{ product.name|truncatechars:30 }}</li>
-        </ol>
-    </nav>
+    <div class="col-lg-5">
+      <div class="ps-lg-4">
+        <div class="mb-2 d-flex justify-content-between align-items-start">
+            <span class="text-success text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 2px;">{{ product.category.name }}</span>
+            <div class="text-warning small">
+                <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon><ion-icon name="star-outline"></ion-icon>
+                <span class="text-muted ms-2">(128 Reviews)</span>
+            </div>
+        </div>
 
-    <div class="row g-4 g-lg-5">
-        <div class="col-lg-7">
-            <div class="row g-2 flex-column-reverse flex-md-row">
-                <div class="col-md-2">
-                    <div class="d-flex thumb-container flex-md-column gap-2 mt-2 mt-md-0">
-                        {% if product.get_primary_image %}
-                            <div class="border p-1 bg-white cursor-pointer active-thumb thumb-box">
-                                <img src="{{ product.get_primary_image }}" class="w-100 h-100 object-fit-cover" alt="Thumbnail">
-                            </div>
-                        {% endif %}
-                        <div class="border p-1 bg-light thumb-box d-flex align-items-center justify-content-center">
-                             <ion-icon name="image-outline" class="text-muted"></ion-icon>
+        <h1 class="fw-bold mb-3 h2" style="letter-spacing: -1px;">{{ product.name }}</h1>
+
+        <div class="mb-4 pb-4 border-bottom">
+            <h3 class="fw-bold mb-1 text-success">{{ product.converted_price }}</h3>
+            {% if product.has_discount %}
+                <div class="d-flex align-items-center gap-3">
+                    <del class="text-muted h5 mb-0">{{ product.converted_original_price }}</del>
+                    <span class="text-danger small fw-bold text-uppercase">Final Price</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <h6 class="x-small fw-bold text-uppercase text-muted mb-2">Product Description</h6>
+            <p class="text-muted small" style="line-height: 1.8;">{{ product.description|default:"Authentic craftsmanship meets modern utility. Sourced directly to ensure continental quality and style." }}</p>
+        </div>
+
+        <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mt-4">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" id="cartQuantity" value="1">
+            
+            <div class="mb-3">
+                <label class="form-label x-small fw-bold text-uppercase text-muted mb-2">Quantity</label>
+                <div class="d-flex border bg-light p-1" style="height: 50px; width: 140px;">
+                    <button type="button" class="btn border-0 px-3 shadow-none" id="decreaseQty"><ion-icon name="remove-outline"></ion-icon></button>
+                    <input type="number" class="form-control border-0 bg-transparent text-center fw-bold px-0 shadow-none" id="quantity" value="1" min="1" max="{{ product.stock }}" readonly>
+                    <button type="button" class="btn border-0 px-3 shadow-none" id="increaseQty"><ion-icon name="add-outline"></ion-icon></button>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success flex-grow-1 text-uppercase fw-bold py-3" style="background-color: var(--primary-green); border: none; font-size: 13px; letter-spacing: 1px;" {% if product.stock <= 0 %}disabled{% endif %}>
+                    <ion-icon name="cart-outline" class="me-2 align-middle"></ion-icon> Add to Cart
+                </button>
+                <button type="button" class="btn btn-outline-dark px-4" style="height: 55px;">
+                    <ion-icon name="heart-outline" class="fs-5"></ion-icon>
+                </button>
+            </div>
+        </form>
+
+        <div class="bg-light p-4 border mt-5">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="d-flex align-items-center">
+                        <ion-icon name="airplane-outline" class="text-success fs-4 me-3"></ion-icon>
+                        <div>
+                            <span class="d-block x-small fw-bold text-uppercase">Free Shipping</span>
+                            <span class="text-muted extra-small">On orders over ₦100,000.00</span>
                         </div>
                     </div>
                 </div>
+                <div class="col-12">
+                    <div class="d-flex align-items-center">
+                        <ion-icon name="sync-outline" class="text-success fs-4 me-3"></ion-icon>
+                        <div>
+                            <span class="d-block x-small fw-bold text-uppercase">Easy Returns</span>
+                            <span class="text-muted extra-small">30-day return policy</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="d-flex align-items-center">
+                        <ion-icon name="shield-checkmark-outline" class="text-success fs-4 me-3"></ion-icon>
+                        <div>
+                            <span class="d-block x-small fw-bold text-uppercase">Secure Payment</span>
+                            <span class="text-muted extra-small">100% secure transaction</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="d-flex align-items-center">
+                        <ion-icon name="headset-outline" class="text-success fs-4 me-3"></ion-icon>
+                        <div>
+                            <span class="d-block x-small fw-bold text-uppercase">24/7 Support</span>
+                            <span class="text-muted extra-small">Professional customer service</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                <div class="col-md-10">
-                    <div class="border bg-white p-2 text-center position-relative main-image-container d-flex align-items-center justify-content-center" style="min-height: 500px;">
-                        {% if product.get_primary_image %}
-                            <img src="{{ product.get_primary_image }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 600px; object-fit: contain;" id="mainImage">
+  <div class="mt-5 pt-5">
+    <ul class="nav nav-tabs border-bottom-0" role="tablist">
+      <li class="nav-item"><button class="nav-link active px-4 py-3 text-uppercase fw-bold" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc-pane" type="button" style="font-size: 11px;">Description</button></li>
+      <li class="nav-item"><button class="nav-link px-4 py-3 text-uppercase fw-bold" id="spec-tab" data-bs-toggle="tab" data-bs-target="#spec-pane" type="button" style="font-size: 11px;">Specifications</button></li>
+      <li class="nav-item"><button class="nav-link px-4 py-3 text-uppercase fw-bold" id="rev-tab" data-bs-toggle="tab" data-bs-target="#rev-pane" type="button" style="font-size: 11px;">Reviews (128)</button></li>
+    </ul>
+    <div class="tab-content border bg-white p-5">
+      <div class="tab-pane fade show active" id="desc-pane">
+        <h5 class="fw-bold mb-4">Product Overview</h5>
+        <p class="text-muted" style="max-width: 800px; line-height: 2;">{{ product.description }}</p>
+      </div>
+      <div class="tab-pane fade" id="spec-pane">
+        <table class="table table-bordered mb-0">
+          <tbody class="small text-muted text-uppercase fw-semibold">
+            <tr><td class="bg-light w-25">Category</td><td>{{ product.category.name }}</td></tr>
+            <tr><td class="bg-light w-25">Availability</td><td>{{ product.stock }} Units</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane fade" id="rev-pane">
+        <h5 class="fw-bold mb-4 text-uppercase">Customer Insight</h5>
+        <div class="mb-4 pb-4 border-bottom text-muted small">No reviews yet. Be the first to share your experience.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5 pt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h3 class="fw-bold h4 mb-0 text-uppercase" style="letter-spacing: 1px;">Related Products</h3>
+        <a href="{% url 'home' %}" class="text-success small fw-bold text-decoration-none">View All &rarr;</a>
+    </div>
+    <div class="row g-4">
+        {% for rel in related_products|slice:":4" %}
+        <div class="col-6 col-md-3">
+            <div class="border h-100 bg-white p-2 product-card-hover">
+                <div class="position-relative overflow-hidden mb-3" style="padding-top: 100%;">
+                    <a href="/product/{{ rel.id }}/">
+                        {% if rel.get_primary_image %}
+                            <img src="{{ rel.get_primary_image }}" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="{{ rel.name }}">
                         {% else %}
-                            <div class="text-muted">
-                                <ion-icon name="image-outline" style="font-size: 80px; opacity: 0.2;"></ion-icon>
-                            </div>
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-light d-flex align-items-center justify-content-center"><ion-icon name="image-outline" class="text-muted fs-3"></ion-icon></div>
                         {% endif %}
-                        
-                        {% if product.has_discount %}
-                            <span class="position-absolute top-0 start-0 m-3 badge bg-danger py-2 px-3 text-uppercase fw-bold x-small" style="letter-spacing: 1px;">
-                                -{{ product.discount_percentage }}% Off
-                            </span>
-                        {% endif %}
-                    </div>
+                    </a>
+                </div>
+                <div class="px-1">
+                    <span class="x-small text-muted text-uppercase fw-bold">{{ rel.category.name }}</span>
+                    <h6 class="fw-bold my-2 small"><a href="/product/{{ rel.id }}/" class="text-decoration-none text-dark">{{ rel.name|truncatechars:35 }}</a></h6>
+                    <span class="text-success fw-bold">{{ rel.converted_price }}</span>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-5">
-            <div class="ps-lg-4">
-                <div class="mb-2 d-flex justify-content-between align-items-start">
-                    <span class="text-success text-uppercase fw-bold x-small" style="letter-spacing: 2px;">{{ product.category.name }}</span>
-                    <div class="text-warning extra-small">
-                        <ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon><ion-icon name="star"></ion-icon><ion-icon name="star-outline"></ion-icon>
-                        <span class="text-muted ms-1">(128)</span>
-                    </div>
-                </div>
-
-                <h1 class="fw-bold mb-3 h2 product-title" style="letter-spacing: -1px;">{{ product.name }}</h1>
-
-                <div class="mb-4 pb-4 border-bottom">
-                    <h3 class="fw-bold mb-1 text-success price-text">{{ product.converted_price }}</h3>
-                    {% if product.has_discount %}
-                        <div class="d-flex align-items-center gap-3">
-                            <del class="text-muted h6 mb-0">{{ product.converted_original_price }}</del>
-                            <span class="text-danger extra-small fw-bold text-uppercase">Final Price</span>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="mb-4">
-                    <h6 class="x-small fw-bold text-uppercase text-muted mb-2">Description</h6>
-                    <p class="text-muted small mb-0" style="line-height: 1.6;">{{ product.description|default:"Authentic continental quality sourced directly for you." }}</p>
-                </div>
-
-                <form method="POST" action="{% url 'add_to_cart' product.id %}" class="mt-4">
-                    {% csrf_token %}
-                    <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                    
-                    <div class="mb-4">
-                        <label class="form-label x-small fw-bold text-uppercase text-muted mb-2">Quantity</label>
-                        <div class="d-flex border bg-light p-1" style="height: 50px; width: 140px;">
-                            <button type="button" class="btn border-0 px-3 shadow-none" id="decreaseQty"><ion-icon name="remove-outline"></ion-icon></button>
-                            <input type="number" class="form-control border-0 bg-transparent text-center fw-bold px-0 shadow-none" id="quantity" value="1" min="1" max="{{ product.stock }}" readonly>
-                            <button type="button" class="btn border-0 px-3 shadow-none" id="increaseQty"><ion-icon name="add-outline"></ion-icon></button>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2 action-buttons">
-                        <button type="submit" class="btn btn-success flex-grow-1 text-uppercase fw-bold py-3" style="background-color: var(--primary-green); border: none; font-size: 12px; letter-spacing: 1px;" {% if product.stock <= 0 %}disabled{% endif %}>
-                            <ion-icon name="cart-outline" class="me-2 align-middle"></ion-icon> Add to Cart
-                        </button>
-                        <button type="button" class="btn btn-outline-dark px-4 py-3">
-                            <ion-icon name="heart-outline" class="align-middle"></ion-icon>
-                        </button>
-                    </div>
-                </form>
-
-                <div class="bg-light p-3 p-md-4 border mt-5">
-                    <div class="row g-3">
-                        <div class="col-6 col-md-12">
-                            <div class="d-flex align-items-center">
-                                <ion-icon name="airplane-outline" class="text-success fs-5 me-2"></ion-icon>
-                                <div class="lh-1">
-                                    <span class="d-block extra-small fw-bold text-uppercase">Free Shipping</span>
-                                    <span class="text-muted" style="font-size: 9px;">Over ₦100k</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-12 border-start border-md-none border-md-top pt-md-2 mt-md-2 ps-3 ps-md-0">
-                            <div class="d-flex align-items-center">
-                                <ion-icon name="shield-checkmark-outline" class="text-success fs-5 me-2"></ion-icon>
-                                <div class="lh-1">
-                                    <span class="d-block extra-small fw-bold text-uppercase">Escrow</span>
-                                    <span class="text-muted" style="font-size: 9px;">100% Secured</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
-
-    <div class="mt-5 pt-4">
-        <ul class="nav nav-tabs border-bottom-0" role="tablist">
-            <li class="nav-item"><button class="nav-link active px-3 py-3 text-uppercase fw-bold x-small" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc-pane" type="button">Description</button></li>
-            <li class="nav-item"><button class="nav-link px-3 py-3 text-uppercase fw-bold x-small" id="spec-tab" data-bs-toggle="tab" data-bs-target="#spec-pane" type="button">Specs</button></li>
-        </ul>
-        <div class="tab-content border bg-white p-4 p-md-5">
-            <div class="tab-pane fade show active" id="desc-pane">
-                <h5 class="fw-bold mb-3 small fw-bold text-uppercase">Product Overview</h5>
-                <p class="text-muted small mb-0" style="line-height: 1.8;">{{ product.description }}</p>
-            </div>
-            <div class="tab-pane fade" id="spec-pane">
-                <table class="table table-bordered mb-0">
-                    <tbody class="extra-small text-muted text-uppercase fw-semibold">
-                        <tr><td class="bg-light w-25">Category</td><td>{{ product.category.name }}</td></tr>
-                        <tr><td class="bg-light w-25">Stock</td><td>{{ product.stock }} Units</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="mt-5 pt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-            <h3 class="fw-bold h6 mb-0 text-uppercase" style="letter-spacing: 1px;">Related Items</h3>
-            <a href="{% url 'home' %}" class="text-success extra-small fw-bold text-decoration-none">VIEW ALL &rarr;</a>
-        </div>
-        <div class="row g-3">
-            {% for rel in related_products|slice:":4" %}
-            <div class="col-6 col-md-3">
-                <div class="border bg-white p-2">
-                    <div class="position-relative overflow-hidden mb-2" style="padding-top: 100%;">
-                        <a href="/product/{{ rel.id }}/">
-                            <img src="{{ rel.get_primary_image|default:'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400' }}" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" alt="">
-                        </a>
-                    </div>
-                    <div class="px-1">
-                        <h6 class="fw-bold mb-1 extra-small text-truncate"><a href="/product/{{ rel.id }}/" class="text-decoration-none text-dark">{{ rel.name }}</a></h6>
-                        <span class="text-success fw-bold extra-small">{{ rel.converted_price }}</span>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+  </div>
 </div>
 
+<style>
+  /* Base Afrimart Reset */
+  .card, .btn, .form-control, .badge, .breadcrumb-item, .nav-link, .thumb-box, .tab-content, .table { border-radius: 0 !important; }
+  .x-small { font-size: 11px; }
+  .extra-small { font-size: 12px; }
+  
+  .thumb-box { width: 80px; height: 100px; cursor: pointer; transition: 0.2s; border: 1px solid var(--border-light); }
+  .thumb-box:hover { border-color: var(--primary-green); }
+  .active-thumb { border-color: var(--primary-green) !important; border-width: 2px; }
+  
+  .nav-tabs .nav-link { color: #999; border: 1px solid transparent; border-bottom: 1px solid var(--border-light); }
+  .nav-tabs .nav-link.active { color: var(--primary-green); border: 1px solid var(--border-light); border-bottom: 1px solid #fff; }
+
+  .product-card-hover { transition: border-color 0.3s ease; }
+  .product-card-hover:hover { border-color: var(--primary-green) !important; }
+
+  input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; }
+</style>
+
 <script>
-    const decreaseBtn = document.getElementById('decreaseQty');
-    const increaseBtn = document.getElementById('increaseQty');
-    const quantityInput = document.getElementById('quantity');
-    const cartQuantityInput = document.getElementById('cartQuantity');
-    
-    if (decreaseBtn && increaseBtn && quantityInput) {
-        decreaseBtn.addEventListener('click', () => {
-            let val = parseInt(quantityInput.value);
-            if (val > 1) { 
-                quantityInput.value = val - 1; 
-                if(cartQuantityInput) cartQuantityInput.value = val - 1; 
-            }
-        });
-        increaseBtn.addEventListener('click', () => {
-            let val = parseInt(quantityInput.value);
-            let max = parseInt(quantityInput.max) || 99;
-            if (val < max) { 
-                quantityInput.value = val + 1; 
-                if(cartQuantityInput) cartQuantityInput.value = val + 1; 
-            }
-        });
-    }
+  const decreaseBtn = document.getElementById('decreaseQty');
+  const increaseBtn = document.getElementById('increaseQty');
+  const quantityInput = document.getElementById('quantity');
+  const cartQuantityInput = document.getElementById('cartQuantity');
+  
+  if (decreaseBtn && increaseBtn && quantityInput) {
+    decreaseBtn.addEventListener('click', () => {
+      let val = parseInt(quantityInput.value);
+      if (val > 1) { 
+        quantityInput.value = val - 1; 
+        if(cartQuantityInput) cartQuantityInput.value = val - 1; 
+      }
+    });
+    increaseBtn.addEventListener('click', () => {
+      let val = parseInt(quantityInput.value);
+      let max = parseInt(quantityInput.max) || 99;
+      if (val < max) { 
+        quantityInput.value = val + 1; 
+        if(cartQuantityInput) cartQuantityInput.value = val + 1; 
+      }
+    });
+  }
 </script>
 
 {% endblock %}

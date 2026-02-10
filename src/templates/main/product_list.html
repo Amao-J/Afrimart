@@ -44,7 +44,7 @@
 
     .object-fit-cover { object-fit: cover; }
 
-    /* Price Responsive Sizing */
+    /* Price Responsive Sizing - FIXED FOR MOBILE */
     .price-text {
         font-size: 18px;
         font-weight: bold;
@@ -52,7 +52,10 @@
 
     @media (max-width: 576px) {
         .price-text {
-            font-size: 15px !important; /* Smaller price on mobile */
+            font-size: 14px !important; /* Forces smaller price on small screens */
+        }
+        .product-card h6 {
+            font-size: 12px !important; /* Also slightly shrinks title for balance */
         }
     }
 
@@ -66,11 +69,11 @@
     }
 </style>
 
-<div class="container my-4">
+<div class="container my-3">
   <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted x-small fw-bold text-uppercase">Home</a></li>
-      <li class="breadcrumb-item active x-small text-dark fw-bold text-uppercase mt-1" aria-current="page">
+      <li class="breadcrumb-item active x-small text-dark fw-bold text-uppercase" style="margin-top: 5px;" aria-current="page">
         {% if search_query %}Search Results{% else %}All Products{% endif %}
       </li>
     </ol>
