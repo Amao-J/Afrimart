@@ -1,8 +1,4 @@
 # main/email_utils.py
-"""
-Email utility functions for Afrimart Africa E-Commerce Platform
-All emails sent from @Afrimart.africa domain
-"""
 
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
@@ -430,3 +426,86 @@ def send_admin_notification(subject, message):
     except Exception as e:
         logger.error(f'Failed to send admin notification: {str(e)}')
         return False
+
+
+
+
+
+def send_escrow_notification(user, notification_type, escrow):
+    """
+    Send email notification for escrow events
+    
+    notification_type options:
+    - 'payment_confirmed' (buyer)
+    - 'payment_received' (seller)
+    - 'order_shipped' (buyer)
+    - 'funds_released' (seller)
+    """
+    
+    subject_map = {
+        'payment_confirmed': f'Payment Confirmed - Order #{escrow.order.id}',
+        'payment_received': f'New Escrow Payment - Order #{escrow.order.id}',
+        'order_shipped': f'Order Shipped - {escrow.transaction_id}',
+        'funds_released': f'Payment Released - ₦{escrow.amount:,.2f}',
+    }
+    
+    message_map = {
+        'payment_confirmed': f'Your payment of ₦{escrow.total_amount:,.2f} has been confirmed and is now held securely in escrow.',
+        'payment_received': f'A buyer has paid ₦{escrow.amount:,.2f} into escrow for Order #{escrow.order.id}. Please ship the order.',
+        'order_shipped': f'Your order has been shipped! Track: {escrow.order.tracking_number or "N/A"}',
+        'funds_released': f'₦{escrow.amount:,.2f} has been released to your wallet.',
+    }
+    
+    subject = subject_map.get(notification_type, 'Afrimart Notification')
+    message = message_map.get(notification_type, '')
+    
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=True,
+        )
+    except Exception as e:
+        # Log error but don't break the transaction
+        print(f"Email notification failed: {e}")
+
+
+def send_order_notification(user, notification_type, order):
+    """
+    Send email notification for regular order events
+    
+    notification_type options:
+    - 'payment_confirmed' (buyer)
+    - 'new_order' (seller)
+    - 'order_shipped' (buyer)
+    """
+    
+    subject_map = {
+        'payment_confirmed': f'Payment Confirmed - Order #{order.id}',
+        'new_order': f'New Order Received - #{order.id}',
+        'order_shipped': f'Order Shipped - #{order.id}',
+    }
+    
+    message_map = {
+        'payment_confirmed': f'Your payment for Order #{order.id} has been confirmed. Total: ₦{order.total_amount:,.2f}',
+        'new_order': f'You have a new order #{order.id} worth ₦{order.total_amount:,.2f}. Please prepare for shipping.',
+        'order_shipped': f'Your order #{order.id} has been shipped!',
+    }
+    
+    subject = subject_map.get(notification_type, 'Afrimart Notification')
+    message = message_map.get(notification_type, '')
+    
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=True,
+        )
+    except Exception as e:
+        print(f"Email notification failed: {e}")
+
+

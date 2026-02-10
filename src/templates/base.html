@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% load currency_tags %}
+
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
@@ -9,7 +10,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Afrimart - {% block title %}{% endblock %}</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 
     <link rel="shortcut icon" href="{% static 'assets/images/logo/favicon.ico' %}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -39,99 +39,49 @@
         a { transition: all 0.2s ease; text-decoration: none; color: inherit; }
         .btn, .form-control, .form-select { border-radius: 0 !important; box-shadow: none !important; border: 1px solid var(--border-light); }
 
-        /* Custom SVG sizing for Hero and Header */
-        .hero-icon, .nav-icon svg {
+        .nav-icon svg {
             width: 20px;
             height: 20px;
             display: inline-block;
             vertical-align: middle;
         }
 
-        /* --- BLACK TOP BAR --- */
-        .utility-bar {
-            background-color: #000;
-            color: #fff;
-            padding: 10px 0;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .utility-bar select {
-            background: transparent;
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.3);
-            outline: none;
-            padding: 2px 5px;
-            font-size: 10px;
-        }
-        .utility-bar option { background: #000; }
-
-        header.main-header {
-            background: #fff;
-            border-bottom: 1px solid var(--border-light);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
+        /* --- TOP BAR --- */
+        .utility-bar { background-color: #000; color: #fff; padding: 10px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .utility-bar select { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); outline: none; padding: 2px 5px; font-size: 10px; }
+        
+        header.main-header { background: #fff; border-bottom: 1px solid var(--border-light); padding: 15px 0; position: sticky; top: 0; z-index: 1000; }
         .logo-img { height: 35px; width: auto; }
 
         .search-container { position: relative; max-width: 500px; }
-        .search-container input {
-            background: #f8f8f8;
-            border: 1px solid var(--border-light);
-            padding: 12px 20px;
-            width: 100%;
-            font-size: 13px;
-        }
+        .search-container input { background: #f8f8f8; border: 1px solid var(--border-light); padding: 12px 20px; width: 100%; font-size: 13px; }
         .search-container input:focus { border-color: var(--primary-green); background: #fff; }
-        
-        .search-container button {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            border: none; background: transparent; color: var(--primary-green); font-size: 18px;
-        }
+        .search-container button { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: var(--primary-green); font-size: 18px; }
 
-        .nav-icon {
-            font-size: 24px;
-            color: var(--text-main);
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .nav-icon:hover { color: var(--primary-green); }
-
-        .badge-count {
-            position: absolute; top: -6px; right: -8px;
-            background: var(--primary-green); color: #fff;
-            font-size: 9px; width: 17px; height: 17px;
-            display: flex; align-items: center; justify-content: center; font-weight: 700;
-            border-radius: 50%;
-        }
+        .nav-icon { font-size: 24px; color: var(--text-main); position: relative; display: flex; align-items: center; }
+        .badge-count { position: absolute; top: -6px; right: -8px; background: var(--primary-green); color: #fff; font-size: 9px; width: 17px; height: 17px; display: flex; align-items: center; justify-content: center; font-weight: 700; border-radius: 50%; }
 
         .secondary-nav { background: #fff; border-bottom: 1px solid var(--border-light); }
-        .secondary-nav .nav-link {
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1px; color: var(--text-main); padding: 15px 25px !important;
-        }
-        .secondary-nav .nav-link:hover, .secondary-nav .nav-link.active { 
-            color: var(--primary-green); border-bottom: 2px solid var(--primary-green);
-        }
+        .secondary-nav .nav-link { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); padding: 15px 25px !important; }
+        .secondary-nav .nav-link:hover, .secondary-nav .nav-link.active { color: var(--primary-green); border-bottom: 2px solid var(--primary-green); }
 
+        /* --- MOBILE MENU --- */
+        .offcanvas-body .nav-section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 20px 20px 10px; background: #fbfbfb; }
+        .offcanvas-link { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-light); font-size: 14px; font-weight: 500; }
+
+        /* --- FOOTER STYLES --- */
         footer.modern-footer { background: #000; color: #fff; padding: 85px 0 0; margin-top: 100px; }
         footer h5, footer h6 { color: #fff; font-weight: 700; font-size: 14px; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
         footer p { color: #bbbbbb; font-size: 14px; line-height: 1.6; }
         footer ul li a { color: #bbbbbb; font-size: 14px; display: block; margin-bottom: 12px; }
         footer ul li a:hover { color: var(--primary-green); }
-
         .footer-logo { height: 40px; width: auto; margin-bottom: 25px; filter: brightness(0) invert(1); }
-
         .footer-bottom { background-color: #111; padding: 25px 0; margin-top: 60px; border-top: 1px solid #222; }
         .payment-img { max-width: 250px; margin-bottom: 20px; }
 
         @media (max-width: 991px) {
             header.main-header { padding: 10px 0; }
-            main { padding-bottom: 80px; }
+            main { padding-bottom: 20px; }
         }
     </style>
 
@@ -139,13 +89,9 @@
 </head>
 
 <body>
-
     <div class="utility-bar d-none d-lg-block">
         <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <ion-icon name="flash-outline" class="text-success me-1"></ion-icon> 
-                {% trans "Free Shipping for New Users this Weekend!" %}
-            </div>
+            <div><ion-icon name="flash-outline" class="text-success me-1"></ion-icon> {% trans "Free Shipping for New Users this Weekend!" %}</div>
             <div class="d-flex gap-4 align-items-center">
                 <form action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
@@ -153,17 +99,13 @@
                         {% get_current_language as CURRENT_LANG %}
                         {% get_available_languages as LANGUAGES %}
                         {% for code, name in LANGUAGES %}
-                            <option value="{{ code }}" {% if code == CURRENT_LANG %}selected{% endif %}>
-                                {{ code|upper }}
-                            </option>
+                            <option value="{{ code }}" {% if code == CURRENT_LANG %}selected{% endif %}>{{ code|upper }}</option>
                         {% endfor %}
                     </select>
                 </form>
                 <select id="currency-switcher">
                     {% for code, info in supported_currencies.items %}
-                        <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>
-                            {{ code }} ({{ info.symbol }})
-                        </option>
+                        <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>{{ code }} ({{ info.symbol }})</option>
                     {% endfor %}
                 </select>
             </div>
@@ -177,8 +119,8 @@
             </a>
 
             <div class="search-container d-none d-lg-block mx-4 flex-grow-1">
-                <form action="#" method="GET">
-                    <input type="text" placeholder="{% trans 'Search for authentic products...' %}">
+                <form action="{% url 'product_list' %}" method="GET">
+                    <input type="text" name="search" placeholder="{% trans 'Search for authentic products...' %}">
                     <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
                 </form>
             </div>
@@ -189,28 +131,20 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                     </svg>
                 </a>
-
                 <a href="{% url 'wallet' %}" class="nav-icon d-none d-md-block" title="Wallet">
                     <ion-icon name="wallet-outline" style="font-size: 20px; margin-top: 10px;"></ion-icon>
-                
                 </a>
-
-              
                 <a href="#" class="nav-icon d-none d-md-block" title="Wishlist">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
-                    <!-- <span class="badge-count" style="top: -2px; left: 14px;">0</span> -->
                 </a>
-                
-                <a href="{% url 'view_cart' %}" class="nav-icon" title="Cart">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                  </svg>
-                  
+                <a href="{% url 'cart' %}" class="nav-icon" title="Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
                     <span class="badge-count">{{ cart_count|default:0 }}</span>
                 </a>
-
                 <button class="d-lg-none nav-icon border-0 bg-transparent" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
                     <ion-icon name="menu-outline"></ion-icon>
                 </button>
@@ -221,18 +155,8 @@
     <nav class="secondary-nav d-none d-lg-block">
         <div class="container d-flex justify-content-center">
             <ul class="nav">
-                <li>
-                    <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' or request.path == '/en/' %}active{% endif %}">
-                        {% trans "Home" %}
-                    </a>
-                </li>
-    
-                <li>
-                    <a href="{% url 'marketplace' %}" class="nav-link {% if 'marketplace' in request.path %}active{% endif %}">
-                        {% trans "Marketplace" %}
-                    </a>
-                </li>
-                <li><a href="#" class="nav-link">{% trans "Textiles" %}</a></li>
+                <li><a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">{% trans "Home" %}</a></li>
+                <li><a href="{% url 'product_list' %}" class="nav-link">{% trans "All Products" %}</a></li>
                 <li><a href="#" class="nav-link">{% trans "New Arrivals" %}</a></li>
                 <li><a href="#" class="nav-link text-danger">{% trans "Sale" %}</a></li>
             </ul>
@@ -240,21 +164,27 @@
     </nav>
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title">Menu</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body p-0">
-        <a href="#" class="nav-link p-3 border-bottom d-block">{% trans "Categories" %}</a>
-        <a href="#" class="nav-link p-3 border-bottom d-block">{% trans "Vendor Central" %}</a>
-      </div>
+        <div class="offcanvas-header border-bottom">
+            <img src="{% static 'assets/images/logo.png' %}" alt="Afrimart" height="24">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="nav-section-title">{% trans "Main Menu" %}</div>
+            <a href="{% url 'home' %}" class="offcanvas-link"><ion-icon name="home-outline"></ion-icon> {% trans "Home" %}</a>
+            <a href="{% url 'product_list' %}" class="offcanvas-link"><ion-icon name="grid-outline"></ion-icon> {% trans "Browse Products" %}</a>
+            <div class="nav-section-title">{% trans "Account & Finance" %}</div>
+            <a href="{% url 'profile' %}" class="offcanvas-link"><ion-icon name="person-outline"></ion-icon> {% trans "My Profile" %}</a>
+            <a href="{% url 'wallet' %}" class="offcanvas-link"><ion-icon name="wallet-outline"></ion-icon> {% trans "My Wallet" %}</a>
+            <div class="nav-section-title">{% trans "Support" %}</div>
+            <a href="#" class="offcanvas-link"><ion-icon name="help-circle-outline"></ion-icon> {% trans "Help Center" %}</a>
+        </div>
     </div>
 
     <main>
         {% block content %}{% endblock %}
     </main>
 
-      <footer class="modern-footer">
+    <footer class="modern-footer">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
@@ -290,11 +220,10 @@
                 </div>
             </div>
         </div>
-
         <div class="footer-bottom text-center">
             <div class="container">
                 <img src="{% static 'assets/images/payment.png' %}" alt="Payment Methods" class="payment-img">
-                <p class="mb-0 x-small">&copy; 2026 Afrimart Marketplace. Empowering African Creators.</p>
+                <p class="mb-0 x-small">&copy; 2026 Afrimart Marketplace. All Rights Reserved.</p>
                 <div class="d-flex justify-content-center gap-3 mt-3 fs-5">
                     <a href="#" class="text-white"><ion-icon name="logo-instagram"></ion-icon></a>
                     <a href="#" class="text-white"><ion-icon name="logo-twitter"></ion-icon></a>
@@ -305,5 +234,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+  {% if search_query %}
+    Search: {{ search_query }} - Afrimart
+  {% else %}
+    All Products - Afrimart
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-green: #2e6e1f;
+        --border-color: #eeeeee;
+        --text-main: #1a1a1a;
+    }
+
+    /* Industrial Identity Reset */
+    .border, .btn, .badge, .form-control, .form-select, .product-card {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+
+    /* Product Grid Styling */
+    .product-card {
+        border: 1px solid var(--border-color);
+        background: #fff;
+        transition: border-color 0.3s ease;
+    }
+    .product-card:hover { border-color: var(--text-main); }
+    
+    .opacity-hover {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    @media (max-width: 991px) { .opacity-hover { opacity: 1; } }
+    .product-card:hover .opacity-hover { opacity: 1; }
+
+    .object-fit-cover { object-fit: cover; }
+
+    /* Price Responsive Sizing */
+    .price-text {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    @media (max-width: 576px) {
+        .price-text {
+            font-size: 15px !important; /* Smaller price on mobile */
+        }
+    }
+
+    /* Custom Flat Badges */
+    .flat-badge {
+        padding: 4px 8px;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container my-4">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted x-small fw-bold text-uppercase">Home</a></li>
+      <li class="breadcrumb-item active x-small text-dark fw-bold text-uppercase mt-1" aria-current="page">
+        {% if search_query %}Search Results{% else %}All Products{% endif %}
+      </li>
+    </ol>
+  </nav>
+
+  <div class="row align-items-end border-bottom pb-4 mb-5">
+    <div class="col-md-6 mb-4 mb-md-0">
+      <span class="x-small fw-bold text-uppercase text-success" style="letter-spacing: 2px;">Marketplace Inventory</span>
+      <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">
+        {% if search_query %}
+          Search Results
+        {% else %}
+          All Products
+        {% endif %}
+      </h1>
+      <p class="text-muted small mb-0">
+        {% if search_query %}
+          Showing results for "{{ search_query }}"
+        {% else %}
+          Discover amazing products from verified sellers
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-md-6">
+      <form method="get" action="{% url 'product_list' %}" class="d-flex">
+        <input type="text" 
+               name="search" 
+               class="form-control form-control-lg bg-light border me-0" 
+               placeholder="Search products..."
+               value="{{ search_query }}"
+               style="font-size: 14px;">
+        <button type="submit" class="btn btn-dark text-uppercase fw-bold px-4" style="font-size: 11px; letter-spacing: 1px;">
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div class="mb-2 mb-md-0">
+      <p class="mb-0 x-small fw-bold text-uppercase text-muted">
+        <strong>{{ products.count }}</strong> product{{ products.count|pluralize }} found
+      </p>
+    </div>
+    <div class="d-flex align-items-center">
+      <form method="get" class="d-inline-flex align-items-center">
+        <label class="extra-small text-muted text-uppercase fw-bold me-2 whitespace-nowrap">Sort By:</label>
+        <select name="sort" class="form-select form-select-sm border bg-white" onchange="this.form.submit()" style="font-size: 11px; font-weight: 700; text-transform: uppercase;">
+          <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+          <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+          <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  {% if products %}
+    <div class="row g-3 g-md-4">
+      {% for product in products %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card d-flex flex-column h-100">
+          <div class="position-relative overflow-hidden" style="padding-top: 125%; background: #fcfcfc;">
+            <a href="{% url 'product_detail' product.id %}">
+              {% if product.get_primary_image %}
+                <img src="{{ product.get_primary_image }}" 
+                     alt="{{ product.name }}" 
+                     class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover">
+              {% else %}
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                  <ion-icon name="cube-outline" style="font-size: 40px; opacity: 0.1;"></ion-icon>
+                </div>
+              {% endif %}
+            </a>
+
+            <div class="position-absolute top-0 start-0 p-2 d-flex flex-column gap-1">
+              {% if product.has_discount %}
+                <span class="flat-badge bg-danger text-white">
+                  -{{ product.discount_percentage }}%
+                </span>
+              {% endif %}
+              {% if product.is_featured %}
+                <span class="flat-badge text-white" style="background-color: var(--primary-green);">
+                  Featured
+                </span>
+              {% endif %}
+            </div>
+
+            {% if product.stock <= 5 and product.stock > 0 %}
+              <div class="position-absolute bottom-0 start-0 w-100 bg-warning text-center py-1">
+                <span class="extra-small fw-bold text-uppercase">Only {{ product.stock }} left</span>
+              </div>
+            {% endif %}
+
+            <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2 opacity-hover">
+                <button class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="heart-outline"></ion-icon></button>
+                <form method="post" action="{% url 'add_to_cart' product.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;" {% if product.stock <= 0 %}disabled{% endif %}>
+                    <ion-icon name="cart-outline"></ion-icon>
+                  </button>
+                </form>
+            </div>
+          </div>
+
+          <div class="p-3 flex-grow-1 d-flex flex-column">
+            {% if product.seller %}
+              <span class="text-muted extra-small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">
+                <ion-icon name="storefront-outline" class="align-middle"></ion-icon> {{ product.seller.username }}
+              </span>
+            {% endif %}
+            
+            <h6 class="fw-bold mb-2" style="font-size: 14px; line-height: 1.4;">
+              <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
+                {{ product.name|truncatechars:45 }}
+              </a>
+            </h6>
+
+            <div class="mt-auto pt-2 border-top">
+              {% if product.has_discount %}
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="text-success price-text mb-0">
+                    ₦{{ product.get_discounted_price|floatformat:2|intcomma }}
+                  </span>
+                  <del class="text-muted extra-small">
+                    ₦{{ product.price|floatformat:2|intcomma }}
+                  </del>
+                </div>
+              {% else %}
+                <span class="text-success price-text mb-0">
+                  ₦{{ product.price|floatformat:2|intcomma }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="text-center py-5 border border-dashed my-5">
+      <div class="mb-4">
+        <ion-icon name="search-outline" style="font-size: 64px; color: #eee;"></ion-icon>
+      </div>
+      <h4 class="fw-bold mb-2 text-uppercase" style="letter-spacing: 1px;">No Products Found</h4>
+      <p class="text-muted small mb-4">
+        {% if search_query %}
+          We couldn't find any results matching "{{ search_query }}"
+        {% else %}
+          No products are currently available in this collection.
+        {% endif %}
+      </p>
+      <div class="d-flex gap-2 justify-content-center">
+        {% if search_query %}
+          <a href="{% url 'product_list' %}" class="btn btn-outline-dark text-uppercase fw-bold x-small px-4 py-2">
+            Clear Search
+          </a>
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn btn-dark text-white text-uppercase fw-bold border-0 x-small px-4 py-2" style="background-color: var(--primary-green);">
+          Browse All
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

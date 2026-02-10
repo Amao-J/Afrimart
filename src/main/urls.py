@@ -40,16 +40,16 @@ urlpatterns = [
     path('payment/history/', views.payment_history, name='payment_history'),
     path('payment/<int:payment_id>/detail/', views.payment_detail, name='payment_detail'),
 
-    # New payment methods
+    
     path('payment/pay-with-wallet/<int:order_id>/', views.pay_with_wallet, name='pay_with_wallet'),
     path('payment/pay-with-wallet-escrow/<int:order_id>/', views.pay_with_wallet_escrow, name='pay_with_wallet_escrow'),
     path('payment/bank/<int:order_id>/', views.initiate_bank_payment, name='initiate_bank_payment'),
     
-    # Webhook
+    
     path('payment/webhook/', views.verify_payment_webhook, name='payment_webhook'),
     
 
-    # Seller URLs
+   
     path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
     path('seller/pending-approval/', auth.seller_pending_approval, name='seller_pending_approval'),
     path('seller/products/', views.seller_products, name='seller_products'),
@@ -65,4 +65,5 @@ urlpatterns = [
      path('', views.home, name='home'),
     path('products/', views.product_list, name='product_list'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
+    path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
 ]

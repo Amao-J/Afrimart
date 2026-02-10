@@ -1,243 +1,258 @@
-{% extends 'base.html' %} {% load static %} {% load humanize %} {% block title
-%}My Orders - Afrimart {% block content %}
-<style>
-  /* Industrial UI Identity Resets */
-  .card,
-  .btn,
-  .border,
-  .bg-light,
-  .badge,
-  .pagination .page-link {
-    border-radius: 0 !important;
-  }
-  .x-small {
-    font-size: 11px;
-  }
-  .extra-small {
-    font-size: 10px;
-  }
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
 
-  /* Custom Flat Status Badges */
-  .order-status {
-    padding: 5px 12px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-block;
-    border: 1px solid #ddd;
-  }
-  .status-pending {
-    background: #fff3cd;
-    color: #856404;
-    border-color: #ffeeba;
-  }
-  .status-shipped {
-    background: #d1ecf1;
-    color: #0c5460;
-    border-color: #bee5eb;
-  }
-  .status-delivered {
-    background: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
-  }
-  .status-cancelled {
-    background: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
-  }
+{% block title %}My Orders - Afrimart{% endblock %}
 
-  /* List Item Styling */
-  .order-row {
-    transition: background 0.2s;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .order-row:last-child {
-    border-bottom: none;
-  }
-</style>
+{% block content %}
+<div class="container my-5 py-3">
+  <!-- Header -->
+  <div class="row align-items-end border-bottom pb-4 mb-4">
+    <div class="col-md-6">
+      <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">My Orders</h1>
+      <p class="text-muted small mb-0">Track and manage your purchases</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <a href="{% url 'home' %}" class="btn btn-outline-dark text-uppercase fw-bold small px-4">
+        <ion-icon name="arrow-back" class="align-middle me-1"></ion-icon>
+        Continue Shopping
+      </a>
+    </div>
+  </div>
 
-<div class="container my-5 py-4">
-  <div class="border-bottom pb-4 mb-5">
-    <div class="row align-items-end g-3">
-      <div class="col-md-6">
-        <span
-          class="x-small fw-bold text-uppercase text-success"
-          style="letter-spacing: 2px"
-          >Account Overview</span
-        >
-        <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px">
-          My Purchase History
-        </h1>
+  <!-- Statistics Cards -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="bag-outline" class="text-muted" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.total_orders }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Total Orders</p>
       </div>
-      <div class="col-md-6 text-md-end">
-        <div class="d-inline-flex gap-4">
-          <div class="text-center">
-            <span class="d-block fw-bold h5 mb-0"
-              >{{ orders.count|default:"0" }}</span
-            >
-            <span class="extra-small text-uppercase text-muted fw-bold"
-              >Total Orders</span
-            >
-          </div>
-          <div class="text-center border-start ps-4">
-            <span class="d-block fw-bold h5 mb-0 text-success"
-              >{{ pending_count|default:"0" }}</span
-            >
-            <span class="extra-small text-uppercase text-muted fw-bold"
-              >In Transit</span
-            >
-          </div>
-        </div>
+    </div>
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="time-outline" class="text-warning" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.pending_payment }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Pending Payment</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="rocket-outline" class="text-primary" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.in_transit }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">In Transit</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="checkmark-circle-outline" class="text-success" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.delivered }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Delivered</p>
       </div>
     </div>
   </div>
 
-  <div class="row g-5">
-    <div class="col-lg-3">
-      <div class="border bg-white sticky-top" style="top: 120px">
-        <div class="p-3 border-bottom bg-light">
-          <h6
-            class="x-small fw-bold text-uppercase mb-0"
-            style="letter-spacing: 1px"
-          >
-            Manage Account
-          </h6>
-        </div>
-        <a
-          href="{% url 'profile' %}"
-          class="d-block p-3 text-decoration-none border-bottom text-dark small fw-bold"
-          >Personal Information</a
-        >
-        <a
-          href="{% url 'my_orders' %}"
-          class="d-block p-3 text-decoration-none border-bottom text-success small fw-bold border-start border-4 border-success bg-light"
-          style="margin-left: -1px"
-          >Order History</a
-        >
-        <a
-          href="{% url 'wallet' %}"
-          class="d-block p-3 text-decoration-none border-bottom text-dark small fw-bold"
-          >My Wallet</a
-        >
-        <a
-          href="{% url 'escrow:dashboard' %}"
-          class="d-block p-3 text-decoration-none text-dark small fw-bold"
-          >Escrow Protection</a
-        >
-      </div>
-    </div>
+  {% if orders %}
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-4 border-bottom pb-3">
+      <li class="nav-item">
+        <a class="nav-link {% if not request.GET.status %}active{% endif %}" href="?">
+          All Orders
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'pending' %}active{% endif %}" href="?status=pending">
+          Pending
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'processing' %}active{% endif %}" href="?status=processing">
+          Processing
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'shipped' %}active{% endif %}" href="?status=shipped">
+          Shipped
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'delivered' %}active{% endif %}" href="?status=delivered">
+          Delivered
+        </a>
+      </li>
+    </ul>
 
-    <div class="col-lg-9">
-      {% if orders %}
-      <div class="border bg-white shadow-0">
-        <div
-          class="d-none d-md-flex p-3 bg-light border-bottom x-small fw-bold text-uppercase text-muted"
-          style="letter-spacing: 1px"
-        >
-          <div class="col-4">Order Details</div>
-          <div class="col-3 text-center">Status</div>
-          <div class="col-2 text-end">Total</div>
-          <div class="col-3 text-end">Action</div>
-        </div>
-
-        {% for order in orders %}
-        <div class="p-4 order-row">
-          <div class="row align-items-center g-3">
-            <div class="col-md-4">
-              <h6 class="fw-bold mb-1">#{{ order.id }}</h6>
-              <p class="extra-small text-muted text-uppercase mb-2">
-                {{ order.created_at|date:"M d, Y" }}
-              </p>
-              <p class="small text-muted mb-0">
-                {{ order.items.count }} Item{{ order.items.count|pluralize }}
-              </p>
+    
+    <div class="row g-4">
+      {% for order in orders %}
+      <div class="col-12">
+        <div class="border bg-white">
+        
+          <div class="p-4 bg-light border-bottom">
+            <div class="row align-items-center g-3">
+              <div class="col-md-3">
+                <p class="x-small text-muted text-uppercase mb-1">Order Number</p>
+                <p class="fw-bold mb-0">
+                  <a href="{% url 'order_detail' order.id %}" class="text-decoration-none text-dark">
+                    #{{ order.id }}
+                  </a>
+                </p>
+              </div>
+              <div class="col-md-2">
+                <p class="x-small text-muted text-uppercase mb-1">Date</p>
+                <p class="fw-bold mb-0 small">{{ order.created_at|date:"M d, Y" }}</p>
+              </div>
+              <div class="col-md-2">
+                <p class="x-small text-muted text-uppercase mb-1">Total</p>
+                <p class="fw-bold mb-0 text-success">₦{{ order.total_amount|floatformat:2|intcomma }}</p>
+              </div>
+              <div class="col-md-2">
+                <p class="x-small text-muted text-uppercase mb-1">Status</p>
+                {% if order.status == 'pending' %}
+                  <span class="badge bg-warning text-dark px-2 py-1 small">Pending</span>
+                {% elif order.status == 'processing' %}
+                  <span class="badge bg-info px-2 py-1 small">Processing</span>
+                {% elif order.status == 'shipped' %}
+                  <span class="badge bg-primary px-2 py-1 small">Shipped</span>
+                {% elif order.status == 'delivered' %}
+                  <span class="badge bg-success px-2 py-1 small">Delivered</span>
+                {% elif order.status == 'cancelled' %}
+                  <span class="badge bg-danger px-2 py-1 small">Cancelled</span>
+                {% endif %}
+              </div>
+              <div class="col-md-3 text-md-end">
+                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-dark text-uppercase fw-bold px-3">
+                  View Details
+                </a>
+              </div>
             </div>
+          </div>
 
-            <div class="col-md-3 text-md-center">
-              {% if order.status == 'pending' %}
-              <span class="order-status status-pending">Processing</span>
-              {% elif order.status == 'shipped' %}
-              <span class="order-status status-shipped">In Transit</span>
-              {% elif order.status == 'delivered' %}
-              <span class="order-status status-delivered">Delivered</span>
-              {% else %}
-              <span class="order-status status-cancelled"
-                >{{ order.status|upper }}</span
-              >
+        
+          <div class="p-4">
+            <div class="row g-3">
+              {% for item in order.items.all|slice:":3" %}
+              <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                  <div class="border p-2 me-3" style="width: 60px; height: 60px;">
+                    {% if item.product.get_primary_image %}
+                      <img src="{{ item.product.get_primary_image }}" class="w-100 h-100 object-fit-cover" alt="{{ item.product.name }}">
+                    {% else %}
+                      <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                        <ion-icon name="image-outline" class="text-muted"></ion-icon>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="mb-0 small fw-bold">{{ item.product.name|truncatechars:30 }}</p>
+                    <p class="x-small text-muted mb-0">Qty: {{ item.quantity }} × ₦{{ item.price|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              
+              {% if order.items.count > 3 %}
+              <div class="col-12">
+                <p class="x-small text-muted mb-0">+ {{ order.items.count|add:"-3" }} more item{{ order.items.count|add:"-3"|pluralize }}</p>
+              </div>
               {% endif %}
             </div>
 
-            <div class="col-md-2 text-md-end">
-              <h6 class="fw-bold mb-0">
-                ₦{{ order.total_amount|floatformat:2|intcomma }}
-              </h6>
-            </div>
+           
+            <div class="row mt-4 pt-3 border-top">
+              <div class="col-md-6">
+                <p class="x-small text-muted text-uppercase mb-1">Payment</p>
+                {% if order.payment_status == 'pending' %}
+                  <span class="badge bg-warning text-dark px-2 py-1 small">
+                    <ion-icon name="time-outline" class="align-middle"></ion-icon>
+                    Pending
+                  </span>
+                {% elif order.payment_status == 'paid' %}
+                  <span class="badge bg-success px-2 py-1 small">
+                    <ion-icon name="checkmark-circle-outline" class="align-middle"></ion-icon>
+                    Paid
+                  </span>
+                  {% if order.payment_method %}
+                    <span class="x-small text-muted ms-2">via {{ order.payment_method|title }}</span>
+                  {% endif %}
+                {% elif order.payment_status == 'refunded' %}
+                  <span class="badge bg-secondary px-2 py-1 small">
+                    <ion-icon name="return-down-back-outline" class="align-middle"></ion-icon>
+                    Refunded
+                  </span>
+                {% endif %}
+              </div>
 
-            <div class="col-md-3 text-end">
-              <a
-                href="{% url 'order_detail' order.id %}"
-                class="btn btn-sm btn-outline-dark fw-bold text-uppercase x-small px-4"
-              >
-                View Details
-              </a>
+              <div class="col-md-6 text-md-end">
+                {% if order.payment_status == 'pending' %}
+                  <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-success text-uppercase fw-bold px-3">
+                    <ion-icon name="card-outline" class="align-middle me-1"></ion-icon>
+                    Pay Now
+                  </a>
+                {% endif %}
+
+                {% if order.escrow %}
+                  <a href="{% url 'escrow:detail' order.escrow.id %}" class="btn btn-sm btn-outline-success text-uppercase fw-bold px-3 ms-2">
+                    <ion-icon name="shield-checkmark-outline" class="align-middle me-1"></ion-icon>
+                    View Escrow
+                  </a>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
-        {% endfor %}
       </div>
-
-      {% if is_paginated %}
-      <nav class="mt-5">
-        <ul class="pagination justify-content-center gap-2 border-0">
-          {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a
-              class="page-link border text-dark x-small fw-bold"
-              href="?page={{ page_obj.previous_page_number }}"
-              >&larr; PREV</a
-            >
-          </li>
-          {% endif %}
-          <li class="page-item">
-            <span
-              class="page-link border-0 text-white fw-bold bg-dark x-small px-3"
-              >{{ page_obj.number }}</span
-            >
-          </li>
-          {% if page_obj.has_next %}
-          <li class="page-item">
-            <a
-              class="page-link border text-dark x-small fw-bold"
-              href="?page={{ page_obj.next_page_number }}"
-              >NEXT &rarr;</a
-            >
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-      {% endif %} {% else %}
-      <div class="border p-5 text-center bg-white">
-        <ion-icon
-          name="bag-handle-outline"
-          class="text-muted opacity-25 mb-3"
-          style="font-size: 64px"
-        ></ion-icon>
-        <h5 class="fw-bold mb-2">No Orders Found</h5>
-        <p class="text-muted small mb-4">
-          You haven't placed any orders on Afrimart yet.
-        </p>
-        <a
-          href="{% url 'marketplace' %}"
-          class="btn btn-dark fw-bold text-uppercase x-small px-5 py-3"
-          style="background-color: var(--primary-green); border: none"
-        >
-          Start Shopping
-        </a>
-      </div>
-      {% endif %}
+      {% endfor %}
     </div>
-  </div>
+
+  {% else %}
+  
+    <div class="text-center py-5 my-5">
+      <div class="mb-4">
+        <ion-icon name="bag-outline" style="font-size: 80px; color: #ddd;"></ion-icon>
+      </div>
+      <h3 class="fw-bold mb-3">No Orders Yet</h3>
+      <p class="text-muted mb-4">You haven't placed any orders. Start shopping now!</p>
+      <a href="{% url 'home' %}" class="btn btn-lg px-5 py-3 text-white text-uppercase fw-bold border-0" style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
+        <ion-icon name="cart-outline" class="align-middle me-2"></ion-icon>
+        Start Shopping
+      </a>
+    </div>
+  {% endif %}
 </div>
+
+<style>
+  .x-small { font-size: 11px; }
+  
+  .nav-pills .nav-link {
+    color: var(--text-dark);
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .nav-pills .nav-link:hover {
+    background-color: transparent;
+    border-bottom-color: var(--primary-green);
+    color: var(--primary-green);
+  }
+  
+  .nav-pills .nav-link.active {
+    background-color: transparent;
+    color: var(--primary-green);
+    border-bottom-color: var(--primary-green);
+  }
+
+  .border, .btn, .badge {
+    border-radius: 0 !important;
+  }
+
+  .object-fit-cover {
+    object-fit: cover;
+  }
+</style>
 {% endblock %}
