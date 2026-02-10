@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My Orders - Afrimart{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-3">
+  <!-- Header -->
+  <div class="row align-items-end border-bottom pb-4 mb-4">
+    <div class="col-md-6">
+      <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">My Orders</h1>
+      <p class="text-muted small mb-0">Track and manage your purchases</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <a href="{% url 'home' %}" class="btn btn-outline-dark text-uppercase fw-bold small px-4">
+        <ion-icon name="arrow-back" class="align-middle me-1"></ion-icon>
+        Continue Shopping
+      </a>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="bag-outline" class="text-muted" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.total_orders }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Total Orders</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="time-outline" class="text-warning" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.pending_payment }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Pending Payment</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="rocket-outline" class="text-primary" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.in_transit }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">In Transit</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="checkmark-circle-outline" class="text-success" style="font-size: 32px;"></ion-icon>
+        <h3 class="fw-bold mb-0 mt-2">{{ stats.delivered }}</h3>
+        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Delivered</p>
+      </div>
+    </div>
+  </div>
+
+  {% if orders %}
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-4 border-bottom pb-3">
+      <li class="nav-item">
+        <a class="nav-link {% if not request.GET.status %}active{% endif %}" href="?">
+          All Orders
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'pending' %}active{% endif %}" href="?status=pending">
+          Pending
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'processing' %}active{% endif %}" href="?status=processing">
+          Processing
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'shipped' %}active{% endif %}" href="?status=shipped">
+          Shipped
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.GET.status == 'delivered' %}active{% endif %}" href="?status=delivered">
+          Delivered
+        </a>
+      </li>
+    </ul>
+
+    
+    <div class="row g-4">
+      {% for order in orders %}
+      <div class="col-12">
+        <div class="border bg-white">
+        
+          <div class="p-4 bg-light border-bottom">
+            <div class="row align-items-center g-3">
+              <div class="col-md-3">
+                <p class="x-small text-muted text-uppercase mb-1">Order Number</p>
+                <p class="fw-bold mb-0">
+                  <a href="{% url 'order_detail' order.id %}" class="text-decoration-none text-dark">
+                    #{{ order.id }}
+                  </a>
+                </p>
+              </div>
+              <div class="col-md-2">
+                <p class="x-small text-muted text-uppercase mb-1">Date</p>
+                <p class="fw-bold mb-0 small">{{ order.created_at|date:"M d, Y" }}</p>
+              </div>
+              <div class="col-md-2">
+                <p class="x-small text-muted text-uppercase mb-1">Total</p>
+                <p class="fw-bold mb-0 text-success">₦{{ order.total_amount|floatformat:2|intcomma }}</p>
+              </div>
+              <div class="col-md-2">
+                <p class="x-small text-muted text-uppercase mb-1">Status</p>
+                {% if order.status == 'pending' %}
+                  <span class="badge bg-warning text-dark px-2 py-1 small">Pending</span>
+                {% elif order.status == 'processing' %}
+                  <span class="badge bg-info px-2 py-1 small">Processing</span>
+                {% elif order.status == 'shipped' %}
+                  <span class="badge bg-primary px-2 py-1 small">Shipped</span>
+                {% elif order.status == 'delivered' %}
+                  <span class="badge bg-success px-2 py-1 small">Delivered</span>
+                {% elif order.status == 'cancelled' %}
+                  <span class="badge bg-danger px-2 py-1 small">Cancelled</span>
+                {% endif %}
+              </div>
+              <div class="col-md-3 text-md-end">
+                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-dark text-uppercase fw-bold px-3">
+                  View Details
+                </a>
+              </div>
+            </div>
+          </div>
+
+        
+          <div class="p-4">
+            <div class="row g-3">
+              {% for item in order.items.all|slice:":3" %}
+              <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                  <div class="border p-2 me-3" style="width: 60px; height: 60px;">
+                    {% if item.product.get_primary_image %}
+                      <img src="{{ item.product.get_primary_image }}" class="w-100 h-100 object-fit-cover" alt="{{ item.product.name }}">
+                    {% else %}
+                      <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                        <ion-icon name="image-outline" class="text-muted"></ion-icon>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="mb-0 small fw-bold">{{ item.product.name|truncatechars:30 }}</p>
+                    <p class="x-small text-muted mb-0">Qty: {{ item.quantity }} × ₦{{ item.price|floatformat:2|intcomma }}</p>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              
+              {% if order.items.count > 3 %}
+              <div class="col-12">
+                <p class="x-small text-muted mb-0">+ {{ order.items.count|add:"-3" }} more item{{ order.items.count|add:"-3"|pluralize }}</p>
+              </div>
+              {% endif %}
+            </div>
+
+           
+            <div class="row mt-4 pt-3 border-top">
+              <div class="col-md-6">
+                <p class="x-small text-muted text-uppercase mb-1">Payment</p>
+                {% if order.payment_status == 'pending' %}
+                  <span class="badge bg-warning text-dark px-2 py-1 small">
+                    <ion-icon name="time-outline" class="align-middle"></ion-icon>
+                    Pending
+                  </span>
+                {% elif order.payment_status == 'paid' %}
+                  <span class="badge bg-success px-2 py-1 small">
+                    <ion-icon name="checkmark-circle-outline" class="align-middle"></ion-icon>
+                    Paid
+                  </span>
+                  {% if order.payment_method %}
+                    <span class="x-small text-muted ms-2">via {{ order.payment_method|title }}</span>
+                  {% endif %}
+                {% elif order.payment_status == 'refunded' %}
+                  <span class="badge bg-secondary px-2 py-1 small">
+                    <ion-icon name="return-down-back-outline" class="align-middle"></ion-icon>
+                    Refunded
+                  </span>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6 text-md-end">
+                {% if order.payment_status == 'pending' %}
+                  <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-success text-uppercase fw-bold px-3">
+                    <ion-icon name="card-outline" class="align-middle me-1"></ion-icon>
+                    Pay Now
+                  </a>
+                {% endif %}
+
+                {% if order.escrow %}
+                  <a href="{% url 'escrow:detail' order.escrow.id %}" class="btn btn-sm btn-outline-success text-uppercase fw-bold px-3 ms-2">
+                    <ion-icon name="shield-checkmark-outline" class="align-middle me-1"></ion-icon>
+                    View Escrow
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+  
+    <div class="text-center py-5 my-5">
+      <div class="mb-4">
+        <ion-icon name="bag-outline" style="font-size: 80px; color: #ddd;"></ion-icon>
+      </div>
+      <h3 class="fw-bold mb-3">No Orders Yet</h3>
+      <p class="text-muted mb-4">You haven't placed any orders. Start shopping now!</p>
+      <a href="{% url 'home' %}" class="btn btn-lg px-5 py-3 text-white text-uppercase fw-bold border-0" style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
+        <ion-icon name="cart-outline" class="align-middle me-2"></ion-icon>
+        Start Shopping
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .x-small { font-size: 11px; }
+  
+  .nav-pills .nav-link {
+    color: var(--text-dark);
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .nav-pills .nav-link:hover {
+    background-color: transparent;
+    border-bottom-color: var(--primary-green);
+    color: var(--primary-green);
+  }
+  
+  .nav-pills .nav-link.active {
+    background-color: transparent;
+    color: var(--primary-green);
+    border-bottom-color: var(--primary-green);
+  }
+
+  .border, .btn, .badge {
+    border-radius: 0 !important;
+  }
+
+  .object-fit-cover {
+    object-fit: cover;
+  }
+</style>
+{% endblock %}

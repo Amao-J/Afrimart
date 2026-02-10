@@ -1,4 +1,5 @@
 # escrow/views.py
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,8 +8,10 @@ from django.db import transaction
 from django.db.models import Sum
 from decimal import Decimal
 import uuid
+from django.conf import settings 
 from main.models import Order, Wallet, WalletTransaction
 from .models import EscrowTransaction, EscrowDispute, EscrowStatusHistory
+from main.email_utils import send_escrow_notification, send_order_notification
 
 
 @login_required
@@ -85,6 +88,9 @@ def initiate_escrow(request, order_id):
         changed_by=request.user,
         reason='Escrow transaction initiated'
     )
+    
+    send_escrow_notification(escrow.buyer, 'escrow_initiated', escrow)
+    send_escrow_notification(escrow.seller, 'escrow_initiated', escrow)
     
     messages.success(request, "Escrow transaction created. Please complete payment.")
     return redirect('escrow:payment', escrow_id=escrow.id)

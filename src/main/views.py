@@ -16,9 +16,10 @@ from .cart import get_cart, save_cart, get_cart_items, update_cart, remove_from_
 import uuid
 import requests
 import json
-from django.db.models import Q
+from django.db.models import Q,F
 from main.utils.currency import convert_currency, get_user_currency,set_user_currency,convert_price_to_user_currency
 from django.db import models
+from .email_utils import send_escrow_notification, send_order_notification
 
 def home(request):
     """Home page with featured products and discount handling"""
@@ -32,7 +33,7 @@ def home(request):
     if not products.exists():
         products = Product.objects.filter(stock__gt=0).order_by('-created_at')[:12]
     
-    # Convert prices to user's currency and handle discounts
+   
     for product in products:
         # Use discounted price if available
         price_to_convert = product.get_discounted_price()
@@ -184,10 +185,10 @@ def clear_cart_view(request):
 @login_required
 def dashboard(request):
     """User dashboard"""
-    # Get user's orders
+   
     orders = Order.objects.filter(buyer=request.user).order_by('-created_at')[:5]
     
-    # Get user's wallet
+
     from .models import Wallet
     wallet, created = Wallet.objects.get_or_create(user=request.user)
     
@@ -272,61 +273,61 @@ def top_up_wallet(request):
     return render(request, 'main/wallet_topup.html', context)
 
 
+
 @login_required
 def checkout(request):
-    """Checkout process with escrow option"""
     cart_data = get_cart_items(request)
-    
-    # Check if cart is empty
+
     if not cart_data['items']:
         messages.warning(request, "Your cart is empty")
         return redirect('cart')
-    
-    # Check stock availability for all items
+
+    # Idempotency protection
+    if request.method == 'POST' and request.session.get('checkout_locked'):
+        messages.info(request, "Checkout already processed.")
+        return redirect('my_orders')
+
+    # Validate stock before POST
     for item in cart_data['items']:
         if item['quantity'] > item['product'].stock:
-            messages.error(request, f"{item['product'].name} only has {item['product'].stock} units in stock")
+            messages.error(
+                request,
+                f"{item['product'].name} only has {item['product'].stock} units available."
+            )
             return redirect('cart')
-    
+
     if request.method == 'POST':
-        # Get shipping information
         shipping_address = request.POST.get('shipping_address', '').strip()
         shipping_city = request.POST.get('shipping_city', '').strip()
         country = request.POST.get('country', 'NG').strip()
-        payment_method = request.POST.get('payment_method', 'card')  # Get payment method
-        
-        # Validate shipping information
-        if not all([shipping_address, shipping_city]):
-            messages.error(request, "Please fill in all shipping information")
-            return render(request, 'main/checkout.html', {
-                'cart_items': cart_data['items'],
-                'cart_total': cart_data['total'],
-                'cart_count': cart_data['count']
-            })
-        
-        # Format full shipping address
+        payment_method = request.POST.get('payment_method', 'card')
+
+        if not shipping_address or not shipping_city:
+            messages.error(request, "Please complete all shipping details.")
+            return redirect('checkout')
+
         full_shipping_address = f"{shipping_address}, {shipping_city}, {country}"
-        
+
         try:
             with transaction.atomic():
-                # Group items by seller
+                request.session['checkout_locked'] = True
+
+                # Group cart items by seller
                 items_by_seller = {}
                 for item in cart_data['items']:
-                    seller = getattr(item['product'], 'seller', request.user)
-                    
-                    if seller not in items_by_seller:
-                        items_by_seller[seller] = []
-                    
-                    items_by_seller[seller].append(item)
-                
-                # Create separate order for each seller
+                    seller = getattr(item['product'], 'seller', None)
+                    if not seller:
+                        raise Exception("Product seller not found.")
+                    items_by_seller.setdefault(seller, []).append(item)
+
                 created_orders = []
-                
+
                 for seller, items in items_by_seller.items():
-                    # Calculate total for this seller's items
-                    order_total = sum(item['subtotal'] for item in items)
-                    
-                    # Create order
+                    order_total = sum(
+                        Decimal(item['product'].price) * item['quantity']
+                        for item in items
+                    )
+
                     order = Order.objects.create(
                         buyer=request.user,
                         seller=seller,
@@ -335,153 +336,197 @@ def checkout(request):
                         status='pending',
                         payment_status='pending'
                     )
-                    
-                    # Create order items and reduce stock
+
+                    order_items = []
+
                     for item in items:
-                        OrderItem.objects.create(
-                            order=order,
-                            product=item['product'],
-                            quantity=item['quantity'],
-                            price=item['product'].price
+                        product = (
+                            Product.objects
+                            .select_for_update()
+                            .get(id=item['product'].id)
                         )
-                        
-                        # Reduce product stock
-                        product = item['product']
-                        product.stock -= item['quantity']
+
+                        if product.stock < item['quantity']:
+                            raise Exception(
+                                f"{product.name} stock changed during checkout."
+                            )
+
+                        product.stock = F('stock') - item['quantity']
                         product.save()
-                    
+
+                        order_items.append(
+                            OrderItem(
+                                order=order,
+                                product=product,
+                                quantity=item['quantity'],
+                                price=product.price
+                            )
+                        )
+
+                    OrderItem.objects.bulk_create(order_items)
                     created_orders.append(order)
+
                 
-                # Clear cart
-                request.session['cart'] = {}
-                request.session.modified = True
+
                 
-                # Handle payment method
-                if payment_method == 'escrow':
-                    # Redirect to escrow initiation
-                    if len(created_orders) == 1:
-                        from escrow.models import EscrowTransaction, EscrowStatusHistory
-                        
-                        order = created_orders[0]
-                        
-                        # Calculate escrow fee (2.5%)
-                        escrow_fee = order.total_amount * Decimal('0.025')
-                        total_amount = order.total_amount + escrow_fee
-                        
-                        # Create escrow transaction
-                        escrow = EscrowTransaction.objects.create(
-                            transaction_id=f"ESC-{uuid.uuid4().hex[:12].upper()}",
-                            order=order,
-                            buyer=request.user,
-                            seller=order.seller,
-                            amount=order.total_amount,
-                            escrow_fee=escrow_fee,
-                            total_amount=total_amount,
-                            status='pending_payment'
-                        )
-                        
-                        # Log initial status
-                        EscrowStatusHistory.objects.create(
-                            escrow=escrow,
-                            old_status='',
-                            new_status='pending_payment',
-                            changed_by=request.user,
-                            reason='Escrow transaction initiated from checkout'
-                        )
-                        
-                        messages.success(request, "Order placed! Please complete escrow payment.")
-                        return redirect('escrow:payment', escrow_id=escrow.id)
-                    else:
-                        messages.info(request, "Escrow payment available for single-seller orders only. Please pay normally.")
-                        return redirect('my_orders')
-                    
+                if payment_method in ('escrow', 'wallet_escrow') and len(created_orders) > 1:
+                    raise Exception("Escrow payments require a single seller.")
 
-                elif payment_method == 'wallet':
-                    if len(created_orders) == 1:
-                        orders = created_orders[0]
+                order = created_orders[0]
 
-                        wallet, _ = Wallet.objects.get_or_create(user=request.user)
-                        if not wallet.can_debit(orders.total_amount):
-                            messages.error(request, "Insufficient wallet balance. Please top up your wallet or choose another payment method.")
-                            return redirect('wallet_top_up')
-                        
-                        try:
-                            with transaction.atomic():
-                                wallet.debit(orders.total_amount)
-                                orders.payment_status = 'paid'
-                                orders.payment_method = 'wallet'
-                                orders.payment_reference = f"WALLET-{uuid.uuid4().hex[:12].upper()}"
-                                orders.paid_at = timezone.now()
-                                orders.status = 'processing'
-                                orders.save()
+              
+                if payment_method == 'wallet_escrow':
+                    from escrow.models import EscrowTransaction, EscrowStatusHistory
 
-                                Payment.objects.create(
-                                    order=orders,
-                                    user=request.user,
-                                    amount=orders.total_amount,
-                                    payment_method='wallet',
-                                    reference=orders.payment_reference,
-                                    status='successful',
-                                    payment_type='normal',
-                                    completed_at=timezone.now()
-                                )
+                    escrow_fee = (order.total_amount * Decimal('0.025')).quantize(Decimal('0.01'))
+                    total_amount = order.total_amount + escrow_fee
 
-                                transfer_to_seller(orders.seller, orders.total_amount)
+                    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+                    if not wallet.can_debit(total_amount):
+                        raise Exception("Insufficient wallet balance.")
 
-                            messages.success(request, "Payment successful! Your order is being processed.")
-                            return redirect('order_detail', order_id=orders.id)
-                        except Exception as e:
-                            messages.error(request, f" Payment Failed: {str(e)}")
-                            return redirect('order_detail', order_id=orders.id)
-                    else:
-                        messages.error(request, "Wallet payment is only available for single-seller orders.")
-                        return redirect('my_orders')
-                else:
-                    # Regular payment flow
-                    if len(created_orders) == 1:
-                        messages.success(request, "Order placed successfully! Please complete payment.")
-                        return redirect('order_detail', order_id=created_orders[0].id)
-                    else:
-                        messages.success(request, f"{len(created_orders)} orders placed successfully! Please complete payments.")
-                        return redirect('my_orders')
-        
+                    wallet.debit(total_amount)
+
+                    escrow = EscrowTransaction.objects.create(
+                        transaction_id=f"ESC-{uuid.uuid4().hex.upper()}",
+                        order=order,
+                        buyer=request.user,
+                        seller=order.seller,
+                        amount=order.total_amount,
+                        escrow_fee=escrow_fee,
+                        total_amount=total_amount,
+                        status='in_escrow',
+                        payment_received_at=timezone.now(),
+                        payment_reference=f"WALLET-ESC-{uuid.uuid4().hex.upper()}",
+                        payment_provider='wallet'
+                    )
+
+                    EscrowStatusHistory.objects.create(
+                        escrow=escrow,
+                        old_status='',
+                        new_status='in_escrow',
+                        changed_by=request.user,
+                        reason='Wallet escrow payment'
+                    )
+
+                    order.payment_status = 'in_escrow'
+                    order.status = 'awaiting_fulfillment'
+                    order.save()
+
+                    Payment.objects.create(
+                        order=order,
+                        user=request.user,
+                        amount=total_amount,
+                        payment_method='wallet',
+                        reference=escrow.payment_reference,
+                        status='successful',
+                        payment_type='escrow',
+                        completed_at=timezone.now()
+                    )
+
+                    request.session['cart'] = {}
+                    request.session.pop('checkout_locked', None)
+
+                    messages.success(request, "Payment successful. Funds secured in escrow.")
+                    return redirect('escrow:detail', escrow_id=escrow.id)
+
+               
+                if payment_method == 'wallet':
+                    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+
+                    if not wallet.can_debit(order.total_amount):
+                        raise Exception("Insufficient wallet balance.")
+
+                    wallet.debit(order.total_amount)
+
+                    order.payment_status = 'paid'
+                    order.payment_method = 'wallet'
+                    order.payment_reference = f"WALLET-{uuid.uuid4().hex.upper()}"
+                    order.paid_at = timezone.now()
+                    order.status = 'processing'
+                    order.save()
+
+                    Payment.objects.create(
+                        order=order,
+                        user=request.user,
+                        amount=order.total_amount,
+                        payment_method='wallet',
+                        reference=order.payment_reference,
+                        status='successful',
+                        payment_type='normal',
+                        completed_at=timezone.now()
+                    )
+
+                    transfer_to_seller(order.seller, order.total_amount )
+
+                    request.session['cart'] = {}
+                    request.session.pop('checkout_locked', None)
+
+                    messages.success(request, "Payment successful. Order is processing.")
+                    return redirect('order_detail', order_id=order.id)
+
+               
+                request.session.pop('checkout_locked', None)
+                messages.success(request, "Order placed. Please complete payment.")
+                return redirect('order_detail', order_id=order.id)
+
         except Exception as e:
-            messages.error(request, f"Error creating order: {str(e)}")
+            request.session.pop('checkout_locked', None)
+            messages.error(request, f"Checkout failed: {str(e)}")
             return redirect('cart')
-    
-    # GET request - show checkout page
-    # Use cart_data['total'] directly since there's no separate subtotal
+
+    # ---- GET REQUEST ---- #
     cart_total = cart_data['total']
-    cart_count = cart_data['count']
-    
-    # Calculate escrow fee (2.5% of total)
-    escrow_fee = cart_total * Decimal('0.025')
-    escrow_total = cart_total + escrow_fee
-    
-    context = {
+    escrow_fee = (cart_total * Decimal('0.025')).quantize(Decimal('0.01'))
+
+    return render(request, 'main/checkout.html', {
         'cart_items': cart_data['items'],
         'cart_total': cart_total,
-        'cart_count': cart_count,
+        'cart_count': cart_data['count'],
         'escrow_fee': escrow_fee,
-        'escrow_total': escrow_total,
-    }
-    return render(request, 'main/checkout.html', context)
+        'escrow_total': cart_total + escrow_fee
+    })
+
 
 
 @login_required
 def my_orders(request):
-    """View all user's orders"""
+    
     orders = Order.objects.filter(
         buyer=request.user
     ).prefetch_related(
-        'items__product'
+        'items__product',
+        'items__product__images'
+    ).select_related(
+        'seller'
     ).order_by('-created_at')
     
-    context = {
-        'orders': orders
+    # Filter by status if provided
+    status_filter = request.GET.get('status')
+    if status_filter:
+        orders = orders.filter(status=status_filter)
+    
+    # Filter by payment status if provided
+    payment_status_filter = request.GET.get('payment_status')
+    if payment_status_filter:
+        orders = orders.filter(payment_status=payment_status_filter)
+    
+    # Calculate statistics
+    stats = {
+        'total_orders': Order.objects.filter(buyer=request.user).count(),
+        'pending_payment': Order.objects.filter(buyer=request.user, payment_status='pending').count(),
+        'in_transit': Order.objects.filter(buyer=request.user, status='shipped').count(),
+        'delivered': Order.objects.filter(buyer=request.user, status='delivered').count(),
     }
+    
+    context = {
+        'orders': orders,
+        'status_filter': status_filter,
+        'payment_status_filter': payment_status_filter,
+        'stats': stats,
+    }
+    
     return render(request, 'main/my_orders.html', context)
-
 
 
 
@@ -606,9 +651,6 @@ def order_detail(request, order_id):
     return render(request, 'main/order_detail.html', context)
 
 
-# ========================================
-# NORMAL PAYMENT VIEWS
-# ========================================
 
 @login_required
 def initiate_normal_payment(request, order_id):
@@ -797,8 +839,8 @@ def verify_payment_webhook(request):
                                 escrow.save()
                         
                             
-                        send_notification(escrow.buyer, 'payment_confirmed', escrow)
-                        send_notification(escrow.seller, 'payment_received', escrow)
+                        send_escrow_notification(escrow.buyer, 'payment_confirmed', escrow)
+                        send_escrow_notification(escrow.seller, 'payment_received', escrow)
                     except EscrowTransaction.DoesNotExist:
                         pass
                 
@@ -820,8 +862,8 @@ def verify_payment_webhook(request):
                                 transfer_to_seller(order.seller, order.total_amount)
                         
                       
-                        send_notification(order.buyer, 'payment_confirmed', order)
-                        send_notification(order.seller, 'new_order', order)
+                        send_order_notification(order.buyer, 'payment_confirmed', order)
+                        send_order_notification(order.seller, 'new_order', order)
                     except Order.DoesNotExist:
                         pass
         
@@ -1157,10 +1199,7 @@ def transfer_to_seller(seller, amount):
         }
 
 
-# ========================================
-# ESCROW HELPER FUNCTION
-# (Used by escrow app)
-# ========================================
+
 
 def initialize_flutterwave_payment(escrow):
     """
@@ -1222,7 +1261,7 @@ def initialize_flutterwave_payment(escrow):
         }
 
 
-# ============= SELLER DASHBOARD VIEWS =============
+
 
 from .auth import seller_required
 
@@ -1408,15 +1447,15 @@ def set_primary_image(request, image_id):
     image = get_object_or_404(ProductImage, id=image_id)
     product = image.product
     
-    # Check if user is the seller
+    
     if product.seller != request.user:
         messages.error(request, 'You cannot modify this product')
         return redirect('seller_dashboard')
     
-    # Unset previous primary image
+    
     ProductImage.objects.filter(product=product, is_primary=True).update(is_primary=False)
     
-    # Set this image as primary
+    
     image.is_primary = True
     image.save()
     
@@ -1456,3 +1495,33 @@ def seller_order_detail(request, order_id):
     return render(request, 'main/seller/order_detail.html', context)
 
 
+def search_suggestions(request):
+ 
+    query = request.GET.get('q', '').strip()
+    
+    if len(query) < 2:
+        return JsonResponse({'products': []})
+    
+   
+    products = Product.objects.filter(
+        Q(name__icontains=query) | Q(description__icontains=query),
+        stock__gt=0
+    ).select_related('seller')[:8] 
+    
+  
+    results = []
+    for product in products:
+        
+        primary_image = product.get_primary_image()
+        
+        results.append({
+            'id': product.id,
+            'name': product.name,
+            'price': float(product.get_discounted_price() if product.has_discount else product.price),
+            'stock': product.stock,
+            'image': primary_image if primary_image else None,
+            'seller': product.seller.username if product.seller else 'Afrimart',
+            'category': product.category.name if product.category else None,
+        })
+    
+    return JsonResponse({'products': results})
