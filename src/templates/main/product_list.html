@@ -13,8 +13,65 @@
 {% endblock %}
 
 {% block content %}
-<div class="container my-5 py-3">
-  <!-- Breadcrumb -->
+<style>
+    :root {
+        --primary-green: #2e6e1f;
+        --border-color: #eeeeee;
+        --text-main: #1a1a1a;
+    }
+
+    /* Industrial Identity Reset */
+    .border, .btn, .badge, .form-control, .form-select, .product-card {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+
+    /* Product Grid Styling */
+    .product-card {
+        border: 1px solid var(--border-color);
+        background: #fff;
+        transition: border-color 0.3s ease;
+    }
+    .product-card:hover { border-color: var(--text-main); }
+    
+    .opacity-hover {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    @media (max-width: 991px) { .opacity-hover { opacity: 1; } }
+    .product-card:hover .opacity-hover { opacity: 1; }
+
+    .object-fit-cover { object-fit: cover; }
+
+    /* Price Responsive Sizing - FIXED FOR MOBILE */
+    .price-text {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    @media (max-width: 576px) {
+        .price-text {
+            font-size: 14px !important; /* Forces smaller price on small screens */
+        }
+        .product-card h6 {
+            font-size: 12px !important; /* Also slightly shrinks title for balance */
+        }
+    }
+
+    /* Custom Flat Badges */
+    .flat-badge {
+        padding: 4px 8px;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container my-3">
   <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-muted small">Home</a></li>
