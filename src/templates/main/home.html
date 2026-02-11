@@ -143,7 +143,7 @@
                 <span class="text-white-50 text-uppercase small mb-2 d-block" style="letter-spacing: 2px;">Marketplace Selection</span>
                 <h1 class="display-4 text-white fw-bold mb-3">Authentic African <br>Craftsmanship.</h1>
                 <p class="text-white-50 mb-4 fs-5">Empowering African creators on a global stage.</p>
-                <a href="#" class="btn btn-light btn-lg px-5">Shop Marketplace</a>
+                <a href="{% url 'product_list' %}" class="btn btn-light btn-lg px-5">Shop Marketplace</a>
             </div>
         </div>
 
@@ -152,7 +152,7 @@
           class="hero-img" alt="African Modern Textiles">     
             <div class="hero-content p-4">
                 <h5 class="text-white mb-0">Modern Textiles</h5>
-                <a href="#" class="text-white-50 small text-decoration-none">View Collection &rarr;</a>
+                <a href="{% url 'product_list' %}" class="text-white-50 small text-decoration-none">View Collection &rarr;</a>
             </div>
         </div>
 
@@ -162,7 +162,7 @@
 
             <div class="hero-content p-4">
                 <h5 class="text-white mb-0">Home Decor</h5>
-                <a href="#" class="text-white-50 small text-decoration-none">Discover More &rarr;</a>
+                <a href="{% url 'product_list' %}" class="text-white-50 small text-decoration-none">Discover More &rarr;</a>
             </div>
         </div>
 
@@ -171,7 +171,7 @@
           class="hero-img" alt="New African Fashion Arrivals">     
             <div class="hero-content p-4">
                 <h5 class="text-white mb-0">New Arrivals</h5>
-                <a href="#" class="text-white-50 small text-decoration-none">Explore Now &rarr;</a>
+                <a href="{% url 'product_list' %}" class="text-white-50 small text-decoration-none">Explore Now &rarr;</a>
             </div>
         </div>
 
@@ -184,19 +184,19 @@
     </div>
 </div>
 
+<!-- UPDATED: Category Pills with Working Links -->
 <div class="container mb-5">
     <div class="category-pills">
-        <a href="#" class="pill-link active">All Feed</a>
-        {% for category in categories|slice:":5" %}
-            <a href="#" class="pill-link">{{ category.name }}</a>
+        <a href="{% url 'product_list' %}" class="pill-link">All Products</a>
+        {% for category in categories|slice:":6" %}
+            <a href="{% url 'product_list' %}?category={{ category.id }}" class="pill-link">{{ category.name }}</a>
         {% endfor %}
-        <a href="#" class="pill-link">Contemporary Art</a>
-        <a href="#" class="pill-link">Organic Beauty</a>
     </div>
 </div>
 
 <div class="container mb-5">
     <div class="row">
+        <!-- UPDATED: Sidebar with Working Category Links -->
         <div class="col-lg-3 d-none d-lg-block pe-lg-5">
             <div class="accordion filter-accordion" id="sideNav">
                 <div class="accordion-item">
@@ -208,11 +208,20 @@
                     <div id="collapseCats" class="accordion-collapse collapse show">
                         <div class="accordion-body px-0 pt-0">
                             <ul class="list-unstyled mb-0">
+                                <!-- All Products Link -->
+                                <li class="py-1">
+                                    <a href="{% url 'product_list' %}" class="text-muted small text-decoration-none d-flex justify-content-between align-items-center">
+                                        All Products
+                                        <span class="x-small">({{ total_products }})</span>
+                                    </a>
+                                </li>
+                                
+                                <!-- Category Links -->
                                 {% for category in categories %}
                                 <li class="py-1">
-                                    <a href="#" class="text-muted small text-decoration-none d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'product_list' %}?category={{ category.id }}" class="text-muted small text-decoration-none d-flex justify-content-between align-items-center">
                                         {{ category.name }}
-                                        <span class="x-small">({{ category.products.count }})</span>
+                                        <span class="x-small">({{ category.product_count|default:0 }})</span>
                                     </a>
                                 </li>
                                 {% endfor %}
@@ -245,7 +254,7 @@
             <div class="row g-4">
                 {% for product in products %}
                 <div class="col-6 col-md-4">
-                    <a href="/product/{{ product.id }}/" class="product-card h-100 d-flex flex-column">
+                    <a href="/product/{{ product.id }}/" class="product-card h-100 d-flex flex-column text-decoration-none">
                         <div class="position-relative overflow-hidden" style="padding-top: 130%;">
                             {% if product.get_primary_image %}
                                 <img src="{{ product.get_primary_image }}" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
@@ -255,7 +264,7 @@
                             
                             <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2 opacity-hover">
                                 <button class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="heart-outline"></ion-icon></button>
-                                <button onclick="addToCartAjax({{ product.id }})" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="cart-outline"></ion-icon></button>
+                                <button onclick="event.preventDefault(); addToCartAjax({{ product.id }})" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="cart-outline"></ion-icon></button>
                             </div>
                         </div>
                         
@@ -265,9 +274,9 @@
                                 {{ product.name|truncatechars:40 }}
                             </h6>
                             <div class="mt-auto pt-2 border-top d-flex align-items-baseline">
-                                <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
+                                <span class="fw-bold fs-5 text-success">₦{{ product.price|floatformat:2|intcomma }}</span>
                                 {% if product.has_discount %}
-                                    <del class="text-muted x-small ms-2">{{ product.converted_original_price }}</del>
+                                    <del class="text-muted x-small ms-2">₦{{ product.original_price|floatformat:2|intcomma }}</del>
                                 {% endif %}
                             </div>
                         </div>
@@ -362,15 +371,6 @@
     .x-small { font-size: 11px; }
 </style>
 
-<style>
-    /* Formatting helper classes */
-    .extra-small { font-size: 12px; line-height: 1.6; }
-</style>
-
-<style>
-    .extra-small { font-size: 12px; line-height: 1.6; }
-</style>
-
 <div id="toast-container" class="position-fixed bottom-0 end-0 p-4" style="z-index: 9999;"></div>
 
 <script>
@@ -388,7 +388,7 @@
         .then(data => {
             if (data.success) {
                 spawnToast(data.message, 'success');
-                const cartCountEl = document.getElementById('cart-count');
+                const cartCountEl = document.querySelector('.badge-count');
                 if (cartCountEl) cartCountEl.textContent = data.cart_count;
             } else {
                 spawnToast(data.message, 'danger');
@@ -400,14 +400,11 @@
     function spawnToast(message, type) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
-        toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center animate__animated animate__fadeInRight`;
+        toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center`;
         toast.style.minWidth = '280px';
         toast.innerHTML = `<div class="small fw-bold">${message}</div>`;
         container.appendChild(toast);
-        setTimeout(() => {
-            toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
-            setTimeout(() => toast.remove(), 500);
-        }, 3000);
+        setTimeout(() => toast.remove(), 3000);
     }
 
     function getCookie(name) {
@@ -426,46 +423,4 @@
     }
 </script>
 
-{% endblock %}
-
-
-<style>
-    /* Small helper class for the protection section */
-    .extra-small { font-size: 12px; line-height: 1.6; }
-</style>
-
-{% block footer %}
-<footer class="bg-white border-top mt-5 py-5">
-    <div class="container">
-        <div class="row gy-4 mb-5">
-            <div class="col-md-4">
-                <h4 class="fw-bold mb-3" style="letter-spacing: -1px;">afrimart</h4>
-                <p class="text-muted small">The definitive marketplace for authentic African craft, textiles, and modern design. Sourced directly, delivered globally.</p>
-            </div>
-            <div class="col-6 col-md-2 offset-md-2">
-                <h6 class="fw-bold text-uppercase small mb-3">Shop</h6>
-                <ul class="list-unstyled small">
-                    <li><a href="#" class="text-muted text-decoration-none">All Collections</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">New Arrivals</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">Featured Vendors</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-md-2">
-                <h6 class="fw-bold text-uppercase small mb-3">Service</h6>
-                <ul class="list-unstyled small">
-                    <li><a href="#" class="text-muted text-decoration-none">Shipping Info</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">Returns Policy</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">Contact Us</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="pt-4 border-top d-flex justify-content-between align-items-center">
-            <p class="mb-0 x-small text-muted">&copy; 2026 Afrimart Marketplace. All Rights Reserved.</p>
-            <div class="d-flex gap-3 text-muted">
-                <ion-icon name="logo-instagram"></ion-icon>
-                <ion-icon name="logo-facebook"></ion-icon>
-            </div>
-        </div>
-    </div>
-</footer>
 {% endblock %}

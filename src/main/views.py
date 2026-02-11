@@ -22,14 +22,26 @@ from django.db import models
 from .email_utils import send_escrow_notification, send_order_notification
 
 def home(request):
-    """Home page with featured products and discount handling"""
-    # Get featured products or latest 12 products
-    products = Product.objects.order_by('-created_at')[:12]
+    
+    
     deal_of_the_day_products = Product.objects.filter(is_deal_of_the_day=True, stock__gt=0).order_by('-created_at')[:12]
     treding_products = Product.objects.filter(is_trending=True, stock__gt=0).order_by('-created_at')[:12]
     featured_products = Product.objects.filter(is_featured=True, stock__gt=0).order_by('-created_at')[:12]
+    categories = Category.objects.all()
+
+    for category in categories:
+        category.product_count = Product.objects.filter(
+            category=category,
+            stock__gt=0
+        ).count()
+
+
+    products = Product.objects.filter(
+        stock__gt=0
+    ).select_related('category').prefetch_related('images')[:12]
     
-    # If no featured products, get latest products
+    
+    
     if not products.exists():
         products = Product.objects.filter(stock__gt=0).order_by('-created_at')[:12]
     
@@ -63,8 +75,7 @@ def home(request):
             )
             product.converted_savings = savings_info['formatted']
     
- 
-    categories = Category.objects.all()
+    total_products = Product.objects.filter(stock__gt=0).count()
     
     context = {
         'products': products,
@@ -75,23 +86,29 @@ def home(request):
         'deal_of_the_day_products':deal_of_the_day_products,
         'trending_products':treding_products,
         'featured_products':featured_products,
+        'total_products':total_products
     }
     return render(request, 'main/home.html', context)
 
 
 def product_list(request):
-    """List all products with search and filter"""
+    """List all products with search, category filter, and sorting"""
     products = Product.objects.filter(stock__gt=0)
-
-    for product in products:
-        price_info = convert_price_to_user_currency(
-            product.price, 
-            'NGN',  # Original currency
-            request
-        )
-        product.converted_price = price_info['formatted']
     
+    # Get all categories with product counts
+    categories = Category.objects.all()
     
+    # Category filter
+    category_id = request.GET.get('category')
+    selected_category = None
+    if category_id:
+        try:
+            selected_category = Category.objects.get(id=category_id)
+            products = products.filter(category=selected_category)
+        except Category.DoesNotExist:
+            pass
+    
+    # Search filter
     search_query = request.GET.get('search', '')
     if search_query:
         products = products.filter(
@@ -110,10 +127,29 @@ def product_list(request):
     else:
         products = products.order_by('-created_at')
     
+    # Convert prices to user currency
+    for product in products:
+        price_info = convert_price_to_user_currency(
+            product.price, 
+            'NGN',
+            request
+        )
+        product.converted_price = price_info['formatted']
+    
+    # Add product count to each category
+    for category in categories:
+        category.product_count = Product.objects.filter(
+            category=category, 
+            stock__gt=0
+        ).count()
+    
     context = {
         'products': products,
+        'categories': categories,
+        'selected_category': selected_category,
         'search_query': search_query,
-        'sort_by': sort_by
+        'sort_by': sort_by,
+        'total_products': Product.objects.filter(stock__gt=0).count(),
     }
     return render(request, 'main/product_list.html', context)
 
