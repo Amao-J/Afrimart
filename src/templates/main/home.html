@@ -274,9 +274,9 @@
                                 {{ product.name|truncatechars:40 }}
                             </h6>
                             <div class="mt-auto pt-2 border-top d-flex align-items-baseline">
-                                <span class="fw-bold fs-5 text-success">₦{{ product.price|floatformat:2|intcomma }}</span>
+                                      <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
                                 {% if product.has_discount %}
-                                    <del class="text-muted x-small ms-2">₦{{ product.original_price|floatformat:2|intcomma }}</del>
+                                    <del class="text-muted x-small ms-2">{{ product.converted_original_price }}</del>
                                 {% endif %}
                             </div>
                         </div>
