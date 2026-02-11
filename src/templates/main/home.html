@@ -21,7 +21,7 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Industrial Flat UI Reset */
+    /* Modern Flat UI Reset */
     .card, .btn, .accordion-item, .progress, .form-control, .form-select {
         box-shadow: none !important;
         border-radius: 0 !important;
@@ -32,7 +32,7 @@
     .btn-success:hover { background-color: #1a4012; border-color: #1a4012; }
     .text-success { color: var(--primary-green) !important; }
 
-    /* Responsive Bento Grid */
+    /* Hero Bento Grid */
     .hero-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -70,20 +70,7 @@
 
     .hero-item:hover .hero-img { transform: scale(1.05); }
 
-    /* Mobile Hero Overrides */
-    @media (max-width: 991px) {
-        .hero-grid {
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: 300px 180px 180px; 
-            gap: 10px;
-        }
-        .hero-main { grid-column: span 2; grid-row: span 1; }
-        .hero-content { padding: 20px; }
-        .hero-content h1 { font-size: 1.5rem !important; }
-        .hero-content p { display: none; }
-    }
-
-    /* Category Navigation - RESTORED ORIGINAL STYLE */
+    /* Category Navigation */
     .category-pills {
         display: flex;
         gap: 12px;
@@ -125,7 +112,6 @@
         opacity: 0;
         transition: opacity 0.3s ease;
     }
-    @media (max-width: 991px) { .opacity-hover { opacity: 1; } }
     .product-card:hover .opacity-hover { opacity: 1; }
 
     /* Modern Sidebar Accordion */
@@ -146,18 +132,15 @@
         border: none;
         border-bottom: 1px solid var(--border-color);
     }
-    
-    /* Pagination RESTORED */
-    .page-link { border-radius: 0 !important; color: var(--text-main); font-weight: 700; font-size: 11px; padding: 10px 18px; border: 1px solid var(--border-color); }
-    .page-item.active .page-link { background-color: var(--text-main); border-color: var(--text-main); color: #fff; }
 </style>
 
 <div class="container mt-4">
     <div class="hero-grid">
         <div class="hero-item hero-main">
-          <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?q=80&w=2070&auto=format&fit=crop" class="hero-img" alt="">
+          <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?q=80&w=2070&auto=format&fit=crop"
+          class="hero-img" alt="Authentic African Craftsmanship">
             <div class="hero-content">
-                <span class="text-white-50 text-uppercase small mb-2 d-block" style="letter-spacing: 2px;">{% trans "Marketplace Selection" %}</span>
+                <span class="text-white-50 text-uppercase small mb-2 d-block" style="letter-spacing: 2px;">Marketplace Selection</span>
                 <h1 class="display-4 text-white fw-bold mb-3">Authentic African <br>Craftsmanship.</h1>
                 <p class="text-white-50 mb-4 fs-5">Empowering African creators on a global stage.</p>
                 <a href="{% url 'product_list' %}" class="btn btn-light btn-lg px-5">Shop Marketplace</a>
@@ -165,7 +148,8 @@
         </div>
 
         <div class="hero-item hero-sub">
-          <img src="https://images.unsplash.com/photo-1622445275463-afa2ab738c34?q=80&w=2070&auto=format&fit=crop" class="hero-img" alt="">     
+          <img src="https://images.unsplash.com/photo-1622445275463-afa2ab738c34?q=80&w=2070&auto=format&fit=crop"
+          class="hero-img" alt="African Modern Textiles">     
             <div class="hero-content p-4">
                 <h5 class="text-white mb-0">Modern Textiles</h5>
                 <a href="{% url 'product_list' %}" class="text-white-50 small text-decoration-none">View Collection &rarr;</a>
@@ -173,7 +157,9 @@
         </div>
 
         <div class="hero-item hero-sub">
-          <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2070&auto=format&fit=crop" class="hero-img" alt="">
+          <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=2070&auto=format&fit=crop"
+          class="hero-img" alt="African Home Decor">
+
             <div class="hero-content p-4">
                 <h5 class="text-white mb-0">Home Decor</h5>
                 <a href="{% url 'product_list' %}" class="text-white-50 small text-decoration-none">Discover More &rarr;</a>
@@ -181,7 +167,8 @@
         </div>
 
         <div class="hero-item hero-sub">
-          <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1976&auto=format&fit=crop" class="hero-img" alt="">     
+          <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1976&auto=format&fit=crop"
+          class="hero-img" alt="New African Fashion Arrivals">     
             <div class="hero-content p-4">
                 <h5 class="text-white mb-0">New Arrivals</h5>
                 <a href="{% url 'product_list' %}" class="text-white-50 small text-decoration-none">Explore Now &rarr;</a>
@@ -191,13 +178,13 @@
         <div class="hero-item hero-sub bg-dark d-flex align-items-center justify-content-center">
             <div class="text-center p-4">
                 <h4 class="text-white fw-bold mb-2">AFRIMART</h4>
-                <p class="text-white-50 x-small mb-0">{% trans "THE NEW CONTINENTAL STANDARD" %}</p>
+                <p class="text-white-50 x-small mb-0">THE NEW CONTINENTAL STANDARD</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- UPDATED: Category Pills with Working Links -->
+
 <div class="container mb-5">
     <div class="category-pills">
         <a href="{% url 'product_list' %}" class="pill-link">All Products</a>
@@ -209,17 +196,19 @@
 
 <div class="container mb-5">
     <div class="row">
-        <!-- UPDATED: Sidebar with Working Category Links -->
+
         <div class="col-lg-3 d-none d-lg-block pe-lg-5">
             <div class="accordion filter-accordion" id="sideNav">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCats">{% trans "Categories" %}</button>
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCats">
+                            Categories
+                        </button>
                     </h2>
                     <div id="collapseCats" class="accordion-collapse collapse show">
                         <div class="accordion-body px-0 pt-0">
                             <ul class="list-unstyled mb-0">
-                                <!-- All Products Link -->
+                               
                                 <li class="py-1">
                                     <a href="{% url 'product_list' %}" class="text-muted small text-decoration-none d-flex justify-content-between align-items-center">
                                         All Products
@@ -240,18 +229,39 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegions">
+                            Sourcing Region
+                        </button>
+                    </h2>
+                    <div id="collapseRegions" class="accordion-collapse collapse">
+                        <div class="accordion-body px-0 pt-0">
+                            <ul class="list-unstyled mb-0">
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Western Africa</a></li>
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Eastern Africa</a></li>
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Northern Africa</a></li>
+                                <li class="py-1"><a href="#" class="text-muted small text-decoration-none">Southern Africa</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="col-lg-9">
-            <div class="row g-3 g-md-4">
+            <div class="row g-4">
                 {% for product in products %}
                 <div class="col-6 col-md-4">
                     <a href="/product/{{ product.id }}/" class="product-card h-100 d-flex flex-column text-decoration-none">
                         <div class="position-relative overflow-hidden" style="padding-top: 130%;">
-                            <a href="/product/{{ product.id }}/">
-                                <img src="{{ product.get_primary_image|default:'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800' }}" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="">
-                            </a>
+                            {% if product.get_primary_image %}
+                                <img src="{{ product.get_primary_image }}" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1920&auto=format&fit=crop" class="position-absolute top-0 start-0 w-100 h-100" style="object-fit: cover; opacity: 0.5;" alt="Placeholder">
+                            {% endif %}
+                            
                             <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2 opacity-hover">
                                 <button class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="heart-outline"></ion-icon></button>
                                 <button onclick="event.preventDefault(); addToCartAjax({{ product.id }})" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="cart-outline"></ion-icon></button>
@@ -261,43 +271,23 @@
                         <div class="p-3 flex-grow-1 d-flex flex-column">
                             <span class="text-muted" style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">{{ product.category.name }}</span>
                             <h6 class="fw-bold my-2" style="font-size: 0.9rem; line-height: 1.4;">
-                                <a href="/product/{{ product.id }}/" class="text-decoration-none text-dark">{{ product.name|truncatechars:40 }}</a>
+                                {{ product.name|truncatechars:40 }}
                             </h6>
                             <div class="mt-auto pt-2 border-top d-flex align-items-baseline">
-                                      <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
+                                       <span class="fw-bold fs-5 text-success">{{ product.converted_price }}</span>
                                 {% if product.has_discount %}
                                     <del class="text-muted x-small ms-2">{{ product.converted_original_price }}</del>
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 {% empty %}
                 <div class="col-12 text-center py-5">
-                    <p class="text-muted fs-5">{% trans "Our marketplace is preparing new stock. Check back shortly." %}</p>
+                    <p class="text-muted fs-5">Our marketplace is preparing new stock. Check back shortly.</p>
                 </div>
                 {% endfor %}
             </div>
-
-            {% if products.has_other_pages %}
-            <nav class="mt-5 pt-4 border-top">
-                <ul class="pagination justify-content-center border-0 gap-2">
-                    {% if products.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">&larr;</a></li>
-                    {% endif %}
-                    {% for i in products.paginator.page_range %}
-                        {% if products.number == i %}
-                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                        {% elif i > products.number|add:'-3' and i < products.number|add:'3' %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ i }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                    {% if products.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">&rarr;</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -307,33 +297,67 @@
         <div class="row g-0 align-items-center">
             <div class="col-lg-5 d-none d-lg-block">
                 <div class="pe-lg-5">
-                    <h6 class="text-uppercase fw-bold x-small mb-5" style="letter-spacing: 2px; opacity: 0.8;">{% trans "The Escrow Cycle" %}</h6>
+                    <h6 class="text-uppercase fw-bold x-small mb-5" style="letter-spacing: 2px; opacity: 0.8;">The Escrow Cycle</h6>
+                    
                     <div class="d-flex align-items-center mb-4">
-                        <div class="bg-white text-success fw-bold d-flex align-items-center justify-content-center me-3" style="width:38px; height:38px;">1</div>
-                        <div><p class="small mb-0 fw-bold">{% trans "Secure Payment" %}</p><p class="extra-small mb-0 opacity-75">{% trans "Buyer pays; Afrimart holds funds." %}</p></div>
+                        <div class="bg-white text-success fw-bold d-flex align-items-center justify-content-center me-3" style="width:38px; height:38px; flex-shrink:0;">1</div>
+                        <div>
+                            <p class="small mb-0 fw-bold">Secure Payment</p>
+                            <p class="extra-small mb-0 opacity-75">Buyer pays; Afrimart holds funds.</p>
+                        </div>
                     </div>
+                    
+                    <div class="ms-3 ps-1 mb-4 opacity-50" style="height: 30px; border-left: 2px dashed #fff;"></div>
+                    
                     <div class="d-flex align-items-center mb-4">
-                        <div class="bg-white text-success fw-bold d-flex align-items-center justify-content-center me-3" style="width:38px; height:38px;">2</div>
-                        <div><p class="small mb-0 fw-bold">{% trans "Artisan Dispatch" %}</p><p class="extra-small mb-0 opacity-75">{% trans "Seller ships the authentic craft." %}</p></div>
+                        <div class="bg-white text-success fw-bold d-flex align-items-center justify-content-center me-3" style="width:38px; height:38px; flex-shrink:0;">2</div>
+                        <div>
+                            <p class="small mb-0 fw-bold">Artisan Dispatch</p>
+                            <p class="extra-small mb-0 opacity-75">Seller ships the authentic craft.</p>
+                        </div>
                     </div>
+
+                    <div class="ms-3 ps-1 mb-4 opacity-50" style="height: 30px; border-left: 2px dashed #fff;"></div>
+
                     <div class="d-flex align-items-center">
-                        <div class="bg-white text-success fw-bold d-flex align-items-center justify-content-center me-3" style="width:38px; height:38px;">3</div>
-                        <div><p class="small mb-0 fw-bold">{% trans "Verified Payout" %}</p><p class="extra-small mb-0 opacity-75">{% trans "Funds released after delivery." %}</p></div>
+                        <div class="bg-white text-success fw-bold d-flex align-items-center justify-content-center me-3" style="width:38px; height:38px; flex-shrink:0;">3</div>
+                        <div>
+                            <p class="small mb-0 fw-bold">Verified Payout</p>
+                            <p class="extra-small mb-0 opacity-75">Funds released after delivery.</p>
+                        </div>
                     </div>
                 </div>
             </div>
+            
             <div class="col-lg-7 p-4 p-md-5 bg-white text-dark border">
-                <span class="text-success text-uppercase fw-bold x-small" style="letter-spacing: 2px;">{% trans "Continental Trust Standard" %}</span>
-                <h3 class="fw-bold h2 mt-2" style="letter-spacing: -1px;">{% trans "How Escrow Protects You" %}</h3>
-                <p class="text-muted mt-3 small">{% trans "Escrow is our promise of security. By acting as a neutral intermediary, Afrimart ensures that your money is safe until the product is in your hands." %}</p>
+                <div class="mb-5">
+                    <span class="text-success text-uppercase fw-bold x-small" style="letter-spacing: 2px;">Continental Trust Standard</span>
+                    <h3 class="fw-bold h2 mt-2" style="letter-spacing: -1px;">How Escrow Protects You</h3>
+                    <p class="text-muted mt-3" style="line-height: 1.8;">Escrow is our promise of security. By acting as a neutral intermediary, Afrimart ensures that your money is safe until the product is in your hands and the artisan is rewarded for their craft.</p>
+                </div>
+                
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <h6 class="fw-bold x-small text-uppercase"><ion-icon name="shield-half-outline" class="me-2 text-success align-middle"></ion-icon>{% trans "For Buyers" %}</h6>
-                        <p class="extra-small text-muted mb-0">{% trans "Inspect items before the seller gets paid." %}</p>
+                        <h6 class="fw-bold x-small text-uppercase mb-2">
+                            <ion-icon name="shield-half-outline" class="me-2 text-success align-middle"></ion-icon> 
+                            For Buyers
+                        </h6>
+                        <p class="extra-small text-muted mb-0">Inspect your items before the seller gets paid. If it's not authentic or damaged, your money is protected.</p>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="fw-bold x-small text-uppercase"><ion-icon name="checkmark-done-outline" class="me-2 text-success align-middle"></ion-icon>{% trans "For Sellers" %}</h6>
-                        <p class="extra-small text-muted mb-0">{% trans "Ship knowing payment is verified and held." %}</p>
+                        <h6 class="fw-bold x-small text-uppercase mb-2">
+                            <ion-icon name="checkmark-done-outline" class="me-2 text-success align-middle"></ion-icon> 
+                            For Sellers
+                        </h6>
+                        <p class="extra-small text-muted mb-0">Ship with confidence knowing the buyer's payment is already verified and held by our system.</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 p-4 border bg-light d-flex align-items-start gap-3">
+                    <ion-icon name="alert-circle-outline" class="text-success fs-4"></ion-icon>
+                    <div>
+                        <h6 class="fw-bold mb-1 x-small text-uppercase">Zero Fraud Policy</h6>
+                        <p class="extra-small text-muted mb-0">Our Escrow system eliminates scams and ensures artisans receive their fair value without delay.</p>
                     </div>
                 </div>
             </div>
@@ -350,7 +374,6 @@
 <div id="toast-container" class="position-fixed bottom-0 end-0 p-4" style="z-index: 9999;"></div>
 
 <script>
-    // AJAX Add to Cart & Cookie helper restored
     function addToCartAjax(productId) {
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
         const formData = new FormData();
