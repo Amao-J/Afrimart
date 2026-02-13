@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Escrow History Audit - Afrimart{% endblock %}
+
+{% block content %}
+<style>
+    /* Industrial Identity Reset */
+    .card, .btn, .border, .bg-light, .badge, .table { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+    
+    /* Audit Table Styling */
+    .audit-table thead th {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 800;
+        background: #f8f8f8;
+        border-top: none;
+        padding: 15px 20px;
+        color: var(--text-muted);
+    }
+    .audit-table tbody td {
+        padding: 20px;
+        vertical-align: middle;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    /* Status Badges */
+    .status-pill {
+        padding: 4px 10px;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid transparent;
+        display: inline-block;
+    }
+    .pill-held { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+    .pill-released { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+    .pill-refunded { background: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+    .pill-disputed { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+
+    .ref-code { font-family: 'Monaco', 'Consolas', monospace; font-size: 11px; color: #555; }
+</style>
+
+<div class="container my-5 py-4">
+    <div class="border-bottom pb-4 mb-5">
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <span class="x-small fw-bold text-uppercase text-success" style="letter-spacing: 2px;">Financial Records</span>
+                <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">Escrow Transaction History</h1>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'escrow:dashboard' %}" class="text-muted extra-small fw-bold text-uppercase text-decoration-none">
+                    <ion-icon name="grid-outline" class="align-middle me-1"></ion-icon> Dashboard Overview
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light border">
+        <div class="d-flex gap-3">
+            <a href="?type=buyer" class="btn btn-sm {% if request.GET.type != 'seller' %}btn-dark{% else %}btn-outline-dark{% endif %} px-4 fw-bold x-small">PURCHASES</a>
+            <a href="?type=seller" class="btn btn-sm {% if request.GET.type == 'seller' %}btn-dark{% else %}btn-outline-dark{% endif %} px-4 fw-bold x-small">SALES</a>
+        </div>
+        <div class="text-muted extra-small fw-bold text-uppercase">
+            Total Entries: {{ transactions.count|default:"0" }}
+        </div>
+    </div>
+
+    <div class="border bg-white shadow-0">
+        <div class="table-responsive">
+            <table class="table audit-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reference / Order</th>
+                        <th>Counterparty</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Settlement</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trans in transactions %}
+                    <tr>
+                        <td class="text-muted">{{ trans.created_at|date:"d M Y" }}</td>
+                        <td>
+                            <span class="ref-code d-block mb-1">{{ trans.escrow_reference }}</span>
+                            <span class="fw-bold">Order #{{ trans.order.id }}</span>
+                        </td>
+                        <td>
+                            {% if request.GET.type == 'seller' %}
+                                <span class="extra-small text-muted text-uppercase d-block">Buyer</span>
+                                <span class="fw-bold">{{ trans.buyer.get_full_name|default:trans.buyer.username }}</span>
+                            {% else %}
+                                <span class="extra-small text-muted text-uppercase d-block">Vendor</span>
+                                <span class="fw-bold">{{ trans.seller.get_full_name|default:trans.seller.username }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if trans.status == 'held' %}
+                                <span class="status-pill pill-held">Held</span>
+                            {% elif trans.status == 'released' %}
+                                <span class="status-pill pill-released">Released</span>
+                            {% elif trans.status == 'refunded' %}
+                                <span class="status-pill pill-refunded">Refunded</span>
+                            {% else %}
+                                <span class="status-pill pill-disputed">{{ trans.status|upper }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end fw-bold text-dark">
+                            ₦{{ trans.amount|floatformat:2|intcomma }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'escrow_transaction_detail' trans.escrow_reference %}" class="btn btn-sm btn-outline-dark fw-bold x-small px-3">
+                                VIEW AUDIT
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="py-5 text-center">
+                            <ion-icon name="document-text-outline" class="text-muted opacity-25 mb-2" style="font-size: 40px;"></ion-icon>
+                            <p class="text-muted small mb-0">No historical records found for this criteria.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center border-0 gap-2">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link border text-dark fw-bold x-small" href="?page={{ page_obj.previous_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">PREV</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link border-0 text-white fw-bold x-small" style="background: var(--primary-green);">{{ page_obj.number }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link border text-dark fw-bold x-small" href="?page={{ page_obj.next_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">NEXT</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <div class="mt-5 p-4 border bg-light text-center">
+        <p class="small text-muted mb-0">
+            Discrepancy in your records? <a href="{% url 'escrow:help' %}" class="text-dark fw-bold text-decoration-underline">Consult the Mediation Guide</a> or contact settlement support.
+        </p>
+    </div>
+</div>
+{% endblock %}
