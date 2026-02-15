@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Escrow Protection Guide - Afrimart{% endblock %}
+
+{% block content %}
+<style>
+    /* Industrial Identity Reset */
+    .card, .btn, .border, .bg-light, .accordion-item, .accordion-button { border-radius: 0 !important; }
+    .x-small { font-size: 11px; }
+    .extra-small { font-size: 10px; }
+    
+    /* Accordion Styling */
+    .help-accordion .accordion-button {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-main);
+        padding: 20px;
+        background: #fff;
+    }
+    .help-accordion .accordion-button:not(.collapsed) {
+        color: var(--primary-green);
+        background-color: #f8fdf9;
+        box-shadow: none;
+    }
+    .help-accordion .accordion-item {
+        border: 1px solid var(--border-light);
+        margin-bottom: 10px;
+    }
+
+    .protection-step {
+        border-left: 3px solid var(--primary-green);
+        padding-left: 20px;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="container my-5 py-4">
+    <div class="border-bottom pb-4 mb-5">
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <span class="x-small fw-bold text-uppercase text-success" style="letter-spacing: 2px;">Support Resources</span>
+                <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">Escrow & Mediation Guide</h1>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'escrow:dashboard' %}" class="text-muted extra-small fw-bold text-uppercase text-decoration-none">
+                    <ion-icon name="arrow-back-outline" class="align-middle me-1"></ion-icon> Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <section class="mb-5">
+                <h5 class="fw-bold text-uppercase mb-4" style="font-size: 13px; letter-spacing: 1px;">The 3-Step Protection Cycle</h5>
+                
+                <div class="protection-step">
+                    <h6 class="fw-bold text-uppercase x-small mb-1">01. Secure Commitment</h6>
+                    <p class="small text-muted mb-0">When a buyer pays for an order, Afrimart holds the total amount in a secure, non-interest bearing escrow account. The seller is notified that funds are "Verified & Secured."</p>
+                </div>
+
+                <div class="protection-step">
+                    <h6 class="fw-bold text-uppercase x-small mb-1">02. Verified Fulfillment</h6>
+                    <p class="small text-muted mb-0">The seller ships the item and provides tracking. The funds remain locked while the package is in transit. The "Escrow Clock" ensures sellers ship within the agreed timeframe.</p>
+                </div>
+
+                <div class="protection-step" style="margin-bottom: 0;">
+                    <h6 class="fw-bold text-uppercase x-small mb-1">03. Final Settlement</h6>
+                    <p class="small text-muted mb-0">Once the buyer confirms receipt and satisfies quality inspection, the funds are released to the seller's wallet. If no action is taken after 7 days of delivery, funds release automatically.</p>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h5 class="fw-bold text-uppercase mb-4" style="font-size: 13px; letter-spacing: 1px;">Frequently Asked Questions</h5>
+                
+                <div class="accordion help-accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                When should I open a dispute?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body small text-muted">
+                                You should initiate mediation if: 
+                                <ul class="mt-2">
+                                    <li>The item received is significantly different from the description.</li>
+                                    <li>The item arrived damaged or non-functional.</li>
+                                    <li>The seller has not shipped the item after the processing period.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How long does mediation take?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body small text-muted">
+                                Most disputes are resolved within 3-5 business days. Our mediation team reviews evidence from both parties (photos, shipping receipts, chat logs) before making a final determination on fund release or refund.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can I cancel an escrow payment?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body small text-muted">
+                                Payments can only be cancelled before the seller dispatches the item. Once marked as "Shipped," the funds are locked until delivery or until a dispute is resolved in the buyer's favor.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="border p-4 bg-white mb-4">
+                <h6 class="fw-bold text-uppercase x-small mb-3" style="letter-spacing: 1px;">Mediation Support</h6>
+                <p class="extra-small text-muted mb-4">Our agents are available to review your transaction logs and provide a fair resolution.</p>
+                
+                <div class="d-grid gap-2">
+                    <a href="mailto:support@afrimart.com" class="btn btn-dark fw-bold text-uppercase x-small py-3">
+                        <ion-icon name="mail-outline" class="me-2 align-middle"></ion-icon> Open Support Ticket
+                    </a>
+                    <button class="btn btn-outline-dark fw-bold text-uppercase x-small py-3">
+                        <ion-icon name="chatbubbles-outline" class="me-2 align-middle"></ion-icon> Live Chat
+                    </button>
+                </div>
+            </div>
+
+            <div class="border p-4 bg-light">
+                <h6 class="fw-bold text-uppercase x-small mb-2" style="letter-spacing: 1px;">Safety Tip</h6>
+                <p class="extra-small text-muted mb-0">Never pay a seller directly outside of the Afrimart Escrow system. Transactions made outside this platform are not eligible for our protection program.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
