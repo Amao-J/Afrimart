@@ -1,5 +1,5 @@
 # main/auth_views.py
-# Updated authentication views with international phone number support
+
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
@@ -111,10 +111,13 @@ def logout_view(request):
     return redirect('home')
 
 
+# Update your profile_view in main/auth_views.py
+
 @login_required
 def profile_view(request):
-    """User profile with international phone number"""
-    from .models import Order, UserProfile
+    """User profile with international phone number and bank account"""
+    from .models import Order, UserProfile, Product
+    from django.db.models import Count, Sum
     
     # Get or create user profile
     profile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -131,27 +134,33 @@ def profile_view(request):
         last_name = request.POST.get('last_name', '').strip()
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
-        country_code = request.POST.get('country_code', '+234').strip()
+        country = request.POST.get('country', 'NG').strip()
         
-        # Validate and format phone
+        # Validate and format phone (if provided)
         if phone:
             phone_cleaned = re.sub(r'\D', '', phone)
             if phone_cleaned.startswith('0'):
                 phone_cleaned = phone_cleaned[1:]
             
-            if not country_code.startswith('+'):
-                country_code = '+' + country_code
-            
-            phone_formatted = country_code + phone_cleaned
+            # Default to Nigeria country code if not specified
+            if len(phone_cleaned) == 10:  # Nigerian number without country code
+                phone_formatted = '+234' + phone_cleaned
+            else:
+                phone_formatted = '+' + phone_cleaned if not phone_cleaned.startswith('+') else phone_cleaned
             
             # Check if phone is taken by another user
             existing = UserProfile.objects.filter(phone=phone_formatted).exclude(user=request.user).exists()
             if existing:
                 messages.error(request, 'Phone number already registered to another account')
+                return redirect('profile')
             else:
                 profile.phone = phone_formatted
-                profile.save()
-                messages.success(request, 'Profile updated successfully')
+        
+        # Update country if field exists in profile
+        if hasattr(profile, 'country'):
+            profile.country = country
+        
+        profile.save()
         
         # Update user
         request.user.first_name = first_name
@@ -159,13 +168,36 @@ def profile_view(request):
         request.user.email = email
         request.user.save()
         
+        messages.success(request, 'Profile updated successfully')
         return redirect('profile')
     
+    # Build context
     context = {
         'profile': profile,
         'wallet': wallet,
         'recent_orders': recent_orders
     }
+    
+    # Add seller statistics if user is a seller
+    if hasattr(profile, 'is_seller') and profile.is_seller and profile.seller_approved:
+        # Total sales count
+        context['total_sales'] = Order.objects.filter(
+            seller=request.user,
+            payment_status='paid'
+        ).count()
+        
+        # Active products
+        context['active_products'] = Product.objects.filter(
+            seller=request.user,
+            stock__gt=0
+        ).count()
+        
+        # Pending orders
+        context['pending_orders'] = Order.objects.filter(
+            seller=request.user,
+            status__in=['pending', 'processing']
+        ).count()
+    
     return render(request, 'main/profile.html', context)
 
 

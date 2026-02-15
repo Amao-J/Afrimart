@@ -11,72 +11,41 @@
         <p class="text-muted small mb-0">Manage your marketplace funds and transaction history</p>
     </div>
     
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="wallet-card border-0 p-5 text-white position-relative overflow-hidden" 
-                 style="background-color: var(--primary-green); min-height: 250px; display: flex; justify-content: center;">
-                
-                <ion-icon name="wallet-outline" class="position-absolute" 
-                          style="font-size: 200px; right: -30px; bottom: -30px; opacity: 0.1; transform: rotate(-15deg);"></ion-icon>
-
-                <div class="position-relative">
-                    <h6 class="text-uppercase fw-bold mb-4" style="font-size: 11px; letter-spacing: 2px; opacity: 0.8;">Available Balance</h6>
-                    <h1 class="display-3 fw-bold mb-2" style="letter-spacing: -2px;">{{ wallet_balance }}</h1>
-                    <div class="d-flex align-items-center mt-4 pt-4 border-top border-white border-opacity-10">
-                        <span class="fs-4 me-2">{{ currency_flag }}</span>
-                        <span class="text-uppercase fw-bold small" style="letter-spacing: 1px;">{{ currency_name }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="h-100 p-4 border bg-white d-flex flex-column justify-content-center">
-                <h5 class="fw-bold text-uppercase mb-4" style="font-size: 13px; letter-spacing: 1px;">Wallet Actions</h5>
-                
-                <div class="d-grid gap-3">
-                    <a href="{% url 'wallet_top_up' %}" class="btn btn-dark btn-lg py-3 text-uppercase fw-bold border-0" 
-                       style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
-                        <ion-icon name="add-circle-outline" class="me-2 align-middle"></ion-icon> Top up Wallet
-                    </a>
-                    
-                    <a href="{% url 'dashboard' %}" class="btn btn-outline-dark btn-lg py-3 text-uppercase fw-bold" 
-                       style="font-size: 11px; letter-spacing: 1px;">
-                        <ion-icon name="grid-outline" class="me-2 align-middle"></ion-icon>Profile Dashboard
-                    </a>
-                </div>
-
-                <div class="mt-5 d-flex align-items-start gap-3 p-3 bg-light border">
-                    <ion-icon name="shield-checkmark-outline" class="text-success fs-4"></ion-icon>
-                    <div>
-                        <h6 class="fw-bold mb-1 x-small text-uppercase">Escrow Protected</h6>
-                        <p class="text-muted extra-small mb-0">Your funds are protected by Afrimart Escrow services during every marketplace transaction.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="row g-4 mb-4">
+  <div class="col-md-6">
+    <div class="border bg-white p-4">
+      <p class="x-small text-muted text-uppercase mb-2">Available Balance</p>
+      <h2 class="fw-bold text-success mb-3">₦{{ wallet.balance|floatformat:2|intcomma }}</h2>
+      
+      <!-- Withdraw Button -->
+      {% if user.bank_account.is_verified %}
+        <a href="{% url 'wallet_withdraw' %}" class="btn btn-success w-100 text-uppercase fw-bold py-2" style="font-size: 12px;">
+          <ion-icon name="cash-outline" class="align-middle me-1"></ion-icon>
+          Withdraw to Bank
+        </a>
+      {% else %}
+        <a href="{% url 'bank_account_settings' %}" class="btn btn-outline-warning w-100 text-uppercase fw-bold py-2" style="font-size: 12px;">
+          <ion-icon name="alert-circle-outline" class="align-middle me-1"></ion-icon>
+          Add Bank Account to Withdraw
+        </a>
+      {% endif %}
     </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="border bg-white p-4">
+      <p class="x-small text-muted text-uppercase mb-2">Quick Actions</p>
+      <div class="d-grid gap-2">
+        <a href="{% url 'wallet_top_up' %}" class="btn btn-outline-dark text-uppercase fw-bold py-2" style="font-size: 12px;">
+          <ion-icon name="add-circle-outline" class="align-middle me-1"></ion-icon>
+          Top Up Wallet
+        </a>
+        <a href="" class="btn btn-outline-dark text-uppercase fw-bold py-2" style="font-size: 12px;">
+          <ion-icon name="time-outline" class="align-middle me-1"></ion-icon>
+          Transaction History
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
-
-<style>
-   
-    .wallet-card, .btn, .border, .bg-light { border-radius: 0 !important; }
-    .x-small { font-size: 11px; }
-    .extra-small { font-size: 12px; }
-
-    /* Modern flat button hover */
-    .btn-dark:hover {
-        background-color: #1a4012 !important;
-        transition: 0.3s ease;
-    }
-
-    .btn-outline-dark:hover {
-        background-color: #000;
-        color: #fff;
-        transition: 0.3s ease;
-    }
-
-    /* Container Spacing for Header Sticky Nav */
-    main { padding-top: 20px; }
-</style>
-{% endblock %}
+{%endblock%}
