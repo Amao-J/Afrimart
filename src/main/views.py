@@ -126,14 +126,38 @@ def product_list(request):
     else:
         products = products.order_by('-created_at')
     
-    # Convert prices to user currency
+  
+
     for product in products:
+        # Use discounted price if available
+        price_to_convert = product.get_discounted_price()
+        
         price_info = convert_price_to_user_currency(
-            product.price, 
+            price_to_convert,
             'NGN',
             request
         )
         product.converted_price = price_info['formatted']
+        
+        
+        if product.has_discount:
+            
+            original_price_info = convert_price_to_user_currency(
+                product.price,
+                'NGN',
+                request
+            )
+            product.converted_original_price = original_price_info['formatted']
+            
+         
+            savings_info = convert_price_to_user_currency(
+                product.get_savings(),
+                'NGN',
+                request
+            )
+            product.converted_savings = savings_info['formatted']
+
+        
     
     # Add product count to each category
     for category in categories:
@@ -236,78 +260,236 @@ def dashboard(request):
     return render(request, 'main/dashboard.html', context)
 
 
+# Update your wallet view in main/views.py
+
 @login_required
 def wallet_view(request):
-    """User wallet view"""
-    wallet, created = Wallet.objects.get_or_create(user=request.user)
+    """Wallet page with balance and transaction history"""
+    from django.db.models import Q, Sum
     
-    # Convert balance to user's currency
-    balance_info = convert_price_to_user_currency(
-        wallet.balance,
-        'NGN',
-        request
-    )
+    # Get or create wallet
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    
+    # Get transactions
+    transactions = WalletTransaction.objects.filter(
+        wallet=wallet
+    ).order_by('-created_at')
+    
+    # Filter by type if requested
+    filter_type = request.GET.get('filter', 'all')
+    if filter_type == 'topup':
+        transactions = transactions.filter(
+            transaction_type__in=['topup', 'credit']
+        )
+    elif filter_type == 'debit':
+        transactions = transactions.filter(
+            transaction_type__in=['debit', 'payment']
+        )
+    elif filter_type == 'withdrawal':
+        transactions = transactions.filter(
+            transaction_type='withdrawal'
+        )
+    
+    # Calculate statistics
+    total_deposits = WalletTransaction.objects.filter(
+        wallet=wallet,
+        transaction_type__in=['topup', 'credit', 'escrow_release', 'escrow_refund']
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    
+    total_spent = WalletTransaction.objects.filter(
+        wallet=wallet,
+        transaction_type__in=['debit', 'payment', 'withdrawal']
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    
+    transaction_count = WalletTransaction.objects.filter(wallet=wallet).count()
     
     context = {
         'wallet': wallet,
-        'wallet_balance': balance_info['formatted'],
-        'wallet_amount': balance_info['amount'],
+        'transactions': transactions[:50],  # Limit to last 50
+        'total_deposits': total_deposits,
+        'total_spent': total_spent,
+        'transaction_count': transaction_count,
     }
     
     return render(request, 'main/wallet.html', context)
 
 
+
+
 @login_required
-def top_up_wallet(request):
-    """Top up the logged-in user's wallet (direct credit simulation)
-
-    Note: This simulates a top-up (synchronous credit). Integrate a payment provider
-    for production top-ups (e.g., Flutterwave card flow) if needed.
-    """
+def wallet_top_up(request):
+    """Top up wallet using Flutterwave payment"""
     wallet, _ = Wallet.objects.get_or_create(user=request.user)
-
+    
     if request.method == 'POST':
-        amount_str = request.POST.get('amount', '0').strip()
-        try:
-            amount = Decimal(amount_str)
-        except Exception:
-            messages.error(request, 'Enter a valid amount')
-            return redirect('wallet_top_up')
-
+        amount = Decimal(request.POST.get('amount', 0))
+        
+        # Validation
         if amount <= 0:
-            messages.error(request, 'Amount must be greater than zero')
-            return redirect('wallet_top_up')
-
+            messages.error(request, 'Please enter a valid amount.')
+            return redirect('wallet_top_up')  # FIXED: was wallet_topup
+        
+        # Minimum top-up amount (e.g., ₦100)
+        min_topup = Decimal('100.00')
+        if amount < min_topup:
+            messages.error(request, f'Minimum top-up amount is ₦{min_topup:,.2f}')
+            return redirect('wallet_top_up')  # FIXED: was wallet_topup
+        
         try:
-            with transaction.atomic():
-                # Credit wallet
-                wallet.credit(amount)
-
-                # Record transaction
-                WalletTransaction.objects.create(
-                    wallet=wallet,
-                    amount=amount,
-                    transaction_type='topup',
-                    description='Top-up (direct credit)',
-                    reference=f"TOPUP-{uuid.uuid4().hex[:12].upper()}"
-                )
-
-            messages.success(request, f'✓ Wallet credited with ₦{amount:,.2f}')
-            return redirect('wallet')
+            # Initialize Flutterwave payment
+            payment_data = initialize_wallet_topup_payment(request.user, amount)
+            
+            if payment_data['success']:
+                # Store pending top-up in session
+                request.session['pending_topup'] = {
+                    'amount': str(amount),
+                    'reference': payment_data['tx_ref'],
+                    'timestamp': timezone.now().isoformat()
+                }
+                
+                # Redirect to Flutterwave payment page
+                return redirect(payment_data['payment_link'])
+            else:
+                messages.error(request, f"Payment initialization failed: {payment_data.get('message')}")
+                return redirect('wallet_top_up')  # FIXED: was wallet_topup
+        
         except Exception as e:
-            messages.error(request, f'Error processing top-up: {str(e)}')
-            return redirect('wallet_top_up')
-
-    # GET - show top-up form
-    balance_info = convert_price_to_user_currency(wallet.balance, 'NGN', request)
+            messages.error(request, f'Error processing payment: {str(e)}')
+            return redirect('wallet_top_up')  # FIXED: was wallet_topup
+    
     context = {
-        'wallet': wallet,
-        'wallet_balance': balance_info['formatted'],
-        'wallet_amount': balance_info['amount'],
+        'wallet_balance': f"₦{wallet.balance:,.2f}",
+        'wallet': wallet
     }
+    
     return render(request, 'main/wallet_topup.html', context)
 
 
+def initialize_wallet_topup_payment(user, amount):
+    """
+    Initialize Flutterwave payment for wallet top-up
+    """
+    url = "https://api.flutterwave.com/v3/payments"
+    
+    tx_ref = f"TOPUP-{uuid.uuid4().hex[:12].upper()}"
+    
+    headers = {
+        'Authorization': f'Bearer {settings.FLUTTERWAVE_SECRET_KEY}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        "tx_ref": tx_ref,
+        "amount": str(amount),
+        "currency": "NGN",
+        "redirect_url": f"{settings.SITE_URL}/wallet/topup/callback/",
+        "customer": {
+            "email": user.email,
+            "name": f"{user.first_name} {user.last_name}",
+        },
+        "customizations": {
+            "title": "Afrimart Wallet Top-Up",
+            "description": f"Add ₦{amount:,.2f} to your wallet",
+            "logo": f"{settings.SITE_URL}/static/assets/images/logo.png"
+        },
+        "payment_options": "card,banktransfer,ussd,account"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        if data.get('status') == 'success':
+            return {
+                'success': True,
+                'payment_link': data['data']['link'],
+                'tx_ref': tx_ref,
+                'message': 'Payment initialized successfully'
+            }
+        else:
+            return {
+                'success': False,
+                'message': data.get('message', 'Payment initialization failed')
+            }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Payment initialization error: {str(e)}'
+        }
+
+
+@login_required
+def wallet_topup_callback(request):
+    """
+    Handle Flutterwave callback after wallet top-up payment
+    """
+    transaction_id = request.GET.get('transaction_id')
+    tx_ref = request.GET.get('tx_ref')
+    status = request.GET.get('status')
+    
+    # Get pending top-up from session
+    pending_topup = request.session.get('pending_topup')
+    
+    if not pending_topup:
+        messages.error(request, 'No pending top-up found.')
+        return redirect('wallet')
+    
+    if status == 'successful' and transaction_id:
+        try:
+            # Verify payment with Flutterwave
+            verification_result = verify_flutterwave_payment(transaction_id)
+            
+            if verification_result['success']:
+                amount = Decimal(pending_topup['amount'])
+                
+                with transaction.atomic():
+                    # Get wallet
+                    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+                    
+                    # Credit wallet
+                    wallet.credit(amount)
+                    
+                    # Create transaction record
+                    WalletTransaction.objects.create(
+                        wallet=wallet,
+                        amount=amount,
+                        transaction_type='topup',
+                        description=f'Wallet top-up via Flutterwave',
+                        reference=tx_ref,
+                        balance_before=wallet.balance - amount,
+                        balance_after=wallet.balance
+                    )
+                    
+                    # Clear pending top-up from session
+                    del request.session['pending_topup']
+                    request.session.modified = True
+                    
+                    messages.success(
+                        request, 
+                        f'Success! ₦{amount:,.2f} has been added to your wallet. '
+                        f'New balance: ₦{wallet.balance:,.2f}'
+                    )
+                
+                return redirect('wallet')
+            else:
+                messages.error(request, f"Payment verification failed: {verification_result.get('message')}")
+                return redirect('wallet_top_up')  # FIXED: was wallet_topup
+        
+        except Exception as e:
+            messages.error(request, f'Error processing top-up: {str(e)}')
+            return redirect('wallet_top_up')  # FIXED: was wallet_topup
+    
+    elif status == 'cancelled':
+        messages.warning(request, 'Payment was cancelled. Please try again.')
+        # Clear pending top-up
+        if 'pending_topup' in request.session:
+            del request.session['pending_topup']
+        return redirect('wallet_top_up')  # FIXED: was wallet_topup
+    
+    else:
+        messages.error(request, 'Payment failed. Please try again.')
+        return redirect('wallet_top_up')  # FIXED: was wallet_topup
 
 @login_required
 def checkout(request):

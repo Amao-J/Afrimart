@@ -32,8 +32,10 @@ urlpatterns = [
     path('wishlist/count/', views.get_wishlist_count, name='get_wishlist_count'),
     path('wishlist/move-to-cart/<int:product_id>/', views.move_wishlist_to_cart, name='move_wishlist_to_cart'),
 
-    path('wallet/', views.wallet_view, name='wallet'),
-    path('wallet/top-up/', views.top_up_wallet, name='wallet_top_up'),
+  # In main/urls.py
+path('wallet/', views.wallet_view, name='wallet'),
+path('wallet/topup/', views.wallet_top_up, name='wallet_top_up'),
+path('wallet/topup/callback/', views.wallet_topup_callback, name='wallet_topup_callback'),
     
     path('set-currency/', views.set_currency, name='set_currency'),
     path('currency-rates/', views.get_currency_rates, name='get_currency_rates'),

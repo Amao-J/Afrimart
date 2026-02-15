@@ -54,11 +54,103 @@
         .logo-img { height: 35px; width: auto; }
 
         .search-container { position: relative; max-width: 500px; }
-        .search-container input { background: #f8f8f8; border: 1px solid var(--border-light); padding: 12px 20px; width: 100%; font-size: 13px; }
+        .search-container input { background: #f8f8f8; border: 1px solid var(--border-light); padding: 12px 45px 12px 20px; width: 100%; font-size: 13px; }
         .search-container input:focus { border-color: var(--primary-green); background: #fff; }
-        .search-container button { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: var(--primary-green); font-size: 18px; }
+        .search-container button { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: var(--primary-green); font-size: 18px; cursor: pointer; z-index: 10; }
+
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-top: none;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1050;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border: 1px solid var(--border-light);
+        }
+
+        .suggestion-image-placeholder {
+            width: 50px;
+            height: 50px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-light);
+        }
+
+        .suggestion-details {
+            flex: 1;
+        }
+
+        .suggestion-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .suggestion-price {
+            font-size: 12px;
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        .suggestion-stock {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .suggestion-loading {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .suggestion-empty {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
 
         .nav-icon { font-size: 24px; color: var(--text-main); position: relative; display: flex; align-items: center; }
+        .nav-icon:hover { color: var(--primary-green); }
         .badge-count { position: absolute; top: -6px; right: -8px; background: var(--primary-green); color: #fff; font-size: 9px; width: 17px; height: 17px; display: flex; align-items: center; justify-content: center; font-weight: 700; border-radius: 50%; }
 
         .secondary-nav { background: #fff; border-bottom: 1px solid var(--border-light); }
@@ -67,8 +159,9 @@
 
         /* --- MOBILE MENU --- */
         .offcanvas-body .nav-section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 20px 20px 10px; background: #fbfbfb; }
-        .offcanvas-link { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-light); font-size: 14px; font-weight: 500; }
+        .offcanvas-link { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border-light); font-size: 14px; font-weight: 500; text-decoration: none; color: var(--text-main); }
         .offcanvas-link.active { color: var(--primary-green); background: #f0fdf4; }
+        .offcanvas-link:hover { background: #f8f8f8; color: var(--primary-green); }
 
         /* --- FOOTER STYLES --- */
         footer.modern-footer { background: #000; color: #fff; padding: 85px 0 0; margin-top: 100px; }
@@ -79,29 +172,6 @@
         .footer-logo { height: 40px; width: auto; margin-bottom: 25px; filter: brightness(0) invert(1); }
         .footer-bottom { background-color: #111; padding: 25px 0; margin-top: 60px; border-top: 1px solid #222; }
         .payment-img { max-width: 250px; margin-bottom: 20px; }
-
-        .search-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid var(--border-light);
-    z-index: 1000;
-    max-height: 300px;
-    overflow-y: auto;
-    display: none;
-}
-
-.search-suggestion-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.search-suggestion-item:hover {
-    background: #f8f8f8;
-}
 
         @media (max-width: 991px) {
             header.main-header { padding: 10px 0; }
@@ -124,25 +194,25 @@
                         {% get_available_languages as LANGUAGES %}
                         {% for code, name in LANGUAGES %}
                             <option value="{{ code }}" {% if code == LANGUAGE_CODE %}selected{% endif %}>
-                                        {% if code == "en" %}🇬🇧 English
-                                        {% elif code == "fr" %}🇫🇷 Français
-                                        {% elif code == "sw" %}🇰🇪 Kiswahili
-                                        {% elif code == "ha" %}🇳🇬 Hausa
-                                        {% elif code == "yo" %}🇳🇬 Yorùbá
-                                        {% elif code == "ig" %}🇳🇬 Igbo
-                                        {% elif code == "ar" %}🇪🇬 العربية
-                                        {% endif %}
-                                    </option>           
-                   {% endfor %}
+                                {% if code == "en" %}🇬🇧 English
+                                {% elif code == "fr" %}🇫🇷 Français
+                                {% elif code == "sw" %}🇰🇪 Kiswahili
+                                {% elif code == "ha" %}🇳🇬 Hausa
+                                {% elif code == "yo" %}🇳🇬 Yorùbá
+                                {% elif code == "ig" %}🇳🇬 Igbo
+                                {% elif code == "ar" %}🇪🇬 العربية
+                                {% endif %}
+                            </option>           
+                        {% endfor %}
                     </select>
                 </form>
                 <select name="currency" id="desktop-currency-selector">
-            {% for code, info in supported_currencies.items %}
-              <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>
-                {{ info.flag }} {{ code }} {{ info.symbol }}
-              </option>
-            {% endfor %}
-          </select>
+                    {% for code, info in supported_currencies.items %}
+                        <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>
+                            {{ info.flag }} {{ code }} {{ info.symbol }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
     </div>
@@ -155,35 +225,49 @@
 
             <div class="search-container d-none d-lg-block mx-4 flex-grow-1">
                 <form action="{% url 'product_list' %}" method="GET" id="searchForm">
-                    <input type="text" name="search" id="searchInput" placeholder="{% trans 'Search for authentic products...' %}" autocomplete="off">
+                    <input type="text" 
+                           name="search" 
+                           id="searchInput" 
+                           placeholder="{% trans 'Search for authentic products...' %}" 
+                           autocomplete="off">
                     <button type="submit"><ion-icon name="search-outline"></ion-icon></button>
                 </form>
                 <div class="search-suggestions" id="searchSuggestions"></div>
             </div>
 
             <div class="d-flex align-items-center gap-4">
+                {% if user.is_authenticated %}
+                    {% if user.profile.is_seller and user.profile.seller_approved %}
+                        <a href="{% url 'seller_dashboard' %}" class="nav-icon d-none d-md-block" title="Seller Dashboard">
+                            <ion-icon name="storefront-outline" style="font-size: 20px; margin-top: 10px;"></ion-icon>
+                        </a>
+                    {% endif %}
+                {% endif %}
+                
                 <a href="{% url 'profile' %}" class="nav-icon d-none d-md-block" title="Profile">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                     </svg>
                 </a>
+                
                 <a href="{% url 'wallet' %}" class="nav-icon d-none d-md-block" title="Wallet">
                     <ion-icon name="wallet-outline" style="font-size: 20px; margin-top: 10px;"></ion-icon>
                 </a>
-               
 
-<a href="{% url 'wishlist' %}" class="nav-icon d-none d-md-block" title="Wishlist">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-    </svg>
-    <span class="badge-count wishlist-badge-count" style="display: none;">0</span>
-</a>
+                <a href="{% url 'wishlist' %}" class="nav-icon d-none d-md-block" title="Wishlist">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                    <span class="badge-count wishlist-badge-count" style="display: none;">0</span>
+                </a>
+                
                 <a href="{% url 'cart' %}" class="nav-icon" title="Cart">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                     </svg>
                     <span class="badge-count">{{ cart_count|default:0 }}</span>
                 </a>
+                
                 <button class="d-lg-none nav-icon border-0 bg-transparent" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
                     <ion-icon name="menu-outline"></ion-icon>
                 </button>
@@ -195,7 +279,7 @@
         <div class="container d-flex justify-content-center">
             <ul class="nav">
                 <li><a href="{% url 'home' %}" class="nav-link {% if request.path == '/' or request.path == '/en/' %}active{% endif %}">{% trans "Home" %}</a></li>
-                <li><a href="{% url 'product_list' %}" class="nav-link {% if 'products' in request.path %}active{% endif %}">{% trans "All Products" %}</a></li>
+                <li><a href="{% url 'product_list' %}" class="nav-link {% if 'products' in request.path or 'product-list' in request.path %}active{% endif %}">{% trans "All Products" %}</a></li>
                 <li><a href="#" class="nav-link">{% trans "New Arrivals" %}</a></li>
                 <li><a href="#" class="nav-link text-danger">{% trans "Sale" %}</a></li>
             </ul>
@@ -209,13 +293,40 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="nav-section-title">{% trans "Main Menu" %}</div>
-            <a href="{% url 'home' %}" class="offcanvas-link {% if request.path == '/' %}active{% endif %}"><ion-icon name="home-outline"></ion-icon> {% trans "Home" %}</a>
-            <a href="{% url 'product_list' %}" class="offcanvas-link {% if 'products' in request.path %}active{% endif %}"><ion-icon name="grid-outline"></ion-icon> {% trans "Browse Products" %}</a>
-            <div class="nav-section-title">{% trans "Account & Finance" %}</div>
-            <a href="{% url 'profile' %}" class="offcanvas-link {% if 'profile' in request.path %}active{% endif %}"><ion-icon name="person-outline"></ion-icon> {% trans "My Profile" %}</a>
-            <a href="{% url 'wallet' %}" class="offcanvas-link {% if 'wallet' in request.path %}active{% endif %}"><ion-icon name="wallet-outline"></ion-icon> {% trans "My Wallet" %}</a>
+            <a href="{% url 'home' %}" class="offcanvas-link {% if request.path == '/' %}active{% endif %}">
+                <ion-icon name="home-outline"></ion-icon> {% trans "Home" %}
+            </a>
+            <a href="{% url 'product_list' %}" class="offcanvas-link {% if 'products' in request.path or 'product-list' in request.path %}active{% endif %}">
+                <ion-icon name="grid-outline"></ion-icon> {% trans "Browse Products" %}
+            </a>
+            
+            {% if user.is_authenticated %}
+                {% if user.profile.is_seller and user.profile.seller_approved %}
+                    <div class="nav-section-title">{% trans "Seller" %}</div>
+                    <a href="{% url 'seller_dashboard' %}" class="offcanvas-link">
+                        <ion-icon name="storefront-outline"></ion-icon> {% trans "Seller Dashboard" %}
+                    </a>
+                {% endif %}
+                
+                <div class="nav-section-title">{% trans "Account & Finance" %}</div>
+                <a href="{% url 'profile' %}" class="offcanvas-link {% if 'profile' in request.path %}active{% endif %}">
+                    <ion-icon name="person-outline"></ion-icon> {% trans "My Profile" %}
+                </a>
+                <a href="{% url 'my_orders' %}" class="offcanvas-link {% if 'orders' in request.path %}active{% endif %}">
+                    <ion-icon name="receipt-outline"></ion-icon> {% trans "My Orders" %}
+                </a>
+                <a href="{% url 'wallet' %}" class="offcanvas-link {% if 'wallet' in request.path %}active{% endif %}">
+                    <ion-icon name="wallet-outline"></ion-icon> {% trans "My Wallet" %}
+                </a>
+                <a href="{% url 'wishlist' %}" class="offcanvas-link {% if 'wishlist' in request.path %}active{% endif %}">
+                    <ion-icon name="heart-outline"></ion-icon> {% trans "Wishlist" %}
+                </a>
+            {% endif %}
+            
             <div class="nav-section-title">{% trans "Support" %}</div>
-            <a href="#" class="offcanvas-link"><ion-icon name="help-circle-outline"></ion-icon> {% trans "Help Center" %}</a>
+            <a href="#" class="offcanvas-link">
+                <ion-icon name="help-circle-outline"></ion-icon> {% trans "Help Center" %}
+            </a>
         </div>
     </div>
 
@@ -272,221 +383,218 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    </script>
-
-    <!-- Add this script section to your base.html, before the closing </body> tag -->
-
-<script>
-// Wishlist functionality
-function addToWishlistAjax(productId) {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
-    
-    fetch(`/wishlist/ajax/add/${productId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update wishlist count badge
-            updateWishlistCount(data.count);
-            
-            // Show success message
-            showToast('Added to wishlist!', 'success');
-        } else {
-            showToast(data.message || 'Failed to add to wishlist', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('Failed to add to wishlist', 'danger');
-    });
-}
-
-function updateWishlistCount(count) {
-    const badge = document.querySelector('.wishlist-badge-count');
-    if (badge) {
-        badge.textContent = count;
-        if (count > 0) {
-            badge.style.display = 'flex';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-}
-
-function showToast(message, type) {
-    // Create toast container if it doesn't exist
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'position-fixed bottom-0 end-0 p-4';
-        container.style.zIndex = '9999';
-        document.body.appendChild(container);
-    }
-    
-    const toast = document.createElement('div');
-    toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center`;
-    toast.style.minWidth = '280px';
-    
-    const icon = type === 'success' ? 'checkmark-circle' : 'alert-circle';
-    const color = type === 'success' ? 'text-success' : 'text-danger';
-    
-    toast.innerHTML = `
-        <ion-icon name="${icon}" class="${color} me-2" style="font-size: 24px;"></ion-icon>
-        <div class="small fw-bold">${message}</div>
-    `;
-    
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    <script>
+    // Helper function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-};
 
-const searchInput = document.getElementById('searchInput');
-const suggestionsBox = document.getElementById('searchSuggestions');
+    // Live Search
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('searchSuggestions');
+        let searchTimeout;
 
-if (searchInput) {
-    let controller;
+        if (!searchInput || !suggestionsBox) return;
 
-    searchInput.addEventListener('input', function () {
-        const query = this.value.trim();
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.remove('active');
+            }
+        });
 
-        if (query.length < 2) {
-            suggestionsBox.style.display = 'none';
-            suggestionsBox.innerHTML = '';
-            return;
-        }
+        // Search input listener
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
 
-        // Abort previous request
-        if (controller) controller.abort();
-        controller = new AbortController();
+            clearTimeout(searchTimeout);
 
-        fetch(`/search-suggestions/?q=${encodeURIComponent(query)}`, {
-            signal: controller.signal
-        })
-        .then(res => res.json())
-        .then(data => {
-            suggestionsBox.innerHTML = '';
+            if (query.length < 2) {
+                suggestionsBox.classList.remove('active');
+                return;
+            }
 
-          if (!data.products || data.products.length === 0) {
-    suggestionsBox.innerHTML = `
-        <div class="search-suggestion-item text-muted">
-            No results found
-        </div>
-    `;
-    suggestionsBox.style.display = 'block';
-    return;
-}
+            suggestionsBox.innerHTML = '<div class="suggestion-loading">Searching...</div>';
+            suggestionsBox.classList.add('active');
 
-            data.results.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'search-suggestion-item';
-                div.textContent = item.name;
-                div.onclick = () => {
-                    window.location.href = item.url;
-                };
-                suggestionsBox.appendChild(div);
+            searchTimeout = setTimeout(function() {
+                fetch(`/search-suggestions/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.products && data.products.length > 0) {
+                            displaySuggestions(data.products);
+                        } else {
+                            suggestionsBox.innerHTML = '<div class="suggestion-empty">No products found</div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        suggestionsBox.innerHTML = '<div class="suggestion-empty">Error loading results</div>';
+                    });
+            }, 300);
+        });
+
+        function displaySuggestions(products) {
+            let html = '';
+            
+            products.forEach(product => {
+                html += `
+                    <a href="/product/${product.id}/" class="suggestion-item text-decoration-none">
+                        ${product.image ? 
+                            `<img src="${product.image}" alt="${product.name}" class="suggestion-image">` :
+                            `<div class="suggestion-image-placeholder">
+                                <ion-icon name="image-outline" style="font-size: 24px; color: #ccc;"></ion-icon>
+                            </div>`
+                        }
+                        <div class="suggestion-details">
+                            <div class="suggestion-name">${product.name}</div>
+                            <div class="suggestion-price">₦${parseFloat(product.price).toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                            ${product.stock > 0 ? 
+                                `<div class="suggestion-stock">${product.stock} in stock</div>` :
+                                `<div class="suggestion-stock text-danger">Out of stock</div>`
+                            }
+                        </div>
+                    </a>
+                `;
             });
 
-            suggestionsBox.style.display = 'block';
-        })
-        .catch(err => {
-            if (err.name !== 'AbortError') {
-                console.error(err);
+            suggestionsBox.innerHTML = html;
+        }
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                suggestionsBox.classList.remove('active');
             }
         });
     });
 
-    // Hide on outside click
-    document.addEventListener('click', e => {
-        if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-            suggestionsBox.style.display = 'none';
+    // Wishlist functionality
+    function addToWishlistAjax(productId) {
+        const csrfToken = getCookie('csrftoken');
+        
+        fetch(`/wishlist/ajax/add/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateWishlistCount(data.count);
+                showToast('Added to wishlist!', 'success');
+            } else {
+                showToast(data.message || 'Failed to add to wishlist', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Failed to add to wishlist', 'danger');
+        });
+    }
+
+    function updateWishlistCount(count) {
+        const badge = document.querySelector('.wishlist-badge-count');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
         }
-    });
-}
+    }
 
+    function showToast(message, type) {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'position-fixed bottom-0 end-0 p-4';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center`;
+        toast.style.minWidth = '280px';
+        
+        const icon = type === 'success' ? 'checkmark-circle' : 'alert-circle';
+        const color = type === 'success' ? 'text-success' : 'text-danger';
+        
+        toast.innerHTML = `
+            <ion-icon name="${icon}" class="${color} me-2" style="font-size: 24px;"></ion-icon>
+            <div class="small fw-bold">${message}</div>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
 
- const csrftoken = getCookie('csrftoken');
+    // Currency switcher
+    const csrftoken = getCookie('csrftoken');
 
     function switchCurrency(currency) {
-      document.body.style.cursor = 'wait';
-      
-      fetch('{% url "set_currency" %}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': csrftoken
-        },
-        body: `currency=${currency}`
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          window.location.reload();
-        } else {
-          console.error('Currency switch failed:', data.error);
-          document.body.style.cursor = 'default';
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        document.body.style.cursor = 'default';
-        window.location.reload();
-      });
+        document.body.style.cursor = 'wait';
+        
+        fetch('{% url "set_currency" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: `currency=${currency}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                console.error('Currency switch failed:', data.error);
+                document.body.style.cursor = 'default';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.body.style.cursor = 'default';
+            window.location.reload();
+        });
     }
 
     const desktopSelector = document.getElementById('desktop-currency-selector');
     if (desktopSelector) {
-      desktopSelector.addEventListener('change', function() {
-        switchCurrency(this.value);
-      });
+        desktopSelector.addEventListener('change', function() {
+            switchCurrency(this.value);
+        });
     }
 
-    const mobileOptions = document.querySelectorAll('.mobile-currency-option');
-    mobileOptions.forEach(option => {
-      option.addEventListener('click', function(e) {
-        e.preventDefault();
-        const currency = this.getAttribute('data-currency');
-        switchCurrency(currency);
-      });
+    // Load wishlist count on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/wishlist/count/')
+            .then(response => response.json())
+            .then(data => {
+                updateWishlistCount(data.count);
+            })
+            .catch(error => console.error('Error loading wishlist count:', error));
     });
+    </script>
 
-
-// Load wishlist count on page load
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('/wishlist/count/')
-        .then(response => response.json())
-        .then(data => {
-            updateWishlistCount(data.count);
-        })
-        .catch(error => console.error('Error loading wishlist count:', error));
-});
-</script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

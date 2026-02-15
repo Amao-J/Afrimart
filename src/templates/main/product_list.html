@@ -249,10 +249,10 @@
                   {% if product.has_discount %}
                     <p class="mb-0">
                       <span class="text-success fw-bold" style="font-size: 18px;">
-                        ₦{{ product.get_discounted_price|floatformat:2|intcomma }}
+                        {{ product.converted_original_price}}
                       </span>
                       <span class="text-muted text-decoration-line-through small ms-1">
-                        ₦{{ product.price|floatformat:2|intcomma }}
+                        {{ product.converted_price}}
                       </span>
                     </p>
                   {% else %}

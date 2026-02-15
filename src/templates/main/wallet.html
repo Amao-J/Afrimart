@@ -5,47 +5,221 @@
 {% block title %}My Wallet - Afrimart{% endblock %}
 
 {% block content %}
-<div class="container my-5 py-5">
-    <div class="border-bottom pb-3 mb-5">
-        <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">My Wallet</h1>
-        <p class="text-muted small mb-0">Manage your marketplace funds and transaction history</p>
+<div class="container my-5 py-3">
+  <!-- Header -->
+  <div class="row align-items-end border-bottom pb-4 mb-5">
+    <div class="col-md-6">
+      <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">My Wallet</h1>
+      <p class="text-muted small mb-0">Manage your wallet balance and transactions</p>
     </div>
-    
-    <div class="row g-4 mb-4">
-  <div class="col-md-6">
-    <div class="border bg-white p-4">
-      <p class="x-small text-muted text-uppercase mb-2">Available Balance</p>
-      <h2 class="fw-bold text-success mb-3">₦{{ wallet.balance|floatformat:2|intcomma }}</h2>
-      
-      <!-- Withdraw Button -->
+    <div class="col-md-6 text-md-end">
+      <a href="{% url 'wallet_top_up' %}" class="btn btn-success text-uppercase fw-bold small px-4 me-2">
+        <ion-icon name="add-circle-outline" class="align-middle me-1"></ion-icon>
+        Top Up
+      </a>
       {% if user.bank_account.is_verified %}
-        <a href="{% url 'wallet_withdraw' %}" class="btn btn-success w-100 text-uppercase fw-bold py-2" style="font-size: 12px;">
+        <a href="{% url 'wallet_withdraw' %}" class="btn btn-outline-dark text-uppercase fw-bold small px-4">
           <ion-icon name="cash-outline" class="align-middle me-1"></ion-icon>
-          Withdraw to Bank
-        </a>
-      {% else %}
-        <a href="{% url 'bank_account_settings' %}" class="btn btn-outline-warning w-100 text-uppercase fw-bold py-2" style="font-size: 12px;">
-          <ion-icon name="alert-circle-outline" class="align-middle me-1"></ion-icon>
-          Add Bank Account to Withdraw
+          Withdraw
         </a>
       {% endif %}
     </div>
   </div>
-  
-  <div class="col-md-6">
-    <div class="border bg-white p-4">
-      <p class="x-small text-muted text-uppercase mb-2">Quick Actions</p>
-      <div class="d-grid gap-2">
-        <a href="{% url 'wallet_top_up' %}" class="btn btn-outline-dark text-uppercase fw-bold py-2" style="font-size: 12px;">
-          <ion-icon name="add-circle-outline" class="align-middle me-1"></ion-icon>
-          Top Up Wallet
+
+  <!-- Balance Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-6">
+      <div class="border bg-white p-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="x-small text-muted text-uppercase mb-2">Available Balance</p>
+            <h2 class="fw-bold text-success mb-0">₦{{ wallet.balance|floatformat:2|intcomma }}</h2>
+          </div>
+          <ion-icon name="wallet" class="text-success opacity-25" style="font-size: 48px;"></ion-icon>
+        </div>
+        
+        <div class="row g-2 mt-3">
+          <div class="col-6">
+            <a href="{% url 'wallet_top_up' %}" class="btn btn-sm w-100 text-white text-uppercase fw-bold border-0 py-2" style="background-color: var(--primary-green); font-size: 11px;">
+              <ion-icon name="add" class="align-middle me-1"></ion-icon>
+              Top Up
+            </a>
+          </div>
+          <div class="col-6">
+            {% if user.bank_account.is_verified %}
+              <a href="{% url 'wallet_withdraw' %}" class="btn btn-sm btn-outline-dark w-100 text-uppercase fw-bold py-2" style="font-size: 11px;">
+                <ion-icon name="cash" class="align-middle me-1"></ion-icon>
+                Withdraw
+              </a>
+            {% else %}
+              <a href="{% url 'bank_account_settings' %}" class="btn btn-sm btn-outline-warning w-100 text-uppercase fw-bold py-2" style="font-size: 10px;">
+                <ion-icon name="alert-circle" class="align-middle me-1"></ion-icon>
+                Add Bank
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="border bg-white p-4">
+        <p class="x-small text-muted text-uppercase mb-3">Quick Stats</p>
+        
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small text-muted">Total Deposits</span>
+            <span class="fw-bold small">₦{{ total_deposits|floatformat:2|intcomma|default:"0.00" }}</span>
+          </div>
+          <div class="progress" style="height: 4px; border-radius: 0;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: 60%"></div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small text-muted">Total Spent</span>
+            <span class="fw-bold small">₦{{ total_spent|floatformat:2|intcomma|default:"0.00" }}</span>
+          </div>
+          <div class="progress" style="height: 4px; border-radius: 0;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 40%"></div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between pt-2 border-top">
+          <span class="small text-muted">Transactions</span>
+          <span class="fw-bold small">{{ transaction_count|default:0 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction History -->
+  <div class="border bg-white">
+    <div class="p-4 border-bottom bg-light">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h5 class="fw-bold mb-0 text-uppercase" style="font-size: 13px; letter-spacing: 1px;">
+            Transaction History
+          </h5>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="btn-group" role="group">
+            <a href="?filter=all" class="btn btn-sm {% if not request.GET.filter or request.GET.filter == 'all' %}btn-dark{% else %}btn-outline-dark{% endif %} text-uppercase" style="font-size: 10px;">All</a>
+            <a href="?filter=topup" class="btn btn-sm {% if request.GET.filter == 'topup' %}btn-dark{% else %}btn-outline-dark{% endif %} text-uppercase" style="font-size: 10px;">Top-ups</a>
+            <a href="?filter=debit" class="btn btn-sm {% if request.GET.filter == 'debit' %}btn-dark{% else %}btn-outline-dark{% endif %} text-uppercase" style="font-size: 10px;">Payments</a>
+            <a href="?filter=withdrawal" class="btn btn-sm {% if request.GET.filter == 'withdrawal' %}btn-dark{% else %}btn-outline-dark{% endif %} text-uppercase" style="font-size: 10px;">Withdrawals</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if transactions %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="x-small text-uppercase fw-bold text-muted border-0 py-3">Date</th>
+              <th class="x-small text-uppercase fw-bold text-muted border-0 py-3">Description</th>
+              <th class="x-small text-uppercase fw-bold text-muted border-0 py-3">Type</th>
+              <th class="x-small text-uppercase fw-bold text-muted border-0 py-3 text-end">Amount</th>
+              <th class="x-small text-uppercase fw-bold text-muted border-0 py-3 text-end">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in transactions %}
+            <tr>
+              <td class="small text-muted py-3">{{ transaction.created_at|date:"M d, Y" }}<br><span class="x-small">{{ transaction.created_at|time:"h:i A" }}</span></td>
+              <td class="small py-3">
+                <span class="fw-bold">{{ transaction.description|truncatechars:40 }}</span>
+                {% if transaction.reference %}
+                  <br><span class="x-small text-muted">Ref: {{ transaction.reference }}</span>
+                {% endif %}
+              </td>
+              <td class="py-3">
+                {% if transaction.transaction_type == 'topup' or transaction.transaction_type == 'credit' %}
+                  <span class="badge bg-success small">
+                    <ion-icon name="arrow-down" class="align-middle"></ion-icon>
+                    Credit
+                  </span>
+                {% elif transaction.transaction_type == 'withdrawal' %}
+                  <span class="badge bg-warning text-dark small">
+                    <ion-icon name="cash" class="align-middle"></ion-icon>
+                    Withdrawal
+                  </span>
+                {% else %}
+                  <span class="badge bg-primary small">
+                    <ion-icon name="arrow-up" class="align-middle"></ion-icon>
+                    Debit
+                  </span>
+                {% endif %}
+              </td>
+              <td class="py-3 text-end">
+                {% if transaction.transaction_type == 'topup' or transaction.transaction_type == 'credit' or transaction.transaction_type == 'escrow_release' or transaction.transaction_type == 'escrow_refund' %}
+                  <span class="fw-bold text-success">+₦{{ transaction.amount|floatformat:2|intcomma }}</span>
+                {% else %}
+                  <span class="fw-bold text-danger">-₦{{ transaction.amount|floatformat:2|intcomma }}</span>
+                {% endif %}
+              </td>
+              <td class="py-3 text-end small text-muted">₦{{ transaction.balance_after|floatformat:2|intcomma }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="p-5 text-center">
+        <ion-icon name="receipt-outline" style="font-size: 64px; color: #ddd;"></ion-icon>
+        <h5 class="fw-bold mt-3 mb-2">No Transactions Yet</h5>
+        <p class="text-muted small mb-4">Your transaction history will appear here</p>
+        <a href="{% url 'wallet_top_up' %}" class="btn btn-success text-uppercase fw-bold px-4">
+          <ion-icon name="add-circle" class="align-middle me-1"></ion-icon>
+          Make Your First Top-Up
         </a>
-        <a href="" class="btn btn-outline-dark text-uppercase fw-bold py-2" style="font-size: 12px;">
-          <ion-icon name="time-outline" class="align-middle me-1"></ion-icon>
-          Transaction History
-        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Section -->
+  <div class="row g-3 mt-4">
+    <div class="col-md-4">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="shield-checkmark" class="text-success mb-2" style="font-size: 32px;"></ion-icon>
+        <h6 class="fw-bold small mb-1">Secure Wallet</h6>
+        <p class="x-small text-muted mb-0">Bank-grade encryption</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="flash" class="text-warning mb-2" style="font-size: 32px;"></ion-icon>
+        <h6 class="fw-bold small mb-1">Instant Payments</h6>
+        <p class="x-small text-muted mb-0">Pay in seconds</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="border bg-white p-3 text-center">
+        <ion-icon name="cash" class="text-primary mb-2" style="font-size: 32px;"></ion-icon>
+        <h6 class="fw-bold small mb-1">Easy Withdrawals</h6>
+        <p class="x-small text-muted mb-0">To your bank account</p>
       </div>
     </div>
   </div>
 </div>
-{%endblock%}
+
+<style>
+  .x-small { font-size: 11px; }
+  .border, .btn, .badge, .progress, .table { border-radius: 0 !important; }
+  
+  .btn-group .btn {
+    border-radius: 0 !important;
+  }
+  
+  .table tbody tr {
+    border-bottom: 1px solid var(--border-light);
+  }
+  
+  .table tbody tr:hover {
+    background-color: #f8f8f8;
+  }
+</style>
+{% endblock %}
