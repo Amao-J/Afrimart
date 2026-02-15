@@ -5,6 +5,38 @@ from decimal import Decimal
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
+
+NIGERIAN_BANKS = [
+    ('044', 'Access Bank'),
+    ('063', 'Access Bank (Diamond)'),
+    ('035A', 'ALAT by WEMA'),
+    ('401', 'ASO Savings and Loans'),
+    ('MFB', 'Bowen Microfinance Bank'),
+    ('50931', 'Eyowo'),
+    ('070', 'Fidelity Bank'),
+    ('011', 'First Bank of Nigeria'),
+    ('214', 'First City Monument Bank'),
+    ('058', 'Guaranty Trust Bank'),
+    ('030', 'Heritage Bank'),
+    ('301', 'Jaiz Bank'),
+    ('082', 'Keystone Bank'),
+    ('50211', 'Kuda Bank'),
+    ('090267', 'Mint-Finex MICROFINANCE BANK'),
+    ('090175', 'Rubies Microfinance Bank'),
+    ('101', 'Providus Bank'),
+    ('076', 'Polaris Bank'),
+    ('221', 'Stanbic IBTC Bank'),
+    ('068', 'Standard Chartered Bank'),
+    ('232', 'Sterling Bank'),
+    ('100', 'Suntrust Bank'),
+    ('032', 'Union Bank of Nigeria'),
+    ('033', 'United Bank For Africa'),
+    ('215', 'Unity Bank'),
+    ('035', 'Wema Bank'),
+    ('057', 'Zenith Bank'),
+]
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -78,17 +110,83 @@ class ProductImage(models.Model):
     
     def __str__(self):
         return f"{self.product.name} - Image {self.order}"
+
+
+class BankAccount(models.Model):
+    """Bank account details for sellers to receive payments"""
     
-class Wishlist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlisted_by')
-    added_at = models.DateTimeField(auto_now_add=True)
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='bank_account')
+    account_name = models.CharField(max_length=200)
+    account_number = models.CharField(max_length=20)
+    bank_name = models.CharField(max_length=100)
+    bank_code = models.CharField(max_length=10, help_text="Flutterwave bank code")
+    
+    # Verification
+    is_verified = models.BooleanField(default=False)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        unique_together = ('user', 'product')
-
+        ordering = ['-created_at']
+        verbose_name = 'Bank Account'
+        verbose_name_plural = 'Bank Accounts'
+    
     def __str__(self):
-        return f"{self.user.username} - {self.product.name}"
+        return f"{self.user.username} - {self.bank_name} ({self.account_number})"
+    
+    def verify_account(self):
+        """
+        Verify bank account details with Flutterwave
+        Returns: dict with success status and account name if successful
+        """
+        from django.conf import settings
+        import requests
+        
+        url = "https://api.flutterwave.com/v3/accounts/resolve"
+        
+        headers = {
+            'Authorization': f'Bearer {settings.FLUTTERWAVE_SECRET_KEY}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            "account_number": self.account_number,
+            "account_bank": self.bank_code
+        }
+        
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            data = response.json()
+            
+            if data.get('status') == 'success':
+                account_name = data['data']['account_name']
+                
+                
+                self.account_name = account_name
+                self.is_verified = True
+                self.verified_at = timezone.now()
+                self.save()
+                
+                return {
+                    'success': True,
+                    'account_name': account_name,
+                    'message': 'Account verified successfully'
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': data.get('message', 'Verification failed')
+                }
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'Verification error: {str(e)}'
+            }
+
+
+
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -406,6 +504,19 @@ class UserProfile(models.Model):
         return self.phone
 
 
+class WishlistItem(models.Model):
+   
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlisted_by')
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'product')
+        ordering = ['-added_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name}"
+
 # Signal handlers
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -414,8 +525,11 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.get_or_create(user=instance)
 
 
+
+
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     """Save UserProfile when User is saved"""
     if hasattr(instance, 'profile'):
         instance.profile.save()
+

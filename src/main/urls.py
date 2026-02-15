@@ -1,4 +1,4 @@
-# main/urls.py - Add these URLs to your existing urls.py
+# main/urls.py 
 
 from django.urls import path
 from . import views
@@ -24,6 +24,14 @@ urlpatterns = [
 
     path('cart/ajax/add/<int:product_id>/', views.ajax_add_to_cart, name='ajax_add_to_cart'),
     path('cart/ajax/count/', views.get_cart_count, name='get_cart_count'),
+
+    path('wishlist/', views.wishlist_view, name='wishlist'),
+    path('wishlist/ajax/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
+    path('wishlist/clear/', views.clear_wishlist, name='clear_wishlist'),
+    path('wishlist/count/', views.get_wishlist_count, name='get_wishlist_count'),
+    path('wishlist/move-to-cart/<int:product_id>/', views.move_wishlist_to_cart, name='move_wishlist_to_cart'),
+
     path('wallet/', views.wallet_view, name='wallet'),
     path('wallet/top-up/', views.top_up_wallet, name='wallet_top_up'),
     
@@ -66,4 +74,7 @@ urlpatterns = [
     path('products/', views.product_list, name='product_list'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
+     path('settings/bank-account/', views.bank_account_settings, name='bank_account_settings'),
+    path('settings/bank-account/verify/', views.verify_bank_account, name='verify_bank_account'),
+    path('settings/bank-account/delete/', views.delete_bank_account, name='delete_bank_account'),
 ]

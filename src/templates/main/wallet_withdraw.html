@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Withdraw Funds - Afrimart{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-3">
+  <!-- Header -->
+  <div class="row align-items-end border-bottom pb-4 mb-5">
+    <div class="col-md-6">
+      <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">Withdraw Funds</h1>
+      <p class="text-muted small mb-0">Transfer money from your wallet to your bank account</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <a href="{% url 'wallet' %}" class="btn btn-outline-dark text-uppercase fw-bold small px-4">
+        <ion-icon name="arrow-back" class="align-middle me-1"></ion-icon>
+        Back to Wallet
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Withdrawal Form -->
+    <div class="col-lg-7 mx-auto">
+      <!-- Current Balance Card -->
+      <div class="border bg-white p-4 mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <p class="x-small text-muted text-uppercase mb-1">Available Balance</p>
+            <h2 class="fw-bold text-success mb-0">₦{{ wallet.balance|floatformat:2|intcomma }}</h2>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <ion-icon name="wallet" class="text-success" style="font-size: 48px; opacity: 0.2;"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank Account Info -->
+      <div class="border bg-light p-4 mb-4">
+        <div class="d-flex align-items-start">
+          <ion-icon name="business" class="text-success me-3 mt-1" style="font-size: 24px;"></ion-icon>
+          <div class="flex-grow-1">
+            <p class="small fw-bold mb-1">Withdrawal Destination</p>
+            <p class="fw-bold mb-0">{{ bank_account.bank_name }}</p>
+            <p class="small text-muted mb-0">{{ bank_account.account_number }} - {{ bank_account.account_name }}</p>
+          </div>
+          {% if bank_account.is_verified %}
+            <span class="badge bg-success px-2 py-1">
+              <ion-icon name="checkmark-circle" class="align-middle"></ion-icon>
+              Verified
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Withdrawal Form -->
+      <div class="border bg-white p-4 p-md-5">
+        <h5 class="fw-bold text-uppercase mb-4 border-bottom pb-3" style="font-size: 13px; letter-spacing: 1px;">
+          Enter Withdrawal Amount
+        </h5>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-uppercase">Amount (₦)</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-light border-0">₦</span>
+              <input type="number" 
+                     name="amount" 
+                     id="withdrawAmount"
+                     class="form-control bg-light border-0" 
+                     placeholder="0.00"
+                     step="0.01"
+                     min="{{ min_withdrawal }}"
+                     max="{{ wallet.balance }}"
+                     required>
+            </div>
+            <div class="form-text x-small">
+              Minimum: ₦{{ min_withdrawal|floatformat:2|intcomma }} | 
+              Maximum: ₦{{ wallet.balance|floatformat:2|intcomma }}
+            </div>
+          </div>
+
+          <!-- Quick Amount Buttons -->
+          <div class="mb-4">
+            <p class="x-small text-muted text-uppercase mb-2">Quick Select</p>
+            <div class="d-flex gap-2 flex-wrap">
+              {% if wallet.balance >= 1000 %}
+                <button type="button" onclick="setAmount(1000)" class="btn btn-sm btn-outline-dark">₦1,000</button>
+              {% endif %}
+              {% if wallet.balance >= 5000 %}
+                <button type="button" onclick="setAmount(5000)" class="btn btn-sm btn-outline-dark">₦5,000</button>
+              {% endif %}
+              {% if wallet.balance >= 10000 %}
+                <button type="button" onclick="setAmount(10000)" class="btn btn-sm btn-outline-dark">₦10,000</button>
+              {% endif %}
+              {% if wallet.balance >= 20000 %}
+                <button type="button" onclick="setAmount(20000)" class="btn btn-sm btn-outline-dark">₦20,000</button>
+              {% endif %}
+              <button type="button" onclick="setAmount({{ wallet.balance }})" class="btn btn-sm btn-outline-success">All (₦{{ wallet.balance|floatformat:2|intcomma }})</button>
+            </div>
+          </div>
+
+          
+          <div class="alert alert-info border-0 mb-4" style="background-color: #e7f3ff;">
+            <div class="d-flex">
+              <ion-icon name="information-circle" class="text-primary me-2 mt-1" style="font-size: 20px;"></ion-icon>
+              <div class="small">
+                <strong>Processing Time:</strong> Withdrawals are processed within 24 hours on business days.
+              </div>
+            </div>
+          </div>
+
+         
+          <div class="border-top pt-4 mb-4">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted small">Withdrawal Amount</span>
+              <span class="fw-bold" id="displayAmount">₦0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted small">Processing Fee</span>
+              <span class="text-success fw-bold"></span>
+            </div>
+            <div class="d-flex justify-content-between pt-2 border-top">
+              <span class="fw-bold">You Will Receive</span>
+              <span class="fw-bold h5 text-success mb-0" id="finalAmount">₦0.00</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" 
+                  class="btn btn-lg w-100 text-white text-uppercase fw-bold border-0 py-3" 
+                  style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
+            <ion-icon name="cash" class="align-middle me-2"></ion-icon>
+            Withdraw Funds
+          </button>
+        </form>
+      </div>
+
+      <!-- Info Cards -->
+      <div class="row g-3 mt-3">
+        <div class="col-md-6">
+          <div class="border bg-white p-3">
+            <div class="d-flex align-items-center mb-2">
+              <ion-icon name="flash" class="text-warning me-2" style="font-size: 24px;"></ion-icon>
+              <h6 class="fw-bold mb-0 small">Fast Processing</h6>
+            </div>
+            <p class="x-small text-muted mb-0">Funds arrive within 24 hours</p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="border bg-white p-3">
+            <div class="d-flex align-items-center mb-2">
+              <ion-icon name="shield-checkmark" class="text-success me-2" style="font-size: 24px;"></ion-icon>
+              <h6 class="fw-bold mb-0 small">Secure Transfer</h6>
+            </div>
+            <p class="x-small text-muted mb-0">Bank-grade encryption</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .x-small { font-size: 11px; }
+  .border, .btn, .badge, .form-control, .form-select, .alert, .input-group-text {
+    border-radius: 0 !important;
+  }
+  .form-control:focus {
+    border-color: var(--primary-green);
+    box-shadow: none;
+  }
+  .btn-sm {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+</style>
+
+<script>
+function setAmount(amount) {
+  document.getElementById('withdrawAmount').value = amount;
+  updateDisplay();
+}
+
+function updateDisplay() {
+  const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+  
+  document.getElementById('displayAmount').textContent = '₦' + amount.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  
+  document.getElementById('finalAmount').textContent = '₦' + amount.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const amountInput = document.getElementById('withdrawAmount');
+  if (amountInput) {
+    amountInput.addEventListener('input', updateDisplay);
+  }
+});
+</script>
+{% endblock %}

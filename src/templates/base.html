@@ -80,6 +80,29 @@
         .footer-bottom { background-color: #111; padding: 25px 0; margin-top: 60px; border-top: 1px solid #222; }
         .payment-img { max-width: 250px; margin-bottom: 20px; }
 
+        .search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border-light);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-suggestion-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.search-suggestion-item:hover {
+    background: #f8f8f8;
+}
+
         @media (max-width: 991px) {
             header.main-header { padding: 10px 0; }
             main { padding-bottom: 20px; }
@@ -100,15 +123,26 @@
                         {% get_current_language as CURRENT_LANG %}
                         {% get_available_languages as LANGUAGES %}
                         {% for code, name in LANGUAGES %}
-                            <option value="{{ code }}" {% if code == CURRENT_LANG %}selected{% endif %}>{{ code|upper }}</option>
-                        {% endfor %}
+                            <option value="{{ code }}" {% if code == LANGUAGE_CODE %}selected{% endif %}>
+                                        {% if code == "en" %}🇬🇧 English
+                                        {% elif code == "fr" %}🇫🇷 Français
+                                        {% elif code == "sw" %}🇰🇪 Kiswahili
+                                        {% elif code == "ha" %}🇳🇬 Hausa
+                                        {% elif code == "yo" %}🇳🇬 Yorùbá
+                                        {% elif code == "ig" %}🇳🇬 Igbo
+                                        {% elif code == "ar" %}🇪🇬 العربية
+                                        {% endif %}
+                                    </option>           
+                   {% endfor %}
                     </select>
                 </form>
-                <select id="currency-switcher">
-                    {% for code, info in supported_currencies.items %}
-                        <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>{{ code }} ({{ info.symbol }})</option>
-                    {% endfor %}
-                </select>
+                <select name="currency" id="desktop-currency-selector">
+            {% for code, info in supported_currencies.items %}
+              <option value="{{ code }}" {% if code == user_currency %}selected{% endif %}>
+                {{ info.flag }} {{ code }} {{ info.symbol }}
+              </option>
+            {% endfor %}
+          </select>
             </div>
         </div>
     </div>
@@ -136,11 +170,14 @@
                 <a href="{% url 'wallet' %}" class="nav-icon d-none d-md-block" title="Wallet">
                     <ion-icon name="wallet-outline" style="font-size: 20px; margin-top: 10px;"></ion-icon>
                 </a>
-                <a href="#" class="nav-icon d-none d-md-block" title="Wishlist">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                    </svg>
-                </a>
+               
+
+<a href="{% url 'wishlist' %}" class="nav-icon d-none d-md-block" title="Wishlist">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+    </svg>
+    <span class="badge-count wishlist-badge-count" style="display: none;">0</span>
+</a>
                 <a href="{% url 'cart' %}" class="nav-icon" title="Cart">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -235,7 +272,221 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+
+    </script>
+
+    <!-- Add this script section to your base.html, before the closing </body> tag -->
+
+<script>
+// Wishlist functionality
+function addToWishlistAjax(productId) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+    
+    fetch(`/wishlist/ajax/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update wishlist count badge
+            updateWishlistCount(data.count);
+            
+            // Show success message
+            showToast('Added to wishlist!', 'success');
+        } else {
+            showToast(data.message || 'Failed to add to wishlist', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Failed to add to wishlist', 'danger');
+    });
+}
+
+function updateWishlistCount(count) {
+    const badge = document.querySelector('.wishlist-badge-count');
+    if (badge) {
+        badge.textContent = count;
+        if (count > 0) {
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+function showToast(message, type) {
+    // Create toast container if it doesn't exist
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'position-fixed bottom-0 end-0 p-4';
+        container.style.zIndex = '9999';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `bg-white border-start border-${type} border-4 p-3 mb-2 shadow-sm d-flex align-items-center`;
+    toast.style.minWidth = '280px';
+    
+    const icon = type === 'success' ? 'checkmark-circle' : 'alert-circle';
+    const color = type === 'success' ? 'text-success' : 'text-danger';
+    
+    toast.innerHTML = `
+        <ion-icon name="${icon}" class="${color} me-2" style="font-size: 24px;"></ion-icon>
+        <div class="small fw-bold">${message}</div>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+};
+
+const searchInput = document.getElementById('searchInput');
+const suggestionsBox = document.getElementById('searchSuggestions');
+
+if (searchInput) {
+    let controller;
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            suggestionsBox.style.display = 'none';
+            suggestionsBox.innerHTML = '';
+            return;
+        }
+
+        // Abort previous request
+        if (controller) controller.abort();
+        controller = new AbortController();
+
+        fetch(`/search-suggestions/?q=${encodeURIComponent(query)}`, {
+            signal: controller.signal
+        })
+        .then(res => res.json())
+        .then(data => {
+            suggestionsBox.innerHTML = '';
+
+          if (!data.products || data.products.length === 0) {
+    suggestionsBox.innerHTML = `
+        <div class="search-suggestion-item text-muted">
+            No results found
+        </div>
+    `;
+    suggestionsBox.style.display = 'block';
+    return;
+}
+
+            data.results.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'search-suggestion-item';
+                div.textContent = item.name;
+                div.onclick = () => {
+                    window.location.href = item.url;
+                };
+                suggestionsBox.appendChild(div);
+            });
+
+            suggestionsBox.style.display = 'block';
+        })
+        .catch(err => {
+            if (err.name !== 'AbortError') {
+                console.error(err);
+            }
+        });
+    });
+
+    // Hide on outside click
+    document.addEventListener('click', e => {
+        if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+}
+
+
+ const csrftoken = getCookie('csrftoken');
+
+    function switchCurrency(currency) {
+      document.body.style.cursor = 'wait';
+      
+      fetch('{% url "set_currency" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrftoken
+        },
+        body: `currency=${currency}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.reload();
+        } else {
+          console.error('Currency switch failed:', data.error);
+          document.body.style.cursor = 'default';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.body.style.cursor = 'default';
+        window.location.reload();
+      });
+    }
+
+    const desktopSelector = document.getElementById('desktop-currency-selector');
+    if (desktopSelector) {
+      desktopSelector.addEventListener('change', function() {
+        switchCurrency(this.value);
+      });
+    }
+
+    const mobileOptions = document.querySelectorAll('.mobile-currency-option');
+    mobileOptions.forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.preventDefault();
+        const currency = this.getAttribute('data-currency');
+        switchCurrency(currency);
+      });
+    });
+
+
+// Load wishlist count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/wishlist/count/')
+        .then(response => response.json())
+        .then(data => {
+            updateWishlistCount(data.count);
+        })
+        .catch(error => console.error('Error loading wishlist count:', error));
+});
+</script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

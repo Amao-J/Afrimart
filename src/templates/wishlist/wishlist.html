@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My Wishlist - Afrimart{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-3">
+  <!-- Header -->
+  <div class="row align-items-end border-bottom pb-4 mb-5">
+    <div class="col-md-6">
+      <h1 class="fw-bold h2 mb-0" style="letter-spacing: -1px;">My Wishlist</h1>
+      <p class="text-muted small mb-0">{{ products.count }} item{{ products.count|pluralize }} saved</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+      {% if products %}
+        <a href="{% url 'clear_wishlist' %}" class="btn btn-outline-danger text-uppercase fw-bold small px-4" onclick="return confirm('Are you sure you want to clear your entire wishlist?')">
+          <ion-icon name="trash-outline" class="align-middle me-1"></ion-icon>
+          Clear All
+        </a>
+      {% endif %}
+      <a href="{% url 'product_list' %}" class="btn btn-outline-dark text-uppercase fw-bold small px-4 ms-2">
+        <ion-icon name="arrow-back" class="align-middle me-1"></ion-icon>
+        Continue Shopping
+      </a>
+    </div>
+  </div>
+
+  {% if products %}
+    <!-- Wishlist Items -->
+    <div class="row g-4">
+      {% for product in products %}
+      <div class="col-12">
+        <div class="border bg-white">
+          <div class="row g-0">
+            <!-- Product Image -->
+            <div class="col-md-3">
+              <a href="{% url 'product_detail' product.id %}">
+                <div class="position-relative" style="height: 250px; overflow: hidden;">
+                  {% if product.get_primary_image %}
+                    <img src="{{ product.get_primary_image }}" 
+                         alt="{{ product.name }}" 
+                         class="w-100 h-100 object-fit-cover">
+                  {% else %}
+                    <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                      <ion-icon name="image-outline" style="font-size: 48px; color: #ddd;"></ion-icon>
+                    </div>
+                  {% endif %}
+
+                  <!-- Badges -->
+                  {% if product.has_discount %}
+                    <span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 11px;">
+                      -{{ product.discount_percentage }}%
+                    </span>
+                  {% endif %}
+                </div>
+              </a>
+            </div>
+
+            <!-- Product Details -->
+            <div class="col-md-6 p-4">
+              <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
+                <h5 class="fw-bold mb-2">{{ product.name }}</h5>
+              </a>
+              
+              {% if product.category %}
+                <p class="x-small text-muted text-uppercase mb-3">
+                  <ion-icon name="pricetag-outline" class="align-middle"></ion-icon>
+                  {{ product.category.name }}
+                </p>
+              {% endif %}
+
+              <p class="text-muted small mb-3" style="line-height: 1.6;">
+                {{ product.description|truncatewords:30 }}
+              </p>
+
+              <!-- Stock Status -->
+              {% if product.stock > 0 %}
+                <p class="small text-success mb-0">
+                  <ion-icon name="checkmark-circle" class="align-middle"></ion-icon>
+                  In Stock ({{ product.stock }} available)
+                </p>
+              {% else %}
+                <p class="small text-danger mb-0">
+                  <ion-icon name="close-circle" class="align-middle"></ion-icon>
+                  Out of Stock
+                </p>
+              {% endif %}
+            </div>
+
+            <!-- Price & Actions -->
+            <div class="col-md-3 p-4 border-start d-flex flex-column">
+              <div class="mb-auto">
+                {% if product.has_discount %}
+                  <p class="mb-1">
+                    <span class="text-success fw-bold h4 mb-0">
+                      ₦{{ product.get_discounted_price|floatformat:2|intcomma }}
+                    </span>
+                  </p>
+                  <p class="mb-0">
+                    <del class="text-muted small">₦{{ product.price|floatformat:2|intcomma }}</del>
+                    <span class="badge bg-success small ms-1">
+                      Save ₦{{ product.get_savings|floatformat:2|intcomma }}
+                    </span>
+                  </p>
+                {% else %}
+                  <p class="mb-0">
+                    <span class="text-success fw-bold h4">
+                      ₦{{ product.price|floatformat:2|intcomma }}
+                    </span>
+                  </p>
+                {% endif %}
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="mt-4">
+                {% if product.stock > 0 %}
+                  <!-- Move to Cart Button -->
+                  <a href="{% url 'move_wishlist_to_cart' product.id %}" 
+                     class="btn w-100 text-white text-uppercase fw-bold border-0 py-2 mb-2" 
+                     style="background-color: var(--primary-green); font-size: 12px; letter-spacing: 0.5px;">
+                    <ion-icon name="cart-outline" class="align-middle me-1"></ion-icon>
+                    Move to Bag
+                  </a>
+                {% else %}
+                  <button class="btn btn-secondary w-100 text-uppercase fw-bold py-2 mb-2" 
+                          style="font-size: 12px; letter-spacing: 0.5px;" 
+                          disabled>
+                    <ion-icon name="close-circle-outline" class="align-middle me-1"></ion-icon>
+                    Out of Stock
+                  </button>
+                {% endif %}
+
+                <!-- Remove Button -->
+                <a href="{% url 'remove_from_wishlist' product.id %}" 
+                   class="btn btn-outline-danger w-100 text-uppercase fw-bold py-2" 
+                   style="font-size: 12px; letter-spacing: 0.5px;"
+                   onclick="return confirm('Remove {{ product.name }} from wishlist?')">
+                  <ion-icon name="trash-outline" class="align-middle me-1"></ion-icon>
+                  Remove
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Continue Shopping Section -->
+    <div class="row mt-5 pt-4 border-top">
+      <div class="col-md-6 mx-auto text-center">
+        <p class="text-muted mb-3">Found everything you need?</p>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-dark text-uppercase fw-bold px-5 py-3">
+          <ion-icon name="search-outline" class="align-middle me-2"></ion-icon>
+          Discover More Products
+        </a>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Empty Wishlist State -->
+    <div class="text-center py-5 my-5">
+      <div class="mb-4">
+        <ion-icon name="heart-outline" style="font-size: 100px; color: #ddd;"></ion-icon>
+      </div>
+      <h3 class="fw-bold mb-3">Your Wishlist is Empty</h3>
+      <p class="text-muted mb-4">Start adding products you love to your wishlist!</p>
+      <a href="{% url 'product_list' %}" class="btn btn-lg px-5 py-3 text-white text-uppercase fw-bold border-0" style="background-color: var(--primary-green); font-size: 13px; letter-spacing: 1px;">
+        <ion-icon name="search-outline" class="align-middle me-2"></ion-icon>
+        Browse Products
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .x-small { font-size: 11px; }
+  
+  .object-fit-cover {
+    object-fit: cover;
+  }
+
+  .border, .btn, .badge {
+    border-radius: 0 !important;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+  }
+</style>
+{% endblock %}

@@ -2,7 +2,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Category
 from django.utils import timezone
 from django.db import transaction
 from django.conf import settings
@@ -10,7 +9,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .utils.currency import set_user_currency, SUPPORTED_CURRENCIES, get_exchange_rate, batch_update_rates
-from .models import Order, OrderItem, Product, Wallet, WalletTransaction, Payment
+from .models import Order, OrderItem, Product, Wallet, WalletTransaction, Payment, Category,WishlistItem, BankAccount,NIGERIAN_BANKS
 from decimal import Decimal
 from .cart import get_cart, save_cart, get_cart_items, update_cart, remove_from_cart, clear_cart, cart_view as cart_view_func
 import uuid
@@ -318,7 +317,7 @@ def checkout(request):
         messages.warning(request, "Your cart is empty")
         return redirect('cart')
 
-    # Idempotency protection
+    
     if request.method == 'POST' and request.session.get('checkout_locked'):
         messages.info(request, "Checkout already processed.")
         return redirect('my_orders')
@@ -625,8 +624,7 @@ def set_currency(request):
     if currency in SUPPORTED_CURRENCIES:
         set_user_currency(request, currency)
         request.session.modified = True
-        response = JsonResponse({'success': True})
-        # Also set a cookie for convenience (expires in 30 days)
+        response = JsonResponse({'success': True}) 
         response.set_cookie('currency', currency, max_age=30*24*60*60)
         return response
 
@@ -1173,9 +1171,9 @@ def transfer_to_seller(seller, amount):
     falls back to crediting wallet if that fails
     """
     
-    # Check if seller has bank account details
+    
     if not hasattr(seller, 'bank_account'):
-        # No bank account model - credit wallet directly
+        # 1. No bank account model - credit wallet directly
         wallet, created = Wallet.objects.get_or_create(user=seller)
         wallet.credit(amount)
         return {
@@ -1184,7 +1182,7 @@ def transfer_to_seller(seller, amount):
             'message': 'Credited to wallet (no bank account linked)'
         }
     
-    # Try bank transfer via Flutterwave
+    
     url = "https://api.flutterwave.com/v3/transfers"
     
     headers = {
@@ -1244,7 +1242,7 @@ def initialize_flutterwave_payment(escrow):
     """
     url = "https://api.flutterwave.com/v3/payments"
     
-    # Generate unique transaction reference
+
     tx_ref = f"{escrow.transaction_id}-{escrow.id}"
     
     headers = {
@@ -1561,3 +1559,276 @@ def search_suggestions(request):
         })
     
     return JsonResponse({'products': results})
+
+
+
+
+def _get_wishlist(request):
+    return request.session.get('wishlist', [])
+
+
+def _save_wishlist(request, wishlist):
+    request.session['wishlist'] = wishlist
+    request.session.modified = True
+
+
+def wishlist_view(request):
+    wishlist_ids = _get_wishlist(request)
+    products = Product.objects.filter(id__in=wishlist_ids)
+
+    return render(request, 'wishlist/wishlist.html', {
+        'products': products
+    })
+
+
+@require_POST
+def add_to_wishlist(request, product_id):
+    wishlist = _get_wishlist(request)
+
+    if product_id not in wishlist:
+        wishlist.append(product_id)
+        _save_wishlist(request, wishlist)
+
+    return JsonResponse({
+        'success': True,
+        'count': len(wishlist)
+    })
+
+
+def remove_from_wishlist(request, product_id):
+    wishlist = _get_wishlist(request)
+
+    if product_id in wishlist:
+        wishlist.remove(product_id)
+        _save_wishlist(request, wishlist)
+
+    return redirect('wishlist')
+
+
+def clear_wishlist(request):
+    _save_wishlist(request, [])
+    return redirect('wishlist')
+
+
+def get_wishlist_count(request):
+    wishlist = _get_wishlist(request)
+    return JsonResponse({'count': len(wishlist)})
+
+
+def move_wishlist_to_cart(request, product_id):
+    wishlist = _get_wishlist(request)
+    cart = request.session.get('cart', {})
+
+    if product_id in wishlist:
+        cart[str(product_id)] = cart.get(str(product_id), 0) + 1
+        wishlist.remove(product_id)
+
+    request.session['cart'] = cart
+    _save_wishlist(request, wishlist)
+
+    return redirect('wishlist')
+
+
+
+@login_required
+def bank_account_settings(request):
+    """Manage bank account settings"""
+    try:
+        bank_account = request.user.bank_account
+    except BankAccount.DoesNotExist:
+        bank_account = None
+    
+    if request.method == 'POST':
+        account_number = request.POST.get('account_number')
+        bank_code = request.POST.get('bank_code')
+        
+        # Get bank name from code
+        bank_name = next((name for code, name in NIGERIAN_BANKS if code == bank_code), '')
+        
+        if bank_account:
+            
+            bank_account.account_number = account_number
+            bank_account.bank_code = bank_code
+            bank_account.bank_name = bank_name
+            bank_account.is_verified = False
+            bank_account.save()
+        else:
+            
+            bank_account = BankAccount.objects.create(
+                user=request.user,
+                account_number=account_number,
+                bank_code=bank_code,
+                bank_name=bank_name
+            )
+        
+        
+        result = bank_account.verify_account()
+        
+        if result['success']:
+            messages.success(request, f"Bank account verified! Account Name: {result['account_name']}")
+        else:
+            messages.warning(request, f"Account saved but verification failed: {result['message']}")
+        
+        return redirect('bank_account_settings')
+    
+    context = {
+        'bank_account': bank_account,
+        'nigerian_banks': NIGERIAN_BANKS
+    }
+    
+    return render(request, 'main/bank_account_settings.html', context)
+
+
+@login_required
+def verify_bank_account(request):
+    """AJAX endpoint to verify bank account"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+    
+    try:
+        bank_account = request.user.bank_account
+        result = bank_account.verify_account()
+        return JsonResponse(result)
+    except BankAccount.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'No bank account found'}, status=404)
+
+
+@login_required
+def delete_bank_account(request):
+    """Delete user's bank account"""
+    if request.method == 'POST':
+        try:
+            bank_account = request.user.bank_account
+            bank_account.delete()
+            messages.success(request, 'Bank account deleted successfully.')
+        except BankAccount.DoesNotExist:
+            messages.error(request, 'No bank account found.')
+    
+    return redirect('bank_account_settings')
+
+
+
+
+@login_required
+def wallet_withdraw(request):
+    """Withdraw funds from wallet to bank account"""
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    
+    # Check if user has a verified bank account
+    try:
+        bank_account = request.user.bank_account
+        if not bank_account.is_verified:
+            messages.error(request, 'Please verify your bank account before withdrawing.')
+            return redirect('bank_account_settings')
+    except BankAccount.DoesNotExist:
+        messages.error(request, 'Please add a bank account before withdrawing.')
+        return redirect('bank_account_settings')
+    
+    if request.method == 'POST':
+        amount = Decimal(request.POST.get('amount', 0))
+        
+        # Validation
+        if amount <= 0:
+            messages.error(request, 'Please enter a valid amount.')
+            return redirect('wallet_withdraw')
+        
+        if amount > wallet.balance:
+            messages.error(request, f'Insufficient balance. Available: ₦{wallet.balance:,.2f}')
+            return redirect('wallet_withdraw')
+        
+        # Minimum withdrawal check (e.g., ₦500)
+        min_withdrawal = Decimal('500.00')
+        if amount < min_withdrawal:
+            messages.error(request, f'Minimum withdrawal is ₦{min_withdrawal:,.2f}')
+            return redirect('wallet_withdraw')
+        
+        try:
+            with transaction.atomic():
+                # Debit wallet
+                wallet.debit(amount)
+                
+                # Create withdrawal transaction
+                WalletTransaction.objects.create(
+                    wallet=wallet,
+                    amount=amount,
+                    transaction_type='withdrawal',
+                    description=f'Withdrawal to {bank_account.bank_name} - {bank_account.account_number}',
+                    reference=f"WITHDRAW-{uuid.uuid4().hex[:12].upper()}"
+                )
+                
+                # Process bank transfer
+                result = process_withdrawal_to_bank(request.user, amount)
+                
+                if result['success']:
+                    messages.success(request, f'Withdrawal of ₦{amount:,.2f} initiated successfully! Funds will arrive within 24 hours.')
+                else:
+                    # Refund to wallet if transfer fails
+                    wallet.credit(amount)
+                    messages.error(request, f'Withdrawal failed: {result["message"]}. Amount has been refunded to your wallet.')
+            
+            return redirect('wallet')
+            
+        except Exception as e:
+            messages.error(request, f'Withdrawal failed: {str(e)}')
+            return redirect('wallet_withdraw')
+    
+    context = {
+        'wallet': wallet,
+        'bank_account': bank_account,
+        'min_withdrawal': 500,
+    }
+    
+    return render(request, 'main/wallet_withdraw.html', context)
+
+
+def process_withdrawal_to_bank(user, amount):
+    """
+    Process withdrawal to user's bank account via Flutterwave
+    """
+    try:
+        bank_account = user.bank_account
+    except BankAccount.DoesNotExist:
+        return {
+            'success': False,
+            'message': 'No bank account found'
+        }
+    
+    url = "https://api.flutterwave.com/v3/transfers"
+    
+    headers = {
+        'Authorization': f'Bearer {settings.FLUTTERWAVE_SECRET_KEY}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        "account_bank": bank_account.bank_code,
+        "account_number": bank_account.account_number,
+        "amount": float(amount),
+        "currency": "NGN",
+        "narration": "Wallet Withdrawal - Afrimart",
+        "reference": f"WITHDRAW-{uuid.uuid4().hex[:12].upper()}",
+        "callback_url": f"{settings.SITE_URL}/wallet/withdrawal-callback/",
+        "debit_currency": "NGN"
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        if data.get('status') == 'success':
+            return {
+                'success': True,
+                'reference': data['data'].get('reference'),
+                'message': 'Transfer initiated successfully'
+            }
+        else:
+            return {
+                'success': False,
+                'message': data.get('message', 'Transfer failed')
+            }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Transfer error: {str(e)}'
+        }

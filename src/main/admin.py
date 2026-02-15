@@ -2,10 +2,91 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Product, Order, OrderItem, Wallet, WalletTransaction, Payment, Refund, ProductImage, UserProfile
+from .models import Product, Order, OrderItem, Wallet, WalletTransaction, Payment, Refund, ProductImage, UserProfile, BankAccount
 from decimal import Decimal
 import uuid
 from django.utils import timezone
+
+@admin.register(BankAccount)
+class BankAccountAdmin(admin.ModelAdmin):
+    list_display = [
+        'user',
+        'bank_name',
+        'account_number',
+        'account_name',
+        'verification_status',
+        'created_at'
+    ]
+    
+    list_filter = [
+        'is_verified',
+        'bank_name',
+        'created_at'
+    ]
+    
+    search_fields = [
+        'user__username',
+        'user__email',
+        'account_number',
+        'account_name',
+        'bank_name'
+    ]
+    
+    readonly_fields = [
+        'is_verified',
+        'verified_at',
+        'created_at',
+        'updated_at'
+    ]
+    
+    fieldsets = (
+        ('User Information', {
+            'fields': ('user',)
+        }),
+        ('Bank Details', {
+            'fields': ('bank_name', 'bank_code', 'account_number', 'account_name')
+        }),
+        ('Verification Status', {
+            'fields': ('is_verified', 'verified_at'),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['verify_accounts']
+    
+    def verification_status(self, obj):
+        """Display verification status with badge"""
+        if obj.is_verified:
+            return format_html(
+                '<span style="color: white; background-color: #28a745; padding: 3px 10px; font-size: 11px; font-weight: bold;">✓ VERIFIED</span>'
+            )
+        return format_html(
+            '<span style="color: white; background-color: #dc3545; padding: 3px 10px; font-size: 11px; font-weight: bold;">✗ NOT VERIFIED</span>'
+        )
+    verification_status.short_description = 'Status'
+    
+    def verify_accounts(self, request, queryset):
+        """Verify selected bank accounts"""
+        verified_count = 0
+        failed_count = 0
+        
+        for bank_account in queryset:
+            result = bank_account.verify_account()
+            if result['success']:
+                verified_count += 1
+            else:
+                failed_count += 1
+        
+        if verified_count:
+            self.message_user(request, f'{verified_count} account(s) verified successfully.')
+        if failed_count:
+            self.message_user(request, f'{failed_count} account(s) failed verification.', level='warning')
+    
+    verify_accounts.short_description = 'Verify selected bank accounts'
 
 
 class ProductImageInline(admin.TabularInline):

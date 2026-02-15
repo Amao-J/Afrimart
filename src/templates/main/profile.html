@@ -32,10 +32,88 @@
             {% endif %}
 
             <div class="border bg-white">
-                <a href="#" class="profile-nav-link active">Personal Information</a>
-                <a href="#" class="profile-nav-link">Order History</a>
-                <a href="{% url 'wallet' %}" class="profile-nav-link">My Wallet</a>
-                <a href="#" class="profile-nav-link text-danger">Sign Out</a>
+                <a href="{% url 'profile' %}" class="profile-nav-link active">
+                    <ion-icon name="person-outline" class="align-middle me-2"></ion-icon>
+                    Personal Information
+                </a>
+                <a href="{% url 'my_orders' %}" class="profile-nav-link">
+                    <ion-icon name="receipt-outline" class="align-middle me-2"></ion-icon>
+                    Order History
+                </a>
+                <a href="{% url 'wallet' %}" class="profile-nav-link">
+                    <ion-icon name="wallet-outline" class="align-middle me-2"></ion-icon>
+                    My Wallet
+                </a>
+                <a href="{% url 'bank_account_settings' %}" class="profile-nav-link">
+                    <ion-icon name="business-outline" class="align-middle me-2"></ion-icon>
+                    Bank Account
+                    {% if user.bank_account.is_verified %}
+                        <span class="badge bg-success small ms-2" style="font-size: 9px;">VERIFIED</span>
+                    {% elif user.bank_account %}
+                        <span class="badge bg-warning text-dark small ms-2" style="font-size: 9px;">UNVERIFIED</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'wishlist' %}" class="profile-nav-link">
+                    <ion-icon name="heart-outline" class="align-middle me-2"></ion-icon>
+                    Wishlist
+                </a>
+                <a href="{% url 'escrow:dashboard' %}" class="profile-nav-link">
+                    <ion-icon name="shield-checkmark-outline" class="align-middle me-2"></ion-icon>
+                    Escrow Transactions
+                </a>
+                <a href="{% url 'logout' %}" class="profile-nav-link text-danger" onclick="return confirm('Are you sure you want to sign out?')">
+                    <ion-icon name="log-out-outline" class="align-middle me-2"></ion-icon>
+                    Sign Out
+                </a>
+            </div>
+
+            <!-- Bank Account Quick Status (For ALL users) -->
+            <div class="border bg-white mt-3 p-3">
+                <h6 class="x-small fw-bold text-uppercase mb-3" style="letter-spacing: 1px;">
+                    {% if user.is_seller %}Payout Account{% else %}Withdrawal Account{% endif %}
+                </h6>
+                {% if user.bank_account %}
+                    {% if user.bank_account.is_verified %}
+                        <div class="d-flex align-items-center mb-2">
+                            <ion-icon name="checkmark-circle" class="text-success me-2" style="font-size: 20px;"></ion-icon>
+                            <div>
+                                <p class="small fw-bold mb-0">{{ user.bank_account.bank_name }}</p>
+                                <p class="x-small text-muted mb-0">{{ user.bank_account.account_number }}</p>
+                            </div>
+                        </div>
+                        <p class="x-small text-muted mb-2">
+                            {% if user.is_seller %}
+                                ✓ Ready to receive seller payments
+                            {% else %}
+                                ✓ Ready to withdraw wallet funds
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <div class="alert alert-warning border-0 mb-2 p-2" style="background-color: #fff3cd;">
+                            <p class="x-small mb-0">
+                                <ion-icon name="alert-circle" class="align-middle me-1"></ion-icon>
+                                Account not verified
+                            </p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info border-0 mb-2 p-2" style="background-color: #e7f3ff;">
+                        <p class="x-small mb-1">
+                            <ion-icon name="information-circle" class="align-middle me-1"></ion-icon>
+                            No bank account added
+                        </p>
+                        <p class="extra-small text-muted mb-0">
+                            {% if user.is_seller %}
+                                Add account to receive payments
+                            {% else %}
+                                Add account to withdraw from wallet
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+                <a href="{% url 'bank_account_settings' %}" class="btn btn-sm btn-outline-dark w-100 text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 1px;">
+                    {% if user.bank_account %}Manage{% else %}Add{% endif %} Account
+                </a>
             </div>
         </div>
 
@@ -48,26 +126,28 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label x-small fw-bold text-uppercase text-muted">First Name</label>
-                            <input type="text" class="form-control bg-light border-0" value="{{ user.first_name }}">
+                            <input type="text" name="first_name" class="form-control bg-light border-0" value="{{ user.first_name }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label x-small fw-bold text-uppercase text-muted">Last Name</label>
-                            <input type="text" class="form-control bg-light border-0" value="{{ user.last_name }}">
+                            <input type="text" name="last_name" class="form-control bg-light border-0" value="{{ user.last_name }}">
                         </div>
                         <div class="col-12">
                             <label class="form-label x-small fw-bold text-uppercase text-muted">Email Address</label>
                             <input type="email" class="form-control bg-light border-0" value="{{ user.email }}" readonly>
+                            <div class="form-text x-small">Email cannot be changed</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label x-small fw-bold text-uppercase text-muted">Contact Number</label>
-                            <input type="tel" class="form-control bg-light border-0" value="{{ user.profile.phone }}">
+                            <input type="tel" name="phone" class="form-control bg-light border-0" value="{{ user.profile.phone }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label x-small fw-bold text-uppercase text-muted">Country</label>
-                            <select class="form-select bg-light border-0">
-                                <option>Nigeria</option>
-                                <option>Kenya</option>
-                                <option>Ghana</option>
+                            <select name="country" class="form-select bg-light border-0">
+                                <option value="NG" {% if user.profile.country == 'NG' %}selected{% endif %}>Nigeria</option>
+                                <option value="KE" {% if user.profile.country == 'KE' %}selected{% endif %}>Kenya</option>
+                                <option value="GH" {% if user.profile.country == 'GH' %}selected{% endif %}>Ghana</option>
+                                <option value="ZA" {% if user.profile.country == 'ZA' %}selected{% endif %}>South Africa</option>
                             </select>
                         </div>
                     </div>
@@ -80,6 +160,30 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Quick Stats (if seller) -->
+            {% if user.is_seller %}
+            <div class="row g-3 mt-3">
+                <div class="col-md-4">
+                    <div class="border bg-white p-3 text-center">
+                        <h3 class="fw-bold mb-0 text-success">{{ total_sales|default:0 }}</h3>
+                        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Total Sales</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border bg-white p-3 text-center">
+                        <h3 class="fw-bold mb-0 text-primary">{{ active_products|default:0 }}</h3>
+                        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Active Products</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border bg-white p-3 text-center">
+                        <h3 class="fw-bold mb-0 text-warning">{{ pending_orders|default:0 }}</h3>
+                        <p class="x-small text-muted text-uppercase mb-0 fw-bold">Pending Orders</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <div class="mt-4 p-4 border bg-light d-flex align-items-center gap-3">
                 <ion-icon name="shield-checkmark-outline" class="text-success fs-4"></ion-icon>
@@ -124,6 +228,10 @@
         border-color: var(--primary-green);
         background-color: #fff !important;
         box-shadow: none;
+    }
+
+    .badge {
+        border-radius: 0 !important;
     }
 </style>
 {% endblock %}

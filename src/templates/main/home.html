@@ -263,7 +263,12 @@
                             {% endif %}
                             
                             <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-2 opacity-hover">
-                                <button class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="heart-outline"></ion-icon></button>
+                                  <button onclick="event.preventDefault(); event.stopPropagation(); addToWishlistAjax({{ product.id }})" 
+                            class="btn btn-light btn-sm border bg-white" 
+                            style="width:38px; height:38px;"
+                            title="Add to Wishlist">
+                        <ion-icon name="heart-outline"></ion-icon>
+                    </button>
                                 <button onclick="event.preventDefault(); addToCartAjax({{ product.id }})" class="btn btn-light btn-sm border bg-white" style="width:38px; height:38px;"><ion-icon name="cart-outline"></ion-icon></button>
                             </div>
                         </div>
